@@ -1,0 +1,313 @@
+[18:03:19] INFO     Model device: cpu                                model.py:92
+           INFO     Loading trained model weights from              model.py:101
+                    runs/train/dqn-seed0/trained_model.pt                       
+[18:03:20] INFO     Evaluating dqn-seed0 on 100 episodes         evaluate.py:172
+[18:03:21] INFO     Episode 1/100 (seed 10000)  delay=10658 veh-s evaluate.py:89
+                    queue=2.0  arrived=999/1000  insertion                      
+                    delay=41 veh-s                                              
+[18:03:22] INFO     Episode 2/100 (seed 10001)  delay=10168 veh-s evaluate.py:89
+                    queue=1.9  arrived=999/1000  insertion                      
+                    delay=27 veh-s                                              
+[18:03:23] INFO     Episode 3/100 (seed 10002)  delay=10884 veh-s evaluate.py:89
+                    queue=2.0  arrived=999/1000  insertion                      
+                    delay=35 veh-s                                              
+[18:03:25] INFO     Episode 4/100 (seed 10003)  delay=10866 veh-s evaluate.py:89
+                    queue=2.0  arrived=999/1000  insertion                      
+                    delay=31 veh-s                                              
+[18:03:26] INFO     Episode 5/100 (seed 10004)  delay=9557 veh-s  evaluate.py:89
+                    queue=1.8  arrived=998/1000  insertion                      
+                    delay=27 veh-s                                              
+[18:03:27] INFO     Episode 6/100 (seed 10005)  delay=10975 veh-s evaluate.py:89
+                    queue=2.0  arrived=999/1000  insertion                      
+                    delay=29 veh-s                                              
+[18:03:28] INFO     Episode 7/100 (seed 10006)  delay=9596 veh-s  evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=36 veh-s                                              
+[18:03:30] INFO     Episode 8/100 (seed 10007)  delay=11445 veh-s evaluate.py:89
+                    queue=2.1  arrived=999/1000  insertion                      
+                    delay=46 veh-s                                              
+[18:03:31] INFO     Episode 9/100 (seed 10008)  delay=10581 veh-s evaluate.py:89
+                    queue=2.0  arrived=998/1000  insertion                      
+                    delay=21 veh-s                                              
+[18:03:33] INFO     Episode 10/100 (seed 10009)  delay=10581      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=47 veh-s                                              
+[18:03:34] INFO     Episode 11/100 (seed 10010)  delay=10190      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=39 veh-s                                              
+[18:03:35] INFO     Episode 12/100 (seed 10011)  delay=10777      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=49 veh-s                                              
+[18:03:36] INFO     Episode 13/100 (seed 10012)  delay=10473      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=48 veh-s                                              
+[18:03:38] INFO     Episode 14/100 (seed 10013)  delay=11852      evaluate.py:89
+                    veh-s  queue=2.2  arrived=999/1000  insertion               
+                    delay=26 veh-s                                              
+[18:03:39] INFO     Episode 15/100 (seed 10014)  delay=10092      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=55 veh-s                                              
+[18:03:40] INFO     Episode 16/100 (seed 10015)  delay=10472      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=30 veh-s                                              
+[18:03:42] INFO     Episode 17/100 (seed 10016)  delay=10255      evaluate.py:89
+                    veh-s  queue=1.9  arrived=995/1000  insertion               
+                    delay=39 veh-s                                              
+[18:03:43] INFO     Episode 18/100 (seed 10017)  delay=10821      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=46 veh-s                                              
+[18:03:44] INFO     Episode 19/100 (seed 10018)  delay=10715      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=29 veh-s                                              
+[18:03:46] INFO     Episode 20/100 (seed 10019)  delay=11439      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=33 veh-s                                              
+[18:03:47] INFO     Episode 21/100 (seed 10020)  delay=10234      evaluate.py:89
+                    veh-s  queue=1.9  arrived=997/1000  insertion               
+                    delay=33 veh-s                                              
+[18:03:48] INFO     Episode 22/100 (seed 10021)  delay=11981      evaluate.py:89
+                    veh-s  queue=2.2  arrived=999/1000  insertion               
+                    delay=40 veh-s                                              
+[18:03:49] INFO     Episode 23/100 (seed 10022)  delay=10792      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:03:51] INFO     Episode 24/100 (seed 10023)  delay=9592 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=32 veh-s                                              
+[18:03:52] INFO     Episode 25/100 (seed 10024)  delay=10879      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=31 veh-s                                              
+[18:03:53] INFO     Episode 26/100 (seed 10025)  delay=9602 veh-s evaluate.py:89
+                    queue=1.8  arrived=998/1000  insertion                      
+                    delay=32 veh-s                                              
+[18:03:54] INFO     Episode 27/100 (seed 10026)  delay=11082      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=29 veh-s                                              
+[18:03:56] INFO     Episode 28/100 (seed 10027)  delay=10649      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=34 veh-s                                              
+[18:03:57] INFO     Episode 29/100 (seed 10028)  delay=10943      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=30 veh-s                                              
+[18:03:58] INFO     Episode 30/100 (seed 10029)  delay=9541 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=20 veh-s                                              
+[18:03:59] INFO     Episode 31/100 (seed 10030)  delay=11013      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=30 veh-s                                              
+[18:04:01] INFO     Episode 32/100 (seed 10031)  delay=9665 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=18 veh-s                                              
+[18:04:02] INFO     Episode 33/100 (seed 10032)  delay=11358      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=34 veh-s                                              
+[18:04:03] INFO     Episode 34/100 (seed 10033)  delay=10364      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=25 veh-s                                              
+[18:04:04] INFO     Episode 35/100 (seed 10034)  delay=11176      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=31 veh-s                                              
+[18:04:06] INFO     Episode 36/100 (seed 10035)  delay=11034      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:04:07] INFO     Episode 37/100 (seed 10036)  delay=10507      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:04:09] INFO     Episode 38/100 (seed 10037)  delay=9938 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=27 veh-s                                              
+[18:04:10] INFO     Episode 39/100 (seed 10038)  delay=11185      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:04:12] INFO     Episode 40/100 (seed 10039)  delay=9578 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=37 veh-s                                              
+[18:04:13] INFO     Episode 41/100 (seed 10040)  delay=11442      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=30 veh-s                                              
+[18:04:14] INFO     Episode 42/100 (seed 10041)  delay=10047      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=33 veh-s                                              
+[18:04:15] INFO     Episode 43/100 (seed 10042)  delay=11164      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=31 veh-s                                              
+[18:04:17] INFO     Episode 44/100 (seed 10043)  delay=12233      evaluate.py:89
+                    veh-s  queue=2.3  arrived=999/1000  insertion               
+                    delay=40 veh-s                                              
+[18:04:18] INFO     Episode 45/100 (seed 10044)  delay=10390      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=19 veh-s                                              
+[18:04:20] INFO     Episode 46/100 (seed 10045)  delay=10744      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=34 veh-s                                              
+[18:04:21] INFO     Episode 47/100 (seed 10046)  delay=10129      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=35 veh-s                                              
+[18:04:22] INFO     Episode 48/100 (seed 10047)  delay=11161      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=33 veh-s                                              
+[18:04:24] INFO     Episode 49/100 (seed 10048)  delay=10065      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=42 veh-s                                              
+[18:04:25] INFO     Episode 50/100 (seed 10049)  delay=10641      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=24 veh-s                                              
+[18:04:26] INFO     Episode 51/100 (seed 10050)  delay=10714      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=39 veh-s                                              
+[18:04:28] INFO     Episode 52/100 (seed 10051)  delay=9434 veh-s evaluate.py:89
+                    queue=1.7  arrived=999/1000  insertion                      
+                    delay=22 veh-s                                              
+[18:04:31] INFO     Episode 53/100 (seed 10052)  delay=11014      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=23 veh-s                                              
+[18:04:32] INFO     Episode 54/100 (seed 10053)  delay=9072 veh-s evaluate.py:89
+                    queue=1.7  arrived=999/1000  insertion                      
+                    delay=29 veh-s                                              
+[18:04:34] INFO     Episode 55/100 (seed 10054)  delay=10606      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=35 veh-s                                              
+[18:04:36] INFO     Episode 56/100 (seed 10055)  delay=9690 veh-s evaluate.py:89
+                    queue=1.8  arrived=998/1000  insertion                      
+                    delay=22 veh-s                                              
+[18:04:37] INFO     Episode 57/100 (seed 10056)  delay=10836      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=32 veh-s                                              
+[18:04:38] INFO     Episode 58/100 (seed 10057)  delay=9284 veh-s evaluate.py:89
+                    queue=1.7  arrived=999/1000  insertion                      
+                    delay=29 veh-s                                              
+[18:04:40] INFO     Episode 59/100 (seed 10058)  delay=10196      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=25 veh-s                                              
+[18:04:41] INFO     Episode 60/100 (seed 10059)  delay=10574      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=24 veh-s                                              
+[18:04:42] INFO     Episode 61/100 (seed 10060)  delay=10238      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=33 veh-s                                              
+[18:04:44] INFO     Episode 62/100 (seed 10061)  delay=9942 veh-s evaluate.py:89
+                    queue=1.8  arrived=998/1000  insertion                      
+                    delay=30 veh-s                                              
+[18:04:45] INFO     Episode 63/100 (seed 10062)  delay=10531      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=34 veh-s                                              
+[18:04:46] INFO     Episode 64/100 (seed 10063)  delay=10636      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=26 veh-s                                              
+[18:04:48] INFO     Episode 65/100 (seed 10064)  delay=10060      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=19 veh-s                                              
+[18:04:49] INFO     Episode 66/100 (seed 10065)  delay=10488      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=26 veh-s                                              
+[18:04:50] INFO     Episode 67/100 (seed 10066)  delay=11053      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=45 veh-s                                              
+[18:04:52] INFO     Episode 68/100 (seed 10067)  delay=10742      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=26 veh-s                                              
+[18:04:53] INFO     Episode 69/100 (seed 10068)  delay=10527      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=31 veh-s                                              
+[18:04:54] INFO     Episode 70/100 (seed 10069)  delay=10080      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:04:56] INFO     Episode 71/100 (seed 10070)  delay=10718      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=33 veh-s                                              
+[18:04:57] INFO     Episode 72/100 (seed 10071)  delay=10381      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=32 veh-s                                              
+[18:04:58] INFO     Episode 73/100 (seed 10072)  delay=8977 veh-s evaluate.py:89
+                    queue=1.7  arrived=998/1000  insertion                      
+                    delay=24 veh-s                                              
+[18:05:00] INFO     Episode 74/100 (seed 10073)  delay=11391      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=32 veh-s                                              
+[18:05:01] INFO     Episode 75/100 (seed 10074)  delay=10392      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=31 veh-s                                              
+[18:05:02] INFO     Episode 76/100 (seed 10075)  delay=10996      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=30 veh-s                                              
+[18:05:04] INFO     Episode 77/100 (seed 10076)  delay=10174      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=45 veh-s                                              
+[18:05:05] INFO     Episode 78/100 (seed 10077)  delay=9809 veh-s evaluate.py:89
+                    queue=1.8  arrived=998/1000  insertion                      
+                    delay=27 veh-s                                              
+[18:05:06] INFO     Episode 79/100 (seed 10078)  delay=10721      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=24 veh-s                                              
+[18:05:07] INFO     Episode 80/100 (seed 10079)  delay=9991 veh-s evaluate.py:89
+                    queue=1.9  arrived=999/1000  insertion                      
+                    delay=58 veh-s                                              
+[18:05:09] INFO     Episode 81/100 (seed 10080)  delay=10576      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=35 veh-s                                              
+[18:05:10] INFO     Episode 82/100 (seed 10081)  delay=10322      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=21 veh-s                                              
+[18:05:11] INFO     Episode 83/100 (seed 10082)  delay=10323      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=34 veh-s                                              
+[18:05:13] INFO     Episode 84/100 (seed 10083)  delay=11034      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=30 veh-s                                              
+[18:05:14] INFO     Episode 85/100 (seed 10084)  delay=10441      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=39 veh-s                                              
+[18:05:15] INFO     Episode 86/100 (seed 10085)  delay=11176      evaluate.py:89
+                    veh-s  queue=2.1  arrived=999/1000  insertion               
+                    delay=38 veh-s                                              
+[18:05:17] INFO     Episode 87/100 (seed 10086)  delay=10956      evaluate.py:89
+                    veh-s  queue=2.0  arrived=997/1000  insertion               
+                    delay=32 veh-s                                              
+[18:05:18] INFO     Episode 88/100 (seed 10087)  delay=10552      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=34 veh-s                                              
+[18:05:19] INFO     Episode 89/100 (seed 10088)  delay=10735      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=37 veh-s                                              
+[18:05:21] INFO     Episode 90/100 (seed 10089)  delay=9681 veh-s evaluate.py:89
+                    queue=1.8  arrived=999/1000  insertion                      
+                    delay=39 veh-s                                              
+[18:05:22] INFO     Episode 91/100 (seed 10090)  delay=10818      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=25 veh-s                                              
+[18:05:23] INFO     Episode 92/100 (seed 10091)  delay=10072      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=30 veh-s                                              
+[18:05:25] INFO     Episode 93/100 (seed 10092)  delay=10820      evaluate.py:89
+                    veh-s  queue=2.0  arrived=998/1000  insertion               
+                    delay=38 veh-s                                              
+[18:05:26] INFO     Episode 94/100 (seed 10093)  delay=9259 veh-s evaluate.py:89
+                    queue=1.7  arrived=998/1000  insertion                      
+                    delay=28 veh-s                                              
+[18:05:27] INFO     Episode 95/100 (seed 10094)  delay=10594      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=36 veh-s                                              
+[18:05:29] INFO     Episode 96/100 (seed 10095)  delay=12314      evaluate.py:89
+                    veh-s  queue=2.3  arrived=999/1000  insertion               
+                    delay=31 veh-s                                              
+[18:05:30] INFO     Episode 97/100 (seed 10096)  delay=10255      evaluate.py:89
+                    veh-s  queue=1.9  arrived=998/1000  insertion               
+                    delay=30 veh-s                                              
+[18:05:31] INFO     Episode 98/100 (seed 10097)  delay=10234      evaluate.py:89
+                    veh-s  queue=1.9  arrived=999/1000  insertion               
+                    delay=34 veh-s                                              
+[18:05:32] INFO     Episode 99/100 (seed 10098)  delay=10660      evaluate.py:89
+                    veh-s  queue=2.0  arrived=999/1000  insertion               
+                    delay=37 veh-s                                              
+[18:05:34] INFO     Episode 100/100 (seed 10099)  delay=10584     evaluate.py:89
+                    veh-s  queue=2.0  arrived=997/1000  insertion               
+                    delay=28 veh-s                                              
+
+dqn-seed0
+Episodes: 100, seeds 10000 to 10099
+Total delay (veh-s):      10,522.0 ± 635.6
+Average queue (veh):      2.0 ± 0.1
+Vehicles arrived:         998.7 ± 0.6 of 1000
+Insertion delay (veh-s):  32.6 ± 7.5  (not in total delay)
+(mean ± standard deviation over episodes)
+Saved: runs/eval/dqn-seed0/eval_results.json

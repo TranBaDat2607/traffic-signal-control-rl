@@ -1,0 +1,902 @@
+[16:29:57] INFO     Model device: cpu                                model.py:91
+[16:29:59] INFO     Episode 1/300  eps=1.00  delay=30770 veh-s      train.py:135
+                    queue=5.7  arrived=998/1000  loss=nan  (1 s)                
+[16:30:08] INFO     Episode 2/300  eps=1.00  delay=37814 veh-s      train.py:135
+                    queue=7.0  arrived=999/1000  loss=69.4489  (10              
+                    s)                                                          
+[16:30:17] INFO     Episode 3/300  eps=0.99  delay=42164 veh-s      train.py:135
+                    queue=7.8  arrived=999/1000  loss=26.9167  (19              
+                    s)                                                          
+[16:30:31] INFO     Episode 4/300  eps=0.99  delay=38822 veh-s      train.py:135
+                    queue=7.2  arrived=998/1000  loss=25.4279  (33              
+                    s)                                                          
+[16:30:47] INFO     Episode 5/300  eps=0.99  delay=49278 veh-s      train.py:135
+                    queue=9.1  arrived=999/1000  loss=26.5713  (49              
+                    s)                                                          
+[16:31:14] INFO     Episode 6/300  eps=0.98  delay=36089 veh-s      train.py:135
+                    queue=6.7  arrived=999/1000  loss=26.505  (76               
+                    s)                                                          
+[16:31:41] INFO     Episode 7/300  eps=0.98  delay=38817 veh-s      train.py:135
+                    queue=7.2  arrived=999/1000  loss=24.4173  (103             
+                    s)                                                          
+[16:32:08] INFO     Episode 8/300  eps=0.98  delay=32114 veh-s      train.py:135
+                    queue=5.9  arrived=999/1000  loss=22.6708  (130             
+                    s)                                                          
+[16:32:36] INFO     Episode 9/300  eps=0.97  delay=31484 veh-s      train.py:135
+                    queue=5.8  arrived=999/1000  loss=21.3734  (158             
+                    s)                                                          
+[16:33:03] INFO     Episode 10/300  eps=0.97  delay=36866 veh-s     train.py:135
+                    queue=6.8  arrived=999/1000  loss=21.0779  (185             
+                    s)                                                          
+[16:33:31] INFO     Episode 11/300  eps=0.97  delay=40932 veh-s     train.py:135
+                    queue=7.6  arrived=999/1000  loss=21.0376  (213             
+                    s)                                                          
+[16:33:55] INFO     Episode 12/300  eps=0.96  delay=32333 veh-s     train.py:135
+                    queue=6.0  arrived=999/1000  loss=19.5757  (237             
+                    s)                                                          
+[16:34:07] INFO     Episode 13/300  eps=0.96  delay=39877 veh-s     train.py:135
+                    queue=7.4  arrived=998/1000  loss=19.6088  (249             
+                    s)                                                          
+[16:34:16] INFO     Episode 14/300  eps=0.96  delay=40451 veh-s     train.py:135
+                    queue=7.5  arrived=999/1000  loss=19.3457  (258             
+                    s)                                                          
+[16:34:32] INFO     Episode 15/300  eps=0.95  delay=40489 veh-s     train.py:135
+                    queue=7.5  arrived=998/1000  loss=19.3053  (274             
+                    s)                                                          
+[16:34:49] INFO     Episode 16/300  eps=0.95  delay=27292 veh-s     train.py:135
+                    queue=5.1  arrived=998/1000  loss=18.2406  (291             
+                    s)                                                          
+[16:35:15] INFO     Episode 17/300  eps=0.95  delay=34176 veh-s     train.py:135
+                    queue=6.3  arrived=999/1000  loss=17.6506  (317             
+                    s)                                                          
+[16:35:23] INFO     Episode 18/300  eps=0.94  delay=35128 veh-s     train.py:135
+                    queue=6.5  arrived=997/1000  loss=18.3799  (325             
+                    s)                                                          
+[16:35:32] INFO     Episode 19/300  eps=0.94  delay=38364 veh-s     train.py:135
+                    queue=7.1  arrived=999/1000  loss=17.8516  (334             
+                    s)                                                          
+[16:35:42] INFO     Episode 20/300  eps=0.94  delay=34245 veh-s     train.py:135
+                    queue=6.3  arrived=998/1000  loss=17.9889  (343             
+                    s)                                                          
+[16:35:50] INFO     Episode 21/300  eps=0.93  delay=29394 veh-s     train.py:135
+                    queue=5.4  arrived=999/1000  loss=17.2606  (352             
+                    s)                                                          
+[16:35:58] INFO     Episode 22/300  eps=0.93  delay=37032 veh-s     train.py:135
+                    queue=6.9  arrived=999/1000  loss=17.2766  (360             
+                    s)                                                          
+[16:36:22] INFO     Episode 23/300  eps=0.93  delay=39762 veh-s     train.py:135
+                    queue=7.4  arrived=999/1000  loss=16.3203  (384             
+                    s)                                                          
+[16:36:48] INFO     Episode 24/300  eps=0.92  delay=36232 veh-s     train.py:135
+                    queue=6.7  arrived=996/1000  loss=17.0832  (410             
+                    s)                                                          
+[16:37:06] INFO     Episode 25/300  eps=0.92  delay=38500 veh-s     train.py:135
+                    queue=7.1  arrived=999/1000  loss=17.8827  (428             
+                    s)                                                          
+[16:37:41] INFO     Episode 26/300  eps=0.92  delay=31327 veh-s     train.py:135
+                    queue=5.8  arrived=998/1000  loss=17.2475  (449             
+                    s)                                                          
+[16:38:01] INFO     Episode 27/300  eps=0.91  delay=32884 veh-s     train.py:135
+                    queue=6.1  arrived=998/1000  loss=17.3435  (469             
+                    s)                                                          
+[16:38:10] INFO     Episode 28/300  eps=0.91  delay=33356 veh-s     train.py:135
+                    queue=6.2  arrived=999/1000  loss=16.4239  (478             
+                    s)                                                          
+[16:38:20] INFO     Episode 29/300  eps=0.91  delay=29919 veh-s     train.py:135
+                    queue=5.5  arrived=999/1000  loss=16.5455  (487             
+                    s)                                                          
+[16:38:29] INFO     Episode 30/300  eps=0.90  delay=32580 veh-s     train.py:135
+                    queue=6.0  arrived=999/1000  loss=16.6526  (497             
+                    s)                                                          
+[16:38:38] INFO     Episode 31/300  eps=0.90  delay=39087 veh-s     train.py:135
+                    queue=7.2  arrived=998/1000  loss=15.9578  (506             
+                    s)                                                          
+[16:38:47] INFO     Episode 32/300  eps=0.90  delay=34989 veh-s     train.py:135
+                    queue=6.5  arrived=999/1000  loss=15.8078  (515             
+                    s)                                                          
+[16:38:55] INFO     Episode 33/300  eps=0.89  delay=30952 veh-s     train.py:135
+                    queue=5.7  arrived=998/1000  loss=15.8482  (523             
+                    s)                                                          
+[16:39:03] INFO     Episode 34/300  eps=0.89  delay=27766 veh-s     train.py:135
+                    queue=5.1  arrived=999/1000  loss=15.8322  (531             
+                    s)                                                          
+[16:39:12] INFO     Episode 35/300  eps=0.89  delay=31785 veh-s     train.py:135
+                    queue=5.9  arrived=999/1000  loss=15.6343  (540             
+                    s)                                                          
+[16:39:20] INFO     Episode 36/300  eps=0.88  delay=32340 veh-s     train.py:135
+                    queue=6.0  arrived=999/1000  loss=15.5392  (548             
+                    s)                                                          
+[16:39:29] INFO     Episode 37/300  eps=0.88  delay=36106 veh-s     train.py:135
+                    queue=6.7  arrived=998/1000  loss=15.0232  (557             
+                    s)                                                          
+[16:39:39] INFO     Episode 38/300  eps=0.88  delay=28576 veh-s     train.py:135
+                    queue=5.3  arrived=998/1000  loss=15.3435  (567             
+                    s)                                                          
+[16:39:48] INFO     Episode 39/300  eps=0.87  delay=27016 veh-s     train.py:135
+                    queue=5.0  arrived=996/1000  loss=14.9192  (576             
+                    s)                                                          
+[16:40:02] INFO     Episode 40/300  eps=0.87  delay=25105 veh-s     train.py:135
+                    queue=4.6  arrived=999/1000  loss=14.9962  (590             
+                    s)                                                          
+[16:40:19] INFO     Episode 41/300  eps=0.87  delay=33624 veh-s     train.py:135
+                    queue=6.2  arrived=999/1000  loss=14.7191  (607             
+                    s)                                                          
+[16:40:33] INFO     Episode 42/300  eps=0.86  delay=26720 veh-s     train.py:135
+                    queue=4.9  arrived=998/1000  loss=14.5696  (621             
+                    s)                                                          
+[16:40:54] INFO     Episode 43/300  eps=0.86  delay=30380 veh-s     train.py:135
+                    queue=5.6  arrived=998/1000  loss=14.6431  (642             
+                    s)                                                          
+[16:41:21] INFO     Episode 44/300  eps=0.86  delay=27965 veh-s     train.py:135
+                    queue=5.2  arrived=998/1000  loss=13.6868  (669             
+                    s)                                                          
+[16:41:29] INFO     Episode 45/300  eps=0.85  delay=28232 veh-s     train.py:135
+                    queue=5.2  arrived=999/1000  loss=14.3986  (677             
+                    s)                                                          
+[16:41:38] INFO     Episode 46/300  eps=0.85  delay=25745 veh-s     train.py:135
+                    queue=4.8  arrived=999/1000  loss=13.9112  (686             
+                    s)                                                          
+[16:41:54] INFO     Episode 47/300  eps=0.85  delay=32307 veh-s     train.py:135
+                    queue=6.0  arrived=999/1000  loss=13.7852  (702             
+                    s)                                                          
+[16:42:10] INFO     Episode 48/300  eps=0.84  delay=25455 veh-s     train.py:135
+                    queue=4.7  arrived=997/1000  loss=14.1366  (718             
+                    s)                                                          
+[16:42:38] INFO     Episode 49/300  eps=0.84  delay=31636 veh-s     train.py:135
+                    queue=5.9  arrived=997/1000  loss=13.5307  (746             
+                    s)                                                          
+[16:43:02] INFO     Episode 50/300  eps=0.84  delay=26971 veh-s     train.py:135
+                    queue=5.0  arrived=998/1000  loss=13.7313  (770             
+                    s)                                                          
+[16:43:19] INFO     Episode 51/300  eps=0.83  delay=24560 veh-s     train.py:135
+                    queue=4.5  arrived=999/1000  loss=13.6151  (787             
+                    s)                                                          
+[16:43:48] INFO     Episode 52/300  eps=0.83  delay=34739 veh-s     train.py:135
+                    queue=6.4  arrived=998/1000  loss=13.6121  (816             
+                    s)                                                          
+[16:44:20] INFO     Episode 53/300  eps=0.83  delay=28185 veh-s     train.py:135
+                    queue=5.2  arrived=999/1000  loss=14.0688  (847             
+                    s)                                                          
+[16:44:43] INFO     Episode 54/300  eps=0.82  delay=27705 veh-s     train.py:135
+                    queue=5.1  arrived=999/1000  loss=13.5184  (871             
+                    s)                                                          
+[16:45:07] INFO     Episode 55/300  eps=0.82  delay=26456 veh-s     train.py:135
+                    queue=4.9  arrived=999/1000  loss=13.5477  (895             
+                    s)                                                          
+[16:45:32] INFO     Episode 56/300  eps=0.82  delay=25191 veh-s     train.py:135
+                    queue=4.7  arrived=999/1000  loss=13.2074  (920             
+                    s)                                                          
+[16:45:55] INFO     Episode 57/300  eps=0.81  delay=28485 veh-s     train.py:135
+                    queue=5.3  arrived=999/1000  loss=13.1681  (943             
+                    s)                                                          
+[16:46:10] INFO     Episode 58/300  eps=0.81  delay=23834 veh-s     train.py:135
+                    queue=4.4  arrived=998/1000  loss=13.0336  (958             
+                    s)                                                          
+[16:46:18] INFO     Episode 59/300  eps=0.81  delay=25253 veh-s     train.py:135
+                    queue=4.7  arrived=999/1000  loss=12.5768  (966             
+                    s)                                                          
+[16:46:31] INFO     Episode 60/300  eps=0.80  delay=24734 veh-s     train.py:135
+                    queue=4.6  arrived=999/1000  loss=12.575  (979              
+                    s)                                                          
+[16:46:39] INFO     Episode 61/300  eps=0.80  delay=31505 veh-s     train.py:135
+                    queue=5.8  arrived=999/1000  loss=12.9438  (987             
+                    s)                                                          
+[16:46:47] INFO     Episode 62/300  eps=0.80  delay=24103 veh-s     train.py:135
+                    queue=4.5  arrived=998/1000  loss=12.9824  (995             
+                    s)                                                          
+[16:46:56] INFO     Episode 63/300  eps=0.79  delay=25375 veh-s     train.py:135
+                    queue=4.7  arrived=997/1000  loss=12.7725                   
+                    (1004 s)                                                    
+[16:47:14] INFO     Episode 64/300  eps=0.79  delay=26191 veh-s     train.py:135
+                    queue=4.9  arrived=999/1000  loss=12.8124                   
+                    (1022 s)                                                    
+[16:47:23] INFO     Episode 65/300  eps=0.79  delay=29369 veh-s     train.py:135
+                    queue=5.4  arrived=999/1000  loss=12.7888                   
+                    (1030 s)                                                    
+[16:47:38] INFO     Episode 66/300  eps=0.78  delay=23718 veh-s     train.py:135
+                    queue=4.4  arrived=998/1000  loss=12.9825                   
+                    (1046 s)                                                    
+[16:47:47] INFO     Episode 67/300  eps=0.78  delay=24458 veh-s     train.py:135
+                    queue=4.5  arrived=999/1000  loss=12.5987                   
+                    (1055 s)                                                    
+[16:47:55] INFO     Episode 68/300  eps=0.78  delay=29313 veh-s     train.py:135
+                    queue=5.4  arrived=999/1000  loss=12.466  (1063             
+                    s)                                                          
+[16:48:03] INFO     Episode 69/300  eps=0.77  delay=25225 veh-s     train.py:135
+                    queue=4.7  arrived=998/1000  loss=12.3462                   
+                    (1071 s)                                                    
+[16:48:12] INFO     Episode 70/300  eps=0.77  delay=23542 veh-s     train.py:135
+                    queue=4.4  arrived=997/1000  loss=12.2646                   
+                    (1080 s)                                                    
+[16:48:20] INFO     Episode 71/300  eps=0.77  delay=30592 veh-s     train.py:135
+                    queue=5.7  arrived=999/1000  loss=12.5051                   
+                    (1088 s)                                                    
+[16:48:29] INFO     Episode 72/300  eps=0.76  delay=23496 veh-s     train.py:135
+                    queue=4.4  arrived=999/1000  loss=12.2713                   
+                    (1097 s)                                                    
+[16:48:49] INFO     Episode 73/300  eps=0.76  delay=22591 veh-s     train.py:135
+                    queue=4.2  arrived=999/1000  loss=12.3624                   
+                    (1117 s)                                                    
+[16:49:11] INFO     Episode 74/300  eps=0.76  delay=23386 veh-s     train.py:135
+                    queue=4.3  arrived=999/1000  loss=12.353  (1139             
+                    s)                                                          
+[16:49:35] INFO     Episode 75/300  eps=0.75  delay=23996 veh-s     train.py:135
+                    queue=4.4  arrived=999/1000  loss=11.8244                   
+                    (1163 s)                                                    
+[16:49:59] INFO     Episode 76/300  eps=0.75  delay=26051 veh-s     train.py:135
+                    queue=4.8  arrived=998/1000  loss=11.7854                   
+                    (1187 s)                                                    
+[16:50:25] INFO     Episode 77/300  eps=0.75  delay=27397 veh-s     train.py:135
+                    queue=5.1  arrived=999/1000  loss=12.0092                   
+                    (1213 s)                                                    
+[16:50:34] INFO     Episode 78/300  eps=0.74  delay=24029 veh-s     train.py:135
+                    queue=4.4  arrived=999/1000  loss=11.945  (1222             
+                    s)                                                          
+[16:50:49] INFO     Episode 79/300  eps=0.74  delay=25054 veh-s     train.py:135
+                    queue=4.6  arrived=999/1000  loss=12.2795                   
+                    (1237 s)                                                    
+[16:50:57] INFO     Episode 80/300  eps=0.74  delay=23067 veh-s     train.py:135
+                    queue=4.3  arrived=999/1000  loss=11.5262                   
+                    (1245 s)                                                    
+[16:51:16] INFO     Episode 81/300  eps=0.73  delay=23972 veh-s     train.py:135
+                    queue=4.4  arrived=998/1000  loss=11.7352                   
+                    (1264 s)                                                    
+[16:51:44] INFO     Episode 82/300  eps=0.73  delay=21508 veh-s     train.py:135
+                    queue=4.0  arrived=998/1000  loss=11.4726                   
+                    (1292 s)                                                    
+[16:52:12] INFO     Episode 83/300  eps=0.73  delay=26233 veh-s     train.py:135
+                    queue=4.9  arrived=998/1000  loss=11.1118                   
+                    (1320 s)                                                    
+[16:52:39] INFO     Episode 84/300  eps=0.72  delay=24337 veh-s     train.py:135
+                    queue=4.5  arrived=999/1000  loss=11.1327                   
+                    (1347 s)                                                    
+[16:53:07] INFO     Episode 85/300  eps=0.72  delay=21229 veh-s     train.py:135
+                    queue=3.9  arrived=999/1000  loss=11.0773                   
+                    (1375 s)                                                    
+[16:53:36] INFO     Episode 86/300  eps=0.72  delay=23113 veh-s     train.py:135
+                    queue=4.3  arrived=998/1000  loss=11.0627                   
+                    (1404 s)                                                    
+[16:54:04] INFO     Episode 87/300  eps=0.71  delay=23021 veh-s     train.py:135
+                    queue=4.3  arrived=999/1000  loss=11.0035                   
+                    (1432 s)                                                    
+[16:54:32] INFO     Episode 88/300  eps=0.71  delay=24219 veh-s     train.py:135
+                    queue=4.5  arrived=998/1000  loss=10.9247                   
+                    (1460 s)                                                    
+[16:55:00] INFO     Episode 89/300  eps=0.71  delay=20639 veh-s     train.py:135
+                    queue=3.8  arrived=999/1000  loss=11.102  (1488             
+                    s)                                                          
+[16:55:08] INFO     Episode 90/300  eps=0.70  delay=24253 veh-s     train.py:135
+                    queue=4.5  arrived=999/1000  loss=11.2075                   
+                    (1496 s)                                                    
+[16:55:16] INFO     Episode 91/300  eps=0.70  delay=26630 veh-s     train.py:135
+                    queue=4.9  arrived=999/1000  loss=10.825  (1504             
+                    s)                                                          
+[16:55:24] INFO     Episode 92/300  eps=0.70  delay=23367 veh-s     train.py:135
+                    queue=4.3  arrived=997/1000  loss=11.1226                   
+                    (1512 s)                                                    
+[16:55:35] INFO     Episode 93/300  eps=0.69  delay=19571 veh-s     train.py:135
+                    queue=3.6  arrived=999/1000  loss=10.866  (1523             
+                    s)                                                          
+[16:55:44] INFO     Episode 94/300  eps=0.69  delay=23115 veh-s     train.py:135
+                    queue=4.3  arrived=998/1000  loss=10.6208                   
+                    (1532 s)                                                    
+[16:55:52] INFO     Episode 95/300  eps=0.69  delay=20133 veh-s     train.py:135
+                    queue=3.7  arrived=998/1000  loss=10.5105                   
+                    (1540 s)                                                    
+[16:56:00] INFO     Episode 96/300  eps=0.68  delay=23669 veh-s     train.py:135
+                    queue=4.4  arrived=999/1000  loss=10.6105                   
+                    (1548 s)                                                    
+[16:56:12] INFO     Episode 97/300  eps=0.68  delay=24537 veh-s     train.py:135
+                    queue=4.5  arrived=999/1000  loss=10.4091                   
+                    (1560 s)                                                    
+[16:56:36] INFO     Episode 98/300  eps=0.68  delay=21823 veh-s     train.py:135
+                    queue=4.0  arrived=999/1000  loss=10.3693                   
+                    (1584 s)                                                    
+[16:57:01] INFO     Episode 99/300  eps=0.67  delay=22120 veh-s     train.py:135
+                    queue=4.1  arrived=999/1000  loss=10.1998                   
+                    (1609 s)                                                    
+[16:57:26] INFO     Episode 100/300  eps=0.67  delay=25079 veh-s    train.py:135
+                    queue=4.6  arrived=999/1000  loss=10.3345                   
+                    (1634 s)                                                    
+[16:57:35] INFO     Episode 101/300  eps=0.67  delay=21473 veh-s    train.py:135
+                    queue=4.0  arrived=999/1000  loss=10.438  (1643             
+                    s)                                                          
+[16:57:54] INFO     Episode 102/300  eps=0.66  delay=23657 veh-s    train.py:135
+                    queue=4.4  arrived=999/1000  loss=10.432  (1662             
+                    s)                                                          
+[16:58:02] INFO     Episode 103/300  eps=0.66  delay=22705 veh-s    train.py:135
+                    queue=4.2  arrived=999/1000  loss=10.3049                   
+                    (1670 s)                                                    
+[16:58:24] INFO     Episode 104/300  eps=0.66  delay=20363 veh-s    train.py:135
+                    queue=3.8  arrived=999/1000  loss=10.8743                   
+                    (1692 s)                                                    
+[16:58:37] INFO     Episode 105/300  eps=0.65  delay=20792 veh-s    train.py:135
+                    queue=3.9  arrived=999/1000  loss=10.4345                   
+                    (1705 s)                                                    
+[16:58:45] INFO     Episode 106/300  eps=0.65  delay=20161 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=10.1587                   
+                    (1713 s)                                                    
+[16:58:54] INFO     Episode 107/300  eps=0.65  delay=20860 veh-s    train.py:135
+                    queue=3.9  arrived=998/1000  loss=10.0752                   
+                    (1721 s)                                                    
+[16:59:02] INFO     Episode 108/300  eps=0.64  delay=19747 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=9.7758  (1730             
+                    s)                                                          
+[16:59:10] INFO     Episode 109/300  eps=0.64  delay=20815 veh-s    train.py:135
+                    queue=3.9  arrived=999/1000  loss=10.1711                   
+                    (1738 s)                                                    
+[16:59:18] INFO     Episode 110/300  eps=0.64  delay=20221 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=9.7646  (1746             
+                    s)                                                          
+[16:59:27] INFO     Episode 111/300  eps=0.63  delay=21040 veh-s    train.py:135
+                    queue=3.9  arrived=999/1000  loss=9.6257  (1755             
+                    s)                                                          
+[16:59:56] INFO     Episode 112/300  eps=0.63  delay=24069 veh-s    train.py:135
+                    queue=4.5  arrived=999/1000  loss=9.953  (1784              
+                    s)                                                          
+[17:00:05] INFO     Episode 113/300  eps=0.63  delay=20188 veh-s    train.py:135
+                    queue=3.7  arrived=998/1000  loss=9.8944  (1793             
+                    s)                                                          
+[17:00:13] INFO     Episode 114/300  eps=0.62  delay=17822 veh-s    train.py:135
+                    queue=3.3  arrived=999/1000  loss=9.8915  (1801             
+                    s)                                                          
+[17:00:22] INFO     Episode 115/300  eps=0.62  delay=18619 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=9.6681  (1810             
+                    s)                                                          
+[17:00:30] INFO     Episode 116/300  eps=0.62  delay=18844 veh-s    train.py:135
+                    queue=3.5  arrived=999/1000  loss=9.6056  (1818             
+                    s)                                                          
+[17:00:55] INFO     Episode 117/300  eps=0.61  delay=24404 veh-s    train.py:135
+                    queue=4.5  arrived=999/1000  loss=9.3434  (1843             
+                    s)                                                          
+[17:01:22] INFO     Episode 118/300  eps=0.61  delay=20519 veh-s    train.py:135
+                    queue=3.8  arrived=999/1000  loss=9.3124  (1870             
+                    s)                                                          
+[17:01:51] INFO     Episode 119/300  eps=0.61  delay=21273 veh-s    train.py:135
+                    queue=3.9  arrived=997/1000  loss=9.4723  (1899             
+                    s)                                                          
+[17:02:00] INFO     Episode 120/300  eps=0.60  delay=19412 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=9.3334  (1908             
+                    s)                                                          
+[17:02:08] INFO     Episode 121/300  eps=0.60  delay=17975 veh-s    train.py:135
+                    queue=3.3  arrived=999/1000  loss=9.3434  (1916             
+                    s)                                                          
+[17:02:17] INFO     Episode 122/300  eps=0.60  delay=22977 veh-s    train.py:135
+                    queue=4.3  arrived=998/1000  loss=9.6535  (1925             
+                    s)                                                          
+[17:02:26] INFO     Episode 123/300  eps=0.59  delay=19180 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=9.1183  (1934             
+                    s)                                                          
+[17:02:34] INFO     Episode 124/300  eps=0.59  delay=19855 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=9.1922  (1942             
+                    s)                                                          
+[17:02:51] INFO     Episode 125/300  eps=0.59  delay=18518 veh-s    train.py:135
+                    queue=3.4  arrived=997/1000  loss=9.0352  (1959             
+                    s)                                                          
+[17:03:01] INFO     Episode 126/300  eps=0.58  delay=19737 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=8.881  (1968              
+                    s)                                                          
+[17:03:10] INFO     Episode 127/300  eps=0.58  delay=21240 veh-s    train.py:135
+                    queue=3.9  arrived=998/1000  loss=8.8809  (1977             
+                    s)                                                          
+[17:03:18] INFO     Episode 128/300  eps=0.58  delay=18128 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=8.9512  (1986             
+                    s)                                                          
+[17:03:26] INFO     Episode 129/300  eps=0.57  delay=20922 veh-s    train.py:135
+                    queue=3.9  arrived=999/1000  loss=8.7888  (1994             
+                    s)                                                          
+[17:03:35] INFO     Episode 130/300  eps=0.57  delay=19529 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=8.7334  (2003             
+                    s)                                                          
+[17:03:49] INFO     Episode 131/300  eps=0.57  delay=18471 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=8.5035  (2017             
+                    s)                                                          
+[17:04:09] INFO     Episode 132/300  eps=0.56  delay=17071 veh-s    train.py:135
+                    queue=3.2  arrived=998/1000  loss=8.4836  (2037             
+                    s)                                                          
+[17:04:19] INFO     Episode 133/300  eps=0.56  delay=18883 veh-s    train.py:135
+                    queue=3.5  arrived=999/1000  loss=8.5764  (2047             
+                    s)                                                          
+[17:04:29] INFO     Episode 134/300  eps=0.56  delay=17619 veh-s    train.py:135
+                    queue=3.3  arrived=999/1000  loss=8.4239  (2057             
+                    s)                                                          
+[17:04:49] INFO     Episode 135/300  eps=0.55  delay=18881 veh-s    train.py:135
+                    queue=3.5  arrived=999/1000  loss=8.4238  (2077             
+                    s)                                                          
+[17:05:16] INFO     Episode 136/300  eps=0.55  delay=19845 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=8.1412  (2104             
+                    s)                                                          
+[17:05:45] INFO     Episode 137/300  eps=0.55  delay=19545 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=8.3018  (2133             
+                    s)                                                          
+[17:06:15] INFO     Episode 138/300  eps=0.54  delay=20228 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=8.2616  (2163             
+                    s)                                                          
+[17:06:47] INFO     Episode 139/300  eps=0.54  delay=18180 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=8.0307  (2195             
+                    s)                                                          
+[17:07:15] INFO     Episode 140/300  eps=0.54  delay=18130 veh-s    train.py:135
+                    queue=3.4  arrived=998/1000  loss=8.0798  (2223             
+                    s)                                                          
+[17:07:29] INFO     Episode 141/300  eps=0.53  delay=19923 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=7.9109  (2237             
+                    s)                                                          
+[17:07:39] INFO     Episode 142/300  eps=0.53  delay=17524 veh-s    train.py:135
+                    queue=3.2  arrived=999/1000  loss=8.0067  (2247             
+                    s)                                                          
+[17:07:58] INFO     Episode 143/300  eps=0.53  delay=15067 veh-s    train.py:135
+                    queue=2.8  arrived=998/1000  loss=7.7667  (2266             
+                    s)                                                          
+[17:08:10] INFO     Episode 144/300  eps=0.52  delay=19772 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=7.7033  (2278             
+                    s)                                                          
+[17:08:20] INFO     Episode 145/300  eps=0.52  delay=19082 veh-s    train.py:135
+                    queue=3.5  arrived=999/1000  loss=7.5621  (2287             
+                    s)                                                          
+[17:08:28] INFO     Episode 146/300  eps=0.52  delay=16360 veh-s    train.py:135
+                    queue=3.0  arrived=998/1000  loss=7.4639  (2296             
+                    s)                                                          
+[17:08:37] INFO     Episode 147/300  eps=0.51  delay=16985 veh-s    train.py:135
+                    queue=3.1  arrived=999/1000  loss=7.4109  (2305             
+                    s)                                                          
+[17:08:46] INFO     Episode 148/300  eps=0.51  delay=21084 veh-s    train.py:135
+                    queue=3.9  arrived=999/1000  loss=7.3923  (2314             
+                    s)                                                          
+[17:08:56] INFO     Episode 149/300  eps=0.51  delay=17407 veh-s    train.py:135
+                    queue=3.2  arrived=999/1000  loss=7.2036  (2324             
+                    s)                                                          
+[17:09:11] INFO     Episode 150/300  eps=0.50  delay=17085 veh-s    train.py:135
+                    queue=3.2  arrived=999/1000  loss=7.2572  (2339             
+                    s)                                                          
+[17:09:33] INFO     Episode 151/300  eps=0.50  delay=19987 veh-s    train.py:135
+                    queue=3.7  arrived=999/1000  loss=7.2066  (2361             
+                    s)                                                          
+[17:09:42] INFO     Episode 152/300  eps=0.50  delay=18373 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=6.9117  (2370             
+                    s)                                                          
+[17:09:51] INFO     Episode 153/300  eps=0.49  delay=18190 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=7.0641  (2379             
+                    s)                                                          
+[17:10:01] INFO     Episode 154/300  eps=0.49  delay=17836 veh-s    train.py:135
+                    queue=3.3  arrived=998/1000  loss=7.0134  (2389             
+                    s)                                                          
+[17:10:12] INFO     Episode 155/300  eps=0.49  delay=17113 veh-s    train.py:135
+                    queue=3.2  arrived=996/1000  loss=6.9636  (2400             
+                    s)                                                          
+[17:10:41] INFO     Episode 156/300  eps=0.48  delay=17205 veh-s    train.py:135
+                    queue=3.2  arrived=996/1000  loss=6.7876  (2429             
+                    s)                                                          
+[17:10:53] INFO     Episode 157/300  eps=0.48  delay=15888 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=6.6718  (2441             
+                    s)                                                          
+[17:11:09] INFO     Episode 158/300  eps=0.48  delay=17360 veh-s    train.py:135
+                    queue=3.2  arrived=998/1000  loss=6.6459  (2457             
+                    s)                                                          
+[17:11:44] INFO     Episode 159/300  eps=0.47  delay=18095 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=6.6029  (2492             
+                    s)                                                          
+[17:11:59] INFO     Episode 160/300  eps=0.47  delay=19368 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=6.4144  (2507             
+                    s)                                                          
+[17:12:09] INFO     Episode 161/300  eps=0.47  delay=19608 veh-s    train.py:135
+                    queue=3.6  arrived=999/1000  loss=6.7184  (2517             
+                    s)                                                          
+[17:12:21] INFO     Episode 162/300  eps=0.46  delay=18797 veh-s    train.py:135
+                    queue=3.5  arrived=999/1000  loss=6.3487  (2529             
+                    s)                                                          
+[17:12:32] INFO     Episode 163/300  eps=0.46  delay=15919 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=6.6056  (2540             
+                    s)                                                          
+[17:12:45] INFO     Episode 164/300  eps=0.46  delay=17864 veh-s    train.py:135
+                    queue=3.3  arrived=998/1000  loss=6.4778  (2553             
+                    s)                                                          
+[17:13:06] INFO     Episode 165/300  eps=0.45  delay=15631 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=6.2498  (2574             
+                    s)                                                          
+[17:13:25] INFO     Episode 166/300  eps=0.45  delay=15931 veh-s    train.py:135
+                    queue=3.0  arrived=998/1000  loss=6.3013  (2593             
+                    s)                                                          
+[17:13:36] INFO     Episode 167/300  eps=0.45  delay=20342 veh-s    train.py:135
+                    queue=3.8  arrived=999/1000  loss=6.2532  (2604             
+                    s)                                                          
+[17:13:45] INFO     Episode 168/300  eps=0.44  delay=16123 veh-s    train.py:135
+                    queue=3.0  arrived=998/1000  loss=6.2033  (2613             
+                    s)                                                          
+[17:13:56] INFO     Episode 169/300  eps=0.44  delay=15890 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=6.1959  (2624             
+                    s)                                                          
+[17:14:22] INFO     Episode 170/300  eps=0.44  delay=15757 veh-s    train.py:135
+                    queue=2.9  arrived=998/1000  loss=6.1665  (2649             
+                    s)                                                          
+[17:14:55] INFO     Episode 171/300  eps=0.43  delay=16690 veh-s    train.py:135
+                    queue=3.1  arrived=999/1000  loss=6.2159  (2683             
+                    s)                                                          
+[17:15:30] INFO     Episode 172/300  eps=0.43  delay=17987 veh-s    train.py:135
+                    queue=3.3  arrived=999/1000  loss=5.8609  (2718             
+                    s)                                                          
+[17:16:00] INFO     Episode 173/300  eps=0.43  delay=16643 veh-s    train.py:135
+                    queue=3.1  arrived=999/1000  loss=5.8788  (2748             
+                    s)                                                          
+[17:16:30] INFO     Episode 174/300  eps=0.42  delay=16779 veh-s    train.py:135
+                    queue=3.1  arrived=998/1000  loss=5.8924  (2778             
+                    s)                                                          
+[17:17:01] INFO     Episode 175/300  eps=0.42  delay=15944 veh-s    train.py:135
+                    queue=3.0  arrived=997/1000  loss=5.8354  (2808             
+                    s)                                                          
+[17:17:17] INFO     Episode 176/300  eps=0.42  delay=17143 veh-s    train.py:135
+                    queue=3.2  arrived=999/1000  loss=5.7883  (2825             
+                    s)                                                          
+[17:17:26] INFO     Episode 177/300  eps=0.41  delay=14765 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=5.8144  (2834             
+                    s)                                                          
+[17:17:41] INFO     Episode 178/300  eps=0.41  delay=18191 veh-s    train.py:135
+                    queue=3.4  arrived=999/1000  loss=5.6733  (2849             
+                    s)                                                          
+[17:18:11] INFO     Episode 179/300  eps=0.41  delay=15934 veh-s    train.py:135
+                    queue=3.0  arrived=999/1000  loss=5.6689  (2879             
+                    s)                                                          
+[17:18:41] INFO     Episode 180/300  eps=0.40  delay=16680 veh-s    train.py:135
+                    queue=3.1  arrived=999/1000  loss=5.6971  (2909             
+                    s)                                                          
+[17:18:56] INFO     Episode 181/300  eps=0.40  delay=16240 veh-s    train.py:135
+                    queue=3.0  arrived=999/1000  loss=5.5159  (2924             
+                    s)                                                          
+[17:19:26] INFO     Episode 182/300  eps=0.40  delay=15868 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=5.4536  (2954             
+                    s)                                                          
+[17:19:51] INFO     Episode 183/300  eps=0.39  delay=16764 veh-s    train.py:135
+                    queue=3.1  arrived=998/1000  loss=5.364  (2979              
+                    s)                                                          
+[17:20:05] INFO     Episode 184/300  eps=0.39  delay=14531 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=5.4426  (2993             
+                    s)                                                          
+[17:20:26] INFO     Episode 185/300  eps=0.39  delay=13895 veh-s    train.py:135
+                    queue=2.6  arrived=998/1000  loss=5.4445  (3014             
+                    s)                                                          
+[17:20:36] INFO     Episode 186/300  eps=0.38  delay=16093 veh-s    train.py:135
+                    queue=3.0  arrived=999/1000  loss=5.5099  (3024             
+                    s)                                                          
+[17:21:06] INFO     Episode 187/300  eps=0.38  delay=16044 veh-s    train.py:135
+                    queue=3.0  arrived=997/1000  loss=5.4552  (3054             
+                    s)                                                          
+[17:21:20] INFO     Episode 188/300  eps=0.38  delay=14379 veh-s    train.py:135
+                    queue=2.7  arrived=997/1000  loss=5.2729  (3068             
+                    s)                                                          
+[17:21:33] INFO     Episode 189/300  eps=0.37  delay=15639 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=5.2208  (3081             
+                    s)                                                          
+[17:22:02] INFO     Episode 190/300  eps=0.37  delay=14700 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=5.2638  (3109             
+                    s)                                                          
+[17:22:16] INFO     Episode 191/300  eps=0.37  delay=15205 veh-s    train.py:135
+                    queue=2.8  arrived=999/1000  loss=5.0766  (3124             
+                    s)                                                          
+[17:22:33] INFO     Episode 192/300  eps=0.36  delay=14713 veh-s    train.py:135
+                    queue=2.7  arrived=998/1000  loss=5.0463  (3141             
+                    s)                                                          
+[17:22:47] INFO     Episode 193/300  eps=0.36  delay=14040 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.9946  (3155             
+                    s)                                                          
+[17:22:58] INFO     Episode 194/300  eps=0.36  delay=16231 veh-s    train.py:135
+                    queue=3.0  arrived=999/1000  loss=4.8986  (3166             
+                    s)                                                          
+[17:23:07] INFO     Episode 195/300  eps=0.35  delay=14296 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.9383  (3175             
+                    s)                                                          
+[17:23:33] INFO     Episode 196/300  eps=0.35  delay=14383 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=4.8406  (3201             
+                    s)                                                          
+[17:24:08] INFO     Episode 197/300  eps=0.35  delay=15134 veh-s    train.py:135
+                    queue=2.8  arrived=998/1000  loss=4.7985  (3236             
+                    s)                                                          
+[17:24:42] INFO     Episode 198/300  eps=0.34  delay=15952 veh-s    train.py:135
+                    queue=3.0  arrived=998/1000  loss=4.7864  (3270             
+                    s)                                                          
+[17:25:17] INFO     Episode 199/300  eps=0.34  delay=14508 veh-s    train.py:135
+                    queue=2.7  arrived=997/1000  loss=4.7777  (3305             
+                    s)                                                          
+[17:25:52] INFO     Episode 200/300  eps=0.34  delay=14061 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.7947  (3340             
+                    s)                                                          
+[17:26:26] INFO     Episode 201/300  eps=0.33  delay=16918 veh-s    train.py:135
+                    queue=3.1  arrived=999/1000  loss=4.743  (3374              
+                    s)                                                          
+[17:26:49] INFO     Episode 202/300  eps=0.33  delay=12642 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=4.7026  (3397             
+                    s)                                                          
+[17:27:21] INFO     Episode 203/300  eps=0.33  delay=15627 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=4.692  (3429              
+                    s)                                                          
+[17:27:40] INFO     Episode 204/300  eps=0.32  delay=15397 veh-s    train.py:135
+                    queue=2.9  arrived=999/1000  loss=4.6245  (3448             
+                    s)                                                          
+[17:27:53] INFO     Episode 205/300  eps=0.32  delay=13679 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=4.6451  (3461             
+                    s)                                                          
+[17:28:05] INFO     Episode 206/300  eps=0.32  delay=13811 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.53  (3473               
+                    s)                                                          
+[17:28:19] INFO     Episode 207/300  eps=0.31  delay=13726 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=4.45  (3487               
+                    s)                                                          
+[17:28:30] INFO     Episode 208/300  eps=0.31  delay=15354 veh-s    train.py:135
+                    queue=2.8  arrived=999/1000  loss=4.5436  (3498             
+                    s)                                                          
+[17:28:43] INFO     Episode 209/300  eps=0.31  delay=15895 veh-s    train.py:135
+                    queue=2.9  arrived=998/1000  loss=4.4875  (3511             
+                    s)                                                          
+[17:29:04] INFO     Episode 210/300  eps=0.30  delay=15051 veh-s    train.py:135
+                    queue=2.8  arrived=999/1000  loss=4.362  (3531              
+                    s)                                                          
+[17:29:26] INFO     Episode 211/300  eps=0.30  delay=14750 veh-s    train.py:135
+                    queue=2.7  arrived=998/1000  loss=4.4846  (3554             
+                    s)                                                          
+[17:29:43] INFO     Episode 212/300  eps=0.30  delay=14292 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.3235  (3571             
+                    s)                                                          
+[17:29:58] INFO     Episode 213/300  eps=0.29  delay=13261 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=4.3029  (3585             
+                    s)                                                          
+[17:30:09] INFO     Episode 214/300  eps=0.29  delay=15085 veh-s    train.py:135
+                    queue=2.8  arrived=999/1000  loss=4.3214  (3597             
+                    s)                                                          
+[17:30:24] INFO     Episode 215/300  eps=0.29  delay=13173 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=4.2285  (3612             
+                    s)                                                          
+[17:30:38] INFO     Episode 216/300  eps=0.28  delay=14127 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=4.3135  (3626             
+                    s)                                                          
+[17:30:56] INFO     Episode 217/300  eps=0.28  delay=14531 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=4.1375  (3644             
+                    s)                                                          
+[17:31:16] INFO     Episode 218/300  eps=0.28  delay=12775 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=4.1952  (3664             
+                    s)                                                          
+[17:31:47] INFO     Episode 219/300  eps=0.27  delay=14321 veh-s    train.py:135
+                    queue=2.7  arrived=997/1000  loss=4.0724  (3694             
+                    s)                                                          
+[17:32:09] INFO     Episode 220/300  eps=0.27  delay=12855 veh-s    train.py:135
+                    queue=2.4  arrived=998/1000  loss=4.1737  (3717             
+                    s)                                                          
+[17:32:33] INFO     Episode 221/300  eps=0.27  delay=13148 veh-s    train.py:135
+                    queue=2.4  arrived=998/1000  loss=4.0885  (3741             
+                    s)                                                          
+[17:32:50] INFO     Episode 222/300  eps=0.26  delay=13442 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=4.0609  (3758             
+                    s)                                                          
+[17:33:04] INFO     Episode 223/300  eps=0.26  delay=13691 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=3.9914  (3772             
+                    s)                                                          
+[17:33:21] INFO     Episode 224/300  eps=0.26  delay=13934 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=3.9114  (3789             
+                    s)                                                          
+[17:33:47] INFO     Episode 225/300  eps=0.25  delay=14397 veh-s    train.py:135
+                    queue=2.7  arrived=999/1000  loss=3.8993  (3815             
+                    s)                                                          
+[17:34:09] INFO     Episode 226/300  eps=0.25  delay=14555 veh-s    train.py:135
+                    queue=2.7  arrived=998/1000  loss=3.9232  (3837             
+                    s)                                                          
+[17:34:27] INFO     Episode 227/300  eps=0.25  delay=11559 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=3.8824  (3855             
+                    s)                                                          
+[17:34:39] INFO     Episode 228/300  eps=0.24  delay=12783 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.8652  (3867             
+                    s)                                                          
+[17:34:54] INFO     Episode 229/300  eps=0.24  delay=12848 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.8499  (3882             
+                    s)                                                          
+[17:35:08] INFO     Episode 230/300  eps=0.24  delay=13704 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=3.7656  (3896             
+                    s)                                                          
+[17:35:24] INFO     Episode 231/300  eps=0.23  delay=13275 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=3.8602  (3912             
+                    s)                                                          
+[17:35:43] INFO     Episode 232/300  eps=0.23  delay=13632 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=3.8312  (3931             
+                    s)                                                          
+[17:35:56] INFO     Episode 233/300  eps=0.23  delay=13855 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=3.6826  (3944             
+                    s)                                                          
+[17:36:16] INFO     Episode 234/300  eps=0.22  delay=13916 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=3.7442  (3964             
+                    s)                                                          
+[17:36:27] INFO     Episode 235/300  eps=0.22  delay=13200 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.7484  (3975             
+                    s)                                                          
+[17:36:38] INFO     Episode 236/300  eps=0.22  delay=13035 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.7211  (3986             
+                    s)                                                          
+[17:36:53] INFO     Episode 237/300  eps=0.21  delay=12590 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.6515  (4001             
+                    s)                                                          
+[17:37:16] INFO     Episode 238/300  eps=0.21  delay=13997 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=3.6989  (4024             
+                    s)                                                          
+[17:37:34] INFO     Episode 239/300  eps=0.21  delay=12934 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.5939  (4042             
+                    s)                                                          
+[17:38:06] INFO     Episode 240/300  eps=0.20  delay=12697 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.6342  (4074             
+                    s)                                                          
+[17:38:34] INFO     Episode 241/300  eps=0.20  delay=13812 veh-s    train.py:135
+                    queue=2.6  arrived=999/1000  loss=3.6366  (4102             
+                    s)                                                          
+[17:38:43] INFO     Episode 242/300  eps=0.20  delay=13359 veh-s    train.py:135
+                    queue=2.5  arrived=998/1000  loss=3.5468  (4111             
+                    s)                                                          
+[17:38:53] INFO     Episode 243/300  eps=0.19  delay=12656 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.5328  (4121             
+                    s)                                                          
+[17:39:09] INFO     Episode 244/300  eps=0.19  delay=13106 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.5069  (4137             
+                    s)                                                          
+[17:39:18] INFO     Episode 245/300  eps=0.19  delay=12976 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.5987  (4146             
+                    s)                                                          
+[17:39:49] INFO     Episode 246/300  eps=0.18  delay=11547 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=3.4426  (4176             
+                    s)                                                          
+[17:40:22] INFO     Episode 247/300  eps=0.18  delay=13363 veh-s    train.py:135
+                    queue=2.5  arrived=999/1000  loss=3.452  (4210              
+                    s)                                                          
+[17:40:57] INFO     Episode 248/300  eps=0.18  delay=12353 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.3884  (4244             
+                    s)                                                          
+[17:41:30] INFO     Episode 249/300  eps=0.17  delay=12989 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.3443  (4278             
+                    s)                                                          
+[17:42:05] INFO     Episode 250/300  eps=0.17  delay=12928 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.3513  (4312             
+                    s)                                                          
+[17:42:38] INFO     Episode 251/300  eps=0.17  delay=11407 veh-s    train.py:135
+                    queue=2.1  arrived=998/1000  loss=3.3379  (4346             
+                    s)                                                          
+[17:42:58] INFO     Episode 252/300  eps=0.16  delay=12241 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.259  (4366              
+                    s)                                                          
+[17:43:21] INFO     Episode 253/300  eps=0.16  delay=12132 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=3.2771  (4389             
+                    s)                                                          
+[17:43:38] INFO     Episode 254/300  eps=0.16  delay=11873 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=3.2729  (4406             
+                    s)                                                          
+[17:43:49] INFO     Episode 255/300  eps=0.15  delay=12411 veh-s    train.py:135
+                    queue=2.3  arrived=998/1000  loss=3.2711  (4417             
+                    s)                                                          
+[17:44:01] INFO     Episode 256/300  eps=0.15  delay=12006 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=3.2219  (4429             
+                    s)                                                          
+[17:44:13] INFO     Episode 257/300  eps=0.15  delay=12133 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=3.2348  (4441             
+                    s)                                                          
+[17:44:23] INFO     Episode 258/300  eps=0.14  delay=12188 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.2241  (4451             
+                    s)                                                          
+[17:44:32] INFO     Episode 259/300  eps=0.14  delay=11727 veh-s    train.py:135
+                    queue=2.2  arrived=998/1000  loss=3.2327  (4460             
+                    s)                                                          
+[17:44:42] INFO     Episode 260/300  eps=0.14  delay=11617 veh-s    train.py:135
+                    queue=2.2  arrived=998/1000  loss=3.1565  (4470             
+                    s)                                                          
+[17:44:51] INFO     Episode 261/300  eps=0.13  delay=11814 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=3.1728  (4479             
+                    s)                                                          
+[17:45:25] INFO     Episode 262/300  eps=0.13  delay=12892 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.1352  (4513             
+                    s)                                                          
+[17:46:00] INFO     Episode 263/300  eps=0.13  delay=12890 veh-s    train.py:135
+                    queue=2.4  arrived=999/1000  loss=3.1484  (4548             
+                    s)                                                          
+[17:46:34] INFO     Episode 264/300  eps=0.12  delay=12608 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.0637  (4582             
+                    s)                                                          
+[17:46:58] INFO     Episode 265/300  eps=0.12  delay=12427 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=3.0082  (4606             
+                    s)                                                          
+[17:47:08] INFO     Episode 266/300  eps=0.12  delay=12560 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=2.9941  (4616             
+                    s)                                                          
+[17:47:18] INFO     Episode 267/300  eps=0.11  delay=11321 veh-s    train.py:135
+                    queue=2.1  arrived=998/1000  loss=2.9531  (4626             
+                    s)                                                          
+[17:47:27] INFO     Episode 268/300  eps=0.11  delay=11074 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.988  (4635              
+                    s)                                                          
+[17:47:37] INFO     Episode 269/300  eps=0.11  delay=11521 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.9765  (4644             
+                    s)                                                          
+[17:47:46] INFO     Episode 270/300  eps=0.10  delay=12351 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=2.9666  (4654             
+                    s)                                                          
+[17:48:20] INFO     Episode 271/300  eps=0.10  delay=11215 veh-s    train.py:135
+                    queue=2.1  arrived=998/1000  loss=2.9381  (4688             
+                    s)                                                          
+[17:48:39] INFO     Episode 272/300  eps=0.10  delay=12919 veh-s    train.py:135
+                    queue=2.4  arrived=998/1000  loss=2.9433  (4707             
+                    s)                                                          
+[17:48:56] INFO     Episode 273/300  eps=0.09  delay=11460 veh-s    train.py:135
+                    queue=2.1  arrived=997/1000  loss=2.8984  (4723             
+                    s)                                                          
+[17:49:06] INFO     Episode 274/300  eps=0.09  delay=11954 veh-s    train.py:135
+                    queue=2.2  arrived=998/1000  loss=2.8919  (4734             
+                    s)                                                          
+[17:49:38] INFO     Episode 275/300  eps=0.09  delay=11728 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=2.8591  (4766             
+                    s)                                                          
+[17:50:07] INFO     Episode 276/300  eps=0.08  delay=10132 veh-s    train.py:135
+                    queue=1.9  arrived=999/1000  loss=2.8858  (4795             
+                    s)                                                          
+[17:50:19] INFO     Episode 277/300  eps=0.08  delay=11168 veh-s    train.py:135
+                    queue=2.1  arrived=997/1000  loss=2.8425  (4806             
+                    s)                                                          
+[17:50:28] INFO     Episode 278/300  eps=0.08  delay=11488 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.8318  (4816             
+                    s)                                                          
+[17:50:42] INFO     Episode 279/300  eps=0.07  delay=11916 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=2.85  (4830               
+                    s)                                                          
+[17:51:09] INFO     Episode 280/300  eps=0.07  delay=11924 veh-s    train.py:135
+                    queue=2.2  arrived=999/1000  loss=2.8039  (4857             
+                    s)                                                          
+[17:51:22] INFO     Episode 281/300  eps=0.07  delay=11384 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.7855  (4870             
+                    s)                                                          
+[17:51:35] INFO     Episode 282/300  eps=0.06  delay=11057 veh-s    train.py:135
+                    queue=2.0  arrived=999/1000  loss=2.7482  (4883             
+                    s)                                                          
+[17:51:44] INFO     Episode 283/300  eps=0.06  delay=10336 veh-s    train.py:135
+                    queue=1.9  arrived=998/1000  loss=2.7817  (4892             
+                    s)                                                          
+[17:51:55] INFO     Episode 284/300  eps=0.06  delay=9896 veh-s     train.py:135
+                    queue=1.8  arrived=998/1000  loss=2.7206  (4903             
+                    s)                                                          
+[17:52:23] INFO     Episode 285/300  eps=0.05  delay=10327 veh-s    train.py:135
+                    queue=1.9  arrived=998/1000  loss=2.6842  (4931             
+                    s)                                                          
+[17:52:42] INFO     Episode 286/300  eps=0.05  delay=10570 veh-s    train.py:135
+                    queue=2.0  arrived=998/1000  loss=2.7476  (4950             
+                    s)                                                          
+[17:53:02] INFO     Episode 287/300  eps=0.05  delay=12239 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=2.6663  (4969             
+                    s)                                                          
+[17:53:19] INFO     Episode 288/300  eps=0.04  delay=11665 veh-s    train.py:135
+                    queue=2.2  arrived=998/1000  loss=2.6882  (4987             
+                    s)                                                          
+[17:53:30] INFO     Episode 289/300  eps=0.04  delay=10274 veh-s    train.py:135
+                    queue=1.9  arrived=997/1000  loss=2.6261  (4998             
+                    s)                                                          
+[17:53:39] INFO     Episode 290/300  eps=0.04  delay=11086 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.6932  (5007             
+                    s)                                                          
+[17:53:48] INFO     Episode 291/300  eps=0.03  delay=11356 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.6041  (5016             
+                    s)                                                          
+[17:53:59] INFO     Episode 292/300  eps=0.03  delay=10927 veh-s    train.py:135
+                    queue=2.0  arrived=999/1000  loss=2.6151  (5027             
+                    s)                                                          
+[17:54:08] INFO     Episode 293/300  eps=0.03  delay=11073 veh-s    train.py:135
+                    queue=2.1  arrived=999/1000  loss=2.6169  (5036             
+                    s)                                                          
+[17:54:17] INFO     Episode 294/300  eps=0.02  delay=10807 veh-s    train.py:135
+                    queue=2.0  arrived=999/1000  loss=2.6324  (5045             
+                    s)                                                          
+[17:54:26] INFO     Episode 295/300  eps=0.02  delay=10581 veh-s    train.py:135
+                    queue=2.0  arrived=999/1000  loss=2.6097  (5054             
+                    s)                                                          
+[17:54:36] INFO     Episode 296/300  eps=0.02  delay=10700 veh-s    train.py:135
+                    queue=2.0  arrived=999/1000  loss=2.5523  (5064             
+                    s)                                                          
+[17:54:45] INFO     Episode 297/300  eps=0.01  delay=9802 veh-s     train.py:135
+                    queue=1.8  arrived=999/1000  loss=2.5172  (5073             
+                    s)                                                          
+[17:54:54] INFO     Episode 298/300  eps=0.01  delay=10884 veh-s    train.py:135
+                    queue=2.0  arrived=997/1000  loss=2.574  (5082              
+                    s)                                                          
+[17:55:04] INFO     Episode 299/300  eps=0.01  delay=12308 veh-s    train.py:135
+                    queue=2.3  arrived=999/1000  loss=2.5202  (5092             
+                    s)                                                          
+[17:55:13] INFO     Episode 300/300  eps=0.00  delay=10772 veh-s    train.py:135
+                    queue=2.0  arrived=998/1000  loss=2.495  (5101              
+                    s)                                                          
+[17:55:14] INFO     Training took 5102 s. Saved to                  train.py:157
+                    runs/train/dqn-seed1                                        

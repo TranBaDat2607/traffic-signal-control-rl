@@ -1,32 +1,32 @@
 # Published results
 
 Each subdirectory is one run that the top-level README cites. It is committed so
-that every published number and chart can be re-derived from a clean clone
-(PROBLEMS.md P0-6).
+that every published number can be checked from a clean clone: the statistics
+from the per-episode data (no SUMO needed), the evaluation from the committed
+weights (SUMO needed, no training).
 
-Scripts never write here by default. Their default outputs (`model/`,
-`baseline_results/`, `comparison/comparison.png`) are scratch and are ignored by
-git. A run is published by copying its outputs here on purpose.
+Scripts never write here. Their default outputs go to `runs/`, which git
+ignores. A run is published by copying its outputs here on purpose.
 
 ## Layout of a run directory
 
 | Path | Produced by | What it is |
 |---|---|---|
-| `README.md` | by hand | The exact commands, the commit, the machine |
-| `training_settings.yaml` | `src/train.py` | Settings snapshot of the training run |
-| `testing_settings.yaml` | copied by hand | Settings of the greedy evaluation |
-| `trained_model.pt` | `src/train.py` | Final weights (state_dict): the policy evaluated |
-| `train/plot_*_data.txt` | `src/train.py` | Per-training-episode curves (ε-greedy, training seeds) |
-| `test/test_results.json`, `test/plot_*_data.txt` | `src/test.py` | Greedy (ε = 0) evaluation on held-out seeds |
-| `baseline*/baseline_results.json` | `comparison/run_baseline.py` | Fixed-time baseline(s) on the *same* held-out seeds |
-| `comparison*/comparison.png`, `comparison_summary.json` | `comparison/compare_results.py` | Greedy agent vs. one baseline, paired per seed |
-| `logs/` | console output | Full logs of each command |
+| `README.md` | by hand | The exact commands, the commit, the machine, the wall-clock time |
+| `testing_settings.yaml` | copied | The evaluation protocol used |
+| `train/<run>/trained_model.pt` | `src/train.py` | Final weights (state_dict): the policy evaluated |
+| `train/<run>/training_settings.yaml` | `src/train.py` | The settings actually used, seed included |
+| `train/<run>/training_log.csv`, `training_curves.png` | `src/train.py` | One row per training episode (ε-greedy, training seeds) |
+| `eval/<label>/eval_results.json` | `src/evaluate.py` | Per-episode metrics on the held-out seeds, one directory per controller |
+| `comparison/summary.md`, `comparison_summary.json`, `comparison.png` | `comparison/compare_results.py` | Paired comparison of all controllers |
+| `logs/` | console output | Logs of the commands |
+
+`training_log.csv` also contains `neg_reward`, the sum of negative rewards. It
+is a training diagnostic and is never compared across controllers.
 
 ## Runs
 
 | Run | Summary |
 |---|---|
-| [`dqn-300ep/`](dqn-300ep/) | 300 training episodes; greedy evaluation on 100 held-out seeds vs fixed-time 30/4 and 10/4 |
-
-`train/plot_reward_data.txt` is a training diagnostic. It is never compared
-with the baseline (PROBLEMS.md P0-1).
+| [`dqn-3seeds/`](dqn-3seeds/) | DQN, 3 training seeds × 300 episodes; greedy evaluation on 100 held-out seeds against fixed-time (30 s, 10 s), max-pressure and random |
+| [`dqn-300ep/`](dqn-300ep/) | Earlier single-seed run, evaluated against fixed-time only. Superseded; kept because its numbers were published |
