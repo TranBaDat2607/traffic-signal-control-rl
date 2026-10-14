@@ -5,12 +5,15 @@ import json
 from pathlib import Path
 from typing import TypedDict
 
+import torch
+
 from agent import Agent
 from constants import (
     DEFAULT_MODEL_PATH,
     DEFAULT_SETTINGS_PATH,
     DEFAULT_TEST_FOLDER,
     TESTING_SETTINGS_FILE,
+    TORCH_NUM_THREADS,
     TRAINING_SETTINGS_FILE,
 )
 from environment import Environment
@@ -65,6 +68,7 @@ def testing_session(model_path: Path, settings_file: Path, out_path: Path) -> No
         out_path: Directory to write the evaluation results into.
     """
     settings = load_testing_settings(settings_file)
+    torch.set_num_threads(TORCH_NUM_THREADS)
 
     # Reconstruct agent architecture from the saved training settings.
     train_settings_file = model_path / TRAINING_SETTINGS_FILE

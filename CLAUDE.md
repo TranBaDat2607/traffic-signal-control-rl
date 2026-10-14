@@ -62,6 +62,7 @@ The codebase separates the three standard RL components into distinct sub-packag
 ```
 src/
 ├── constants.py          # All magic numbers, lane geometry, TL phase IDs, paths
+├── sumo_api.py           # The one SUMO import: libsumo headless, TraCI with GUI
 ├── metrics.py            # Episode metric definitions — shared by train/test/grid/baseline
 ├── settings.py           # Pydantic models (TrainingSettings, TestingSettings) + YAML loaders
 ├── logger.py             # RichHandler setup; configures root logger at import time
@@ -72,8 +73,9 @@ src/
 ├── environment/          # MDP environment (owns SUMO)
 │   ├── core.py           # Environment class + EnvStats dataclass
 │   ├── generator.py      # Weibull route-file generation
-│   ├── state.py          # get_state(), get_lane_cell() — pure functions over TraCI
-│   └── reward.py         # get_cumulated_waiting_time(), get_queue_length() — pure functions
+│   ├── subscriptions.py  # subscribe() + bulk readers: one call per step, not per vehicle
+│   ├── state.py          # get_state(), get_lane_cell() — pure functions over subscriptions
+│   └── reward.py         # get_cumulated_waiting_time(), get_queue_length(), saturation guard
 │
 ├── agent/                # Learning algorithm (owns Q-network + replay buffer)
 │   ├── agent.py          # Agent class — Q-learning update (replay())
@@ -85,7 +87,7 @@ src/
 ```
 
 **Dependency order** (no circular imports):
-`constants` → `logger` → `metrics` → `model` → `policy` → `memory` → `agent` → `environment` → `episode` → `train`
+`constants` → `sumo_api` → `logger` → `metrics` → `model` → `policy` → `memory` → `agent` → `environment` → `episode` → `train`
 
 (`metrics` depends on nothing — not on the project, not on TraCI. That is what lets
 `comparison/` import it and what makes it testable without SUMO.)
@@ -99,7 +101,8 @@ src/
   negative-reward sum is a *training diagnostic* and must never be plotted against
   a baseline.
 - `policy/` is intentionally separate from `agent/` so the exploration rule can be swapped without touching the Q-learning update.
-- `environment/state.py` and `environment/reward.py` are pure functions (no instance state) — they call TraCI directly, making them testable without a live SUMO process.
+- `environment/state.py` and `environment/reward.py` are pure functions (no instance state). They read SUMO through the subscriptions in `environment/subscriptions.py`, registered by `Environment.activate()`.
+- Never `import traci` directly: import `traci` from `sumo_api`. It selects `libsumo` (SUMO in-process, no socket round-trips) for headless runs and TraCI for `sumo-gui`. Set `TLCS_SUMO_BACKEND=traci` to force the socket backend. Both must give the same numbers; `comparison/fixed_phase_check.py` checks that.
 - `agent/model.py` saves/loads via `state_dict` (not pickle). Saved `.pt` files from the original project are **not compatible**.
 - All path constants are relative to the project root. Scripts/notebooks must `os.chdir(PROJECT_ROOT)` or be launched from `refactor/` before SUMO starts.
 

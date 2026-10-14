@@ -6,9 +6,8 @@ incoming edges from :class:`~grid.config.IntersectionConfig`.
 
 from __future__ import annotations
 
-import traci
-
 from grid.config import IntersectionConfig
+from sumo_api import traci
 
 
 def get_intersection_cumulated_waiting_time(cfg: IntersectionConfig) -> float:

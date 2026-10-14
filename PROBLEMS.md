@@ -38,7 +38,7 @@ Severity:
 | [P2-3](#p2-3) | P2 | Cosmetic | Repository name is misspelled (`trafic`) |
 | ~~[P1-7](#p1-7)~~ | P1 | Method | ~~Model selection uses the metric now demoted to a diagnostic~~ **FIXED** |
 | ~~[P2-4](#p2-4)~~ | P2 | Metrics | ~~`total_delay` understates delay when vehicles cannot be inserted~~ **FIXED** |
-| [P3-1](#p3-1) | P3 | Speed | Training time is dominated by per-vehicle TraCI round-trips, not SUMO or the network |
+| ~~[P3-1](#p3-1)~~ | P3 | Speed | ~~Training time is dominated by per-vehicle TraCI round-trips, not SUMO or the network~~ **FIXED** |
 
 ## Suggested order
 
@@ -63,7 +63,8 @@ P1-2, P1-3, P1-5, P1-6, P1-7 and all P2 items are independent and can be done
 any time.
 
 P3-1 is independent of everything else, but P0-5 needs long training runs. Doing
-P3-1 first makes P0-5, and every re-run after it, cheaper.
+P3-1 first makes P0-5, and every re-run after it, cheaper. (Done: a training
+episode went from ~18–22 s to ~6–8 s.)
 
 ---
 
@@ -1037,6 +1038,93 @@ what is read.
 - Re-running the profile below shows TraCI and socket time no longer
   dominating, with the per-episode wall time before and after recorded in this
   entry.
+
+> ### RESOLVED — fixes 1, 2 and 4; fix 3 deliberately not done
+>
+> **1. libsumo.** `src/sumo_api.py` is the only place that imports SUMO's API.
+> Every file listed under **Where** now does `from sumo_api import traci`.
+> `select_backend(gui)` picks `libsumo` for headless runs and TraCI for
+> `sumo-gui`, and `TLCS_SUMO_BACKEND=traci` forces TraCI. `traci.isLoaded()`
+> exists in libsumo, so no call site needed a workaround. `libsumo` is now a
+> dependency in `pyproject.toml`.
+>
+> **2. Subscriptions.** `src/environment/subscriptions.py` registers one junction
+> context subscription (lane, position, speed, waiting time, accumulated
+> waiting time, road), one edge subscription for halting numbers, and one
+> simulation subscription (arrived, pending). `get_state()`,
+> `get_cumulated_waiting_time()`, `get_queue_length()` and the P2-4 guard read
+> those results instead of calling one getter per vehicle. The readers raise if
+> nothing was subscribed, so they cannot silently return empty data. `get_state()`
+> still iterates in `getIDList()` order so that its per-cell float sums are
+> accumulated in exactly the old order.
+>
+> **4. PyTorch threads** capped at 4 (`TORCH_NUM_THREADS` in `src/constants.py`,
+> set by `train.py`, `test.py`, `grid_train.py`). One `replay()` step, 4×400 MLP,
+> batch 100, on this 12-core machine: 21.7 ms at 1 thread, 13.5 ms at 2,
+> **9.3 ms at 4**, and 13.9 ms at 12 (the PyTorch default here is 8).
+>
+> **3. Parallel experience collection: not done.** Unlike 1, 2 and 4, it changes
+> training dynamics (experience from an older policy, a different ordering of
+> replay updates), and nothing else needs it now that a 200-episode run takes
+> well under an hour.
+>
+> **Done-when, checked:**
+>
+> - `python comparison/fixed_phase_check.py` → RL path and native path both
+>   **18,195** vehicle-seconds (PASS) under libsumo, and also under
+>   `TLCS_SUMO_BACKEND=traci` with subscriptions.
+> - `get_state()` identical at every decision step: the 386 per-decision state
+>   arrays of that run, dumped before and after the change, are
+>   `np.array_equal` (max abs diff 0.0). The reward signal is identical too: the
+>   386 values of `get_cumulated_waiting_time()` hash the same before and after,
+>   on both backends.
+>
+> **Per-episode wall time** (`train.py`, `settings/training_settings.yaml`, 1,000
+> cars, 5,400 steps; seconds per `run_episode()` including interleaved
+> `replay()`; replay starts in episode 3 once memory reaches 600 samples;
+> training is unseeded, so episode lengths vary a little between runs):
+>
+> | episode | 1 | 2 | 3 | 4 | 5 |
+> |---|---|---|---|---|---|
+> | before (TraCI, per-vehicle getters) | 4.62 | 5.75 | 14.49 | 18.14 | 22.11 |
+> | libsumo + subscriptions | 1.33 | 1.63 | 8.07 | 13.55 | 13.47 |
+> | + 4 PyTorch threads (as committed) | 1.46 | 1.33 | 5.54 | 6.06 | 7.50 |
+>
+> **Profile** (the verification command below, 3 episodes, cProfile total):
+>
+> | Component | Before | After |
+> |---|---|---|
+> | total | 48.5 s | 19.2 s |
+> | `get_state()` | 10.26 s | 0.48 s |
+> | `get_cumulated_waiting_time()` | 5.59 s | 0.17 s |
+> | `get_queue_length()` (16,200 calls) | 5.54 s | 0.15 s |
+> | socket `send`/`recv` | 11.31 s | 0 |
+> | `simulationStep()` (SUMO itself) | 5.37 s | 5.34 s |
+> | `agent.replay()` | 7.84 s | 4.99 s |
+> | SUMO start (×3) | 3.03 s | 0.02 s |
+>
+> Reading vehicle data went from ~21 s to ~0.8 s. What remains is SUMO's own
+> simulation and the network update, which is the correct floor for this design.
+>
+> **Correction to the evidence above:** "the environment is still the larger
+> cost" was true of the profiled run, but only because 2 of its 3 episodes ran
+> no gradient steps. In steady state (episodes 3+ in the table), `replay()`
+> was already the larger cost before this change: episodes 1–2 took ~5 s, and
+> episodes 3–5 took 14–22 s. That is why fix 4 was worth more than the entry
+> predicted.
+>
+> **Found while verifying, and fixed:** `grid_train.py` hung forever on Linux,
+> on `main` too, before any of this change. `ProcessPoolExecutor` used the
+> default `fork` start method, and a forked worker inherits PyTorch's
+> initialised thread pool and deadlocks in its first forward pass. The pool now
+> uses `spawn`; `parallel_worker.py` was already written for spawned workers.
+> A 2-episode, 2-worker grid run now completes with libsumo in every worker.
+>
+> **Trade-off:** under the TraCI backend (GUI, or forced), subscriptions are
+> *slower* than before: 5.7 s vs 4.1 s for the fixed-phase episode, because SUMO
+> pushes every vehicle's data on every simulation step rather than at decisions
+> only. The headless default is libsumo (1.2 s), so this only affects GUI runs,
+> where speed is not the point.
 
 ---
 

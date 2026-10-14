@@ -15,6 +15,15 @@ MODEL_FILE = Path("trained_model.pt")
 DEFAULT_TEST_FOLDER = "test"
 
 # ---------------------------------------------------------------------------
+# Compute
+# ---------------------------------------------------------------------------
+
+# PyTorch CPU threads. The Q-network is a small MLP (batch 100), so more threads
+# mostly busy-wait: on a 12-core machine one replay() step took 9.3 ms at 4
+# threads, 13.9 ms at 12 and 13.5 ms at 2 (PROBLEMS.md P3-1).
+TORCH_NUM_THREADS = 4
+
+# ---------------------------------------------------------------------------
 # SUMO route file configuration
 # ---------------------------------------------------------------------------
 

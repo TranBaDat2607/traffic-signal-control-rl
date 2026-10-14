@@ -15,6 +15,9 @@ dependencies = [
     "rich>=14.2.0",
     "torch>=2.9.0",
     "traci>=1.24.0",
+    # In-process SUMO for headless runs (src/sumo_api.py). Keep it at the same
+    # version as the installed SUMO, or the two backends may disagree.
+    "libsumo>=1.24.0",
     "typer>=0.20.0",
 ]
 

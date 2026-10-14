@@ -1,10 +1,14 @@
-"""Reward and per-step measurements from TraCI data."""
+"""Reward and per-step measurements from TraCI data.
+
+All reads go through the subscriptions in ``environment.subscriptions``, so
+``subscribe()`` must have been called after the simulation started.
+"""
 
 from __future__ import annotations
 
-import traci
-
 from constants import INCOMING_EDGES
+from environment.subscriptions import halting_numbers, simulation_data, vehicle_data
+from sumo_api import tc
 
 
 def get_cumulated_waiting_time() -> float:
@@ -15,12 +19,10 @@ def get_cumulated_waiting_time() -> float:
     """
     waiting_times = 0.0
 
-    for car_id in traci.vehicle.getIDList():
-        road_id = traci.vehicle.getRoadID(car_id)
-        if road_id not in INCOMING_EDGES:
+    for car in vehicle_data().values():
+        if car[tc.VAR_ROAD_ID] not in INCOMING_EDGES:
             continue
-        wait_time = float(traci.vehicle.getAccumulatedWaitingTime(car_id))
-        waiting_times += wait_time
+        waiting_times += float(car[tc.VAR_ACCUMULATED_WAITING_TIME])
 
     return waiting_times
 
@@ -31,7 +33,7 @@ def get_queue_length() -> int:
     Returns:
         Total number of vehicles with speed 0 on all four incoming edges.
     """
-    return sum(traci.edge.getLastStepHaltingNumber(edge) for edge in INCOMING_EDGES)
+    return sum(halting_numbers().values())
 
 
 def get_arrived_number() -> int:
@@ -40,7 +42,7 @@ def get_arrived_number() -> int:
     Returns:
         Vehicles that left the network during the last simulation step.
     """
-    return traci.simulation.getArrivedNumber()
+    return int(simulation_data()[tc.VAR_ARRIVED_VEHICLES_NUMBER])
 
 
 def get_pending_number() -> int:
@@ -53,4 +55,4 @@ def get_pending_number() -> int:
     Returns:
         Vehicles past their departure time that are not yet in the network.
     """
-    return len(traci.simulation.getPendingVehicles())
+    return len(simulation_data()[tc.VAR_PENDING_VEHICLES])

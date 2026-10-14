@@ -9,7 +9,6 @@ Channels (each of length NUM_CELLS):
 from __future__ import annotations
 
 import numpy as np
-import traci
 from numpy.typing import NDArray
 
 from constants import (
@@ -21,6 +20,8 @@ from constants import (
     NUM_CELLS,
     ROAD_MAX_LENGTH,
 )
+from environment.subscriptions import vehicle_data
+from sumo_api import tc, traci
 
 
 def get_lane_cell(lane_pos: float) -> int:
@@ -54,6 +55,9 @@ def get_state() -> NDArray:
 
     Iterates over all active vehicles, maps each to its lane group and cell,
     and accumulates presence, speed, and waiting-time information per cell.
+    Vehicle data comes from one subscription read (``vehicle_data()``). The
+    loop follows ``getIDList()`` order so that the per-cell float sums are
+    accumulated in the same order as before subscriptions were used.
 
     Returns:
         A NumPy array of shape (STATE_SIZE,) = (NUM_CELLS * 3,) with values
@@ -67,14 +71,16 @@ def get_state() -> NDArray:
     wait_sum  = np.zeros(NUM_CELLS, dtype=float)
     count     = np.zeros(NUM_CELLS, dtype=float)
 
+    data = vehicle_data()
+
     for car_id in traci.vehicle.getIDList():
-        lane_id = traci.vehicle.getLaneID(car_id)
-        lane_group = LANE_ID_TO_GROUP.get(lane_id)
+        car = data[car_id]
+        lane_group = LANE_ID_TO_GROUP.get(car[tc.VAR_LANE_ID])
         if lane_group is None:
             # Ignore cars that are not on incoming lanes.
             continue
 
-        lane_pos: float = traci.vehicle.getLanePosition(car_id)
+        lane_pos: float = car[tc.VAR_LANEPOSITION]
         lane_cell = get_lane_cell(lane_pos)
 
         car_position = lane_group * CELLS_PER_LANE_GROUP + lane_cell
@@ -84,8 +90,8 @@ def get_state() -> NDArray:
             raise ValueError(msg)
 
         presence[car_position] = 1.0
-        speed_sum[car_position] += traci.vehicle.getSpeed(car_id)
-        wait_sum[car_position]  += traci.vehicle.getWaitingTime(car_id)
+        speed_sum[car_position] += car[tc.VAR_SPEED]
+        wait_sum[car_position]  += car[tc.VAR_WAITING_TIME]
         count[car_position]     += 1.0
 
     denom = np.maximum(count, 1.0)

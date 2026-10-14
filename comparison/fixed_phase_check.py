@@ -37,7 +37,7 @@ from constants import TL_GREEN_TO_YELLOW, TRAFFIC_LIGHT_ID
 from environment import Environment
 from environment.generator import generate_routefile
 from metrics import insertion_delay, total_delay, vehicles_arrived
-import traci
+from sumo_api import backend_name, traci
 
 EXPECTED_DEFAULT_DELAY = 18_195
 
@@ -120,7 +120,7 @@ def main() -> int:
 
     print(f"RL path     (Environment.execute): {rl}  [{t1 - t0:.2f} s]")
     print(f"Native path (SUMO static program): {native}  [{t2 - t1:.2f} s]")
-    print(f"Decision steps: {len(states)}")
+    print(f"Decision steps: {len(states)}  (SUMO backend: {backend_name()})")
 
     if args.dump_states is not None:
         np.save(args.dump_states, np.stack(states))

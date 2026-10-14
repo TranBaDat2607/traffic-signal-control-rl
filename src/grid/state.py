@@ -7,7 +7,6 @@ Parameterised rewrite of ``environment/state.py`` using per-junction
 from __future__ import annotations
 
 import numpy as np
-import traci
 from numpy.typing import NDArray
 
 from constants import (
@@ -20,6 +19,7 @@ from constants import (
     STATE_SIZE,
 )
 from grid.config import GridConfig, IntersectionConfig
+from sumo_api import traci
 
 
 def _get_lane_cell(lane_pos: float) -> int:

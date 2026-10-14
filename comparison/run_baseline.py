@@ -18,7 +18,6 @@ import sys
 from pathlib import Path
 
 import numpy as np
-import traci
 import yaml
 from sumolib import checkBinary
 
@@ -26,7 +25,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from environment.generator import generate_routefile
 from environment.reward import get_arrived_number, get_pending_number, get_queue_length
+from environment.subscriptions import subscribe
 from metrics import METRICS_VERSION, avg_queue, insertion_delay, total_delay, vehicles_arrived
+from sumo_api import select_backend, traci
 
 
 def load_settings(path: str) -> dict:
@@ -46,12 +47,14 @@ def run_one_episode(sumocfg_file: Path, max_steps: int, gui: bool) -> dict:
     if traci.isLoaded():
         traci.close()
 
+    select_backend(gui=gui)
     traci.start([
         binary,
         "-c", str(sumocfg_file),
         "--no-step-log", "true",
         "--waiting-time-memory", str(max_steps),
     ])
+    subscribe()
 
     queue_per_step   = []
     arrived_per_step = []
