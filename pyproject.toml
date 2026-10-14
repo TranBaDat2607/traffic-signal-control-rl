@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Deep Q-Learning agent controlling a single intersection in SUMO."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "Andrea Vidali", email = "andreavidali.me@gmail.com" }]
+authors = [{ name = "nammovuivui", email = "tranbadat26072004@gmail.com" }]
 requires-python = ">=3.13,<3.14"
 
 dependencies = [
@@ -18,7 +18,6 @@ dependencies = [
     # In-process SUMO for headless runs (src/sumo_api.py). Keep it at the same
     # version as the installed SUMO, or the two backends may disagree.
     "libsumo>=1.24.0",
-    "typer>=0.20.0",
 ]
 
 [project.optional-dependencies]
@@ -35,9 +34,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
-
-[project.scripts]
-tlcs = "cli:app"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

@@ -1,6 +1,5 @@
 import logging
 
-import typer
 from rich.logging import RichHandler
 
 
@@ -17,7 +16,6 @@ def configure_logging(level: int = logging.INFO) -> None:
         handlers=[
             RichHandler(
                 rich_tracebacks=True,
-                tracebacks_suppress=[typer],
                 tracebacks_show_locals=False,
             )
         ],
