@@ -23,6 +23,7 @@ from sumolib import checkBinary
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from constants import TL_GREEN_TO_YELLOW, TRAFFIC_LIGHT_ID
 from environment.generator import generate_routefile
 from environment.reward import get_arrived_number, get_pending_number, get_queue_length
 from environment.subscriptions import subscribe
@@ -35,12 +36,38 @@ def load_settings(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-def run_one_episode(sumocfg_file: Path, max_steps: int, gui: bool) -> dict:
+def apply_fixed_plan(green: int, yellow: int) -> None:
+    """Override the static program's durations; SUMO still runs it by itself.
+
+    Every green phase gets *green* seconds, every yellow phase *yellow*.
+    The phase order and states stay as in the net file.
+    """
+    logic = traci.trafficlight.getAllProgramLogics(TRAFFIC_LIGHT_ID)[0]
+    yellow_phases = set(TL_GREEN_TO_YELLOW.values())
+    for i, phase in enumerate(logic.phases):
+        phase.duration = yellow if i in yellow_phases else green
+        phase.minDur = phase.maxDur = phase.duration
+    traci.trafficlight.setProgramLogic(TRAFFIC_LIGHT_ID, logic)
+    traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
+
+
+def current_phase_durations() -> list[float]:
+    """Durations of the program SUMO is running, in phase order."""
+    logic = traci.trafficlight.getAllProgramLogics(TRAFFIC_LIGHT_ID)[0]
+    return [phase.duration for phase in logic.phases]
+
+
+def run_one_episode(
+    sumocfg_file: Path, max_steps: int, gui: bool, plan: tuple[int, int] | None = None
+) -> dict:
     """Chạy 1 episode — SUMO tự điều khiển đèn, Python chỉ đo.
 
     Metrics dùng chung định nghĩa với agent (src/metrics.py). Baseline không
     có reward: reward là tín hiệu huấn luyện, không phải thước đo chất lượng
     của bộ điều khiển. Xem PROBLEMS.md P0-1.
+
+    plan=(green, yellow) thay thời lượng pha trong net file (xem
+    apply_fixed_plan); None = dùng đúng tlLogic trong environment.net.xml.
     """
     binary = checkBinary("sumo-gui" if gui else "sumo")
 
@@ -55,6 +82,9 @@ def run_one_episode(sumocfg_file: Path, max_steps: int, gui: bool) -> dict:
         "--waiting-time-memory", str(max_steps),
     ])
     subscribe()
+    if plan is not None:
+        apply_fixed_plan(*plan)
+    phase_durations = current_phase_durations()
 
     queue_per_step   = []
     arrived_per_step = []
@@ -75,10 +105,12 @@ def run_one_episode(sumocfg_file: Path, max_steps: int, gui: bool) -> dict:
         "avg_queue":       avg_queue(queue_per_step, max_steps),
         "arrived":         vehicles_arrived(arrived_per_step),
         "insertion_delay": insertion_delay(pending_per_step),
+        "phase_durations": phase_durations,
     }
 
 
-def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = False):
+def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = False,
+                 plan: tuple[int, int] | None = None):
     cfg = load_settings(config_path)
 
     total_episodes = n_episodes or cfg["total_episodes"]
@@ -86,6 +118,10 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
     n_cars         = cfg["n_cars_generated"]
     turn_chance    = cfg.get("turn_chance", 0.25)
     sumocfg_file   = Path(cfg.get("sumocfg_file", "intersection/sumo_config.sumocfg"))
+    # Seeds: training settings start at 0 (the training seeds); testing
+    # settings carry episode_seed (10000), the held-out evaluation seeds.
+    seed_start     = cfg.get("episode_seed", 0)
+    seeds          = [seed_start + ep for ep in range(total_episodes)]
 
     os.makedirs(out_dir, exist_ok=True)
 
@@ -94,19 +130,25 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
     all_arrived   = []
     all_insertion = []
 
-    print(f"Running {total_episodes} baseline episodes")
-    print("Mode: SUMO native tlLogic — no Python controller, no agent\n")
+    print(f"Running {total_episodes} baseline episodes, seeds {seeds[0]}..{seeds[-1]}")
+    print("Mode: SUMO native tlLogic — no Python controller, no agent")
+    if plan is not None:
+        print(f"Signal plan overridden: {plan[0]} s green / {plan[1]} s yellow")
+    print()
+
+    phase_durations = None
 
     for ep in range(total_episodes):
         # Sinh xe cùng seed với RL → so sánh công bằng
         generate_routefile(
-            seed=ep,
+            seed=seeds[ep],
             n_cars_generated=n_cars,
             max_steps=max_steps,
             turn_chance=turn_chance,
         )
 
-        result = run_one_episode(sumocfg_file, max_steps, gui)
+        result = run_one_episode(sumocfg_file, max_steps, gui, plan)
+        phase_durations = result["phase_durations"]
 
         all_delays.append(result["total_delay"])
         all_queues.append(result["avg_queue"])
@@ -114,7 +156,7 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
         all_insertion.append(result["insertion_delay"])
 
         print(
-            f"  Ep {ep+1:3d}/{total_episodes}"
+            f"  Ep {ep+1:3d}/{total_episodes} (seed {seeds[ep]})"
             f"  delay={result['total_delay']:9d} veh-s"
             f"  queue={result['avg_queue']:.2f}"
             f"  arrived={result['arrived']}/{n_cars}"
@@ -126,7 +168,10 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
         "metrics_version": METRICS_VERSION,
         "mode":            "baseline_sumo_native",
         "total_episodes":  total_episodes,
+        "seeds":           seeds,
         "n_cars_generated": n_cars,
+        "signal_plan":     "net file" if plan is None else "override",
+        "phase_durations": phase_durations,
         "total_delays":    all_delays,
         "avg_queues":      all_queues,
         # Saturation guard (PROBLEMS.md P2-4): total_delay không đếm xe chưa
@@ -154,5 +199,12 @@ if __name__ == "__main__":
     parser.add_argument("--out",      default="baseline_results")
     parser.add_argument("--episodes", type=int, default=None)
     parser.add_argument("--gui",      action="store_true")
+    parser.add_argument("--green",    type=int, default=None,
+                        help="Override every green phase (s); requires --yellow")
+    parser.add_argument("--yellow",   type=int, default=None,
+                        help="Override every yellow phase (s); requires --green")
     args = parser.parse_args()
-    run_baseline(args.config, args.out, args.episodes, args.gui)
+    if (args.green is None) != (args.yellow is None):
+        parser.error("--green and --yellow must be given together")
+    plan = None if args.green is None else (args.green, args.yellow)
+    run_baseline(args.config, args.out, args.episodes, args.gui, plan)

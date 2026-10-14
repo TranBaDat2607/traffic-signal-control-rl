@@ -1,6 +1,6 @@
 # simulation
 gui: false
-total_episodes: 10
+total_episodes: 300
 max_steps: 5400
 n_cars_generated: 1000
 green_duration: 10
@@ -21,7 +21,7 @@ memory_size_max: 50000
 # agent
 gamma: 0.75
 tau: 0.005
-checkpoint_interval: 0
+checkpoint_interval: 50
 early_stopping_patience: 0  # episodes with no total-delay improvement before stopping (0 = disabled)
 
 # paths
