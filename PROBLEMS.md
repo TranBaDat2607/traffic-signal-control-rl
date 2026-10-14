@@ -28,7 +28,7 @@ Severity:
 | ~~[P0-6](#p0-6)~~ | P0 | Repro | ~~The RL data behind the charts is not in the repository~~ **FIXED** |
 | ~~[P0-7](#p0-7)~~ | P0 | Result | ~~On the only comparable metric, the agent loses to fixed-time~~ **RESOLVED**: re-measured; the trained agent now wins |
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
-| [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
+| ~~[P1-2](#p1-2)~~ | P1 | Docs | ~~`HUONG_DAN_CHAY.md` commands are stale since files moved~~ **FIXED** |
 | ~~[P1-3](#p1-3)~~ | P1 | Packaging | ~~`pyproject.toml`: dead entrypoint, unused dep, upstream author~~ **FIXED** |
 | ~~[P1-4](#p1-4)~~ | P1 | Hygiene | ~~`.gitignore` misses the paths the code actually writes to~~ **FIXED** |
 | ~~[P1-5](#p1-5)~~ | P1 | Bug | ~~`early_stopping_min_episode` is silently ignored by `train.py`~~ **FIXED** |
@@ -642,6 +642,37 @@ guide in the repository and is Vietnamese-only — consider an English version, 
 folding the pipeline into the README, for a GitHub audience.
 
 **Done when** every command in the file runs as written from the project root.
+
+> ### RESOLVED
+>
+> `comparison/HUONG_DAN_CHAY.md` is rewritten around the pipeline that produced
+> the published result. Every script path is from the root (`comparison/...`,
+> `src/...`), and the baseline runs on the held-out seeds
+> (`--config settings/testing_settings.yaml`). It warns that only one SUMO command
+> may run at a time, covers the 10 s / 4 s baseline, the measurement checks and
+> the GUI, and points to `results/`. The English version of the same pipeline is
+> the README's *Reproduce* section.
+>
+> **The GUI command did not run as documented.** It hung: without
+> `--quit-on-end`, `traci.close()` blocks until someone closes the `sumo-gui`
+> window. `--start --quit-on-end` is now added to every GUI launch
+> (`Environment`, `run_baseline.py`, `GridEnv`).
+>
+> **Every command verified from the project root:**
+>
+> | Command | Result |
+> |---|---|
+> | `pip install -e ".[dev]"` | installs |
+> | `run_baseline.py --config settings/testing_settings.yaml --out baseline_results` | exit 0, 100 episodes |
+> | `src/train.py --settings settings/training_settings.yaml --out model/dqn-300ep` | the published P0-5 run, exit 0, 35 min |
+> | `src/test.py --model model/dqn-300ep` | exit 0, 100 episodes |
+> | `compare_results.py --baseline baseline_results --rl model/dqn-300ep/test --out comparison_output` | exit 0 |
+> | both 10 s / 4 s commands | exit 0 |
+> | `fixed_phase_check.py`, `pytest -q` | PASS, all tests pass |
+> | `run_baseline.py ... --episodes 1 --gui` | exit 0 in 8 s (hung before this fix) |
+>
+> Under the GUI (TraCI backend), seed 10000 gives 40,786 veh-s for the baseline
+> and 11,773 for the agent (`gui: true`), identical to the headless libsumo runs.
 
 ---
 

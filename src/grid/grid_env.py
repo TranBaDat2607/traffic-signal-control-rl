@@ -82,6 +82,8 @@ class GridEnvironment:
             "--no-step-log", "true",
             "--waiting-time-memory", str(self.max_steps),
         ]
+        if self.gui:
+            cmd += ["--start", "--quit-on-end"]  # else traci.close() blocks on the window
         if self.routes_override is not None:
             cmd += ["--route-files", str(self.routes_override)]
         return cmd

@@ -80,6 +80,8 @@ def run_one_episode(
         "-c", str(sumocfg_file),
         "--no-step-log", "true",
         "--waiting-time-memory", str(max_steps),
+        # GUI: chạy ngay, tự thoát khi TraCI đóng (nếu không traci.close() bị treo).
+        *(["--start", "--quit-on-end"] if gui else []),
     ])
     subscribe()
     if plan is not None:
