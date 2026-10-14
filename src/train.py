@@ -78,7 +78,10 @@ def training_session(settings_file: Path, out_path: Path) -> None:
     memory = Memory(size_max=settings.memory_size_max, size_min=settings.memory_size_min)
     agent = Agent(settings=settings)
 
-    early_stopping = EarlyStopping(patience=settings.early_stopping_patience)
+    early_stopping = EarlyStopping(
+        patience=settings.early_stopping_patience,
+        min_episode=settings.early_stopping_min_episode,
+    )
 
     timestamp_start = datetime.now()
     tot_episodes = settings.total_episodes

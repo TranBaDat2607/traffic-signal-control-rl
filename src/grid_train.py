@@ -116,7 +116,10 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
         epsilon=1.0,
     )
 
-    early_stopping = EarlyStopping(patience=settings.early_stopping_patience)
+    early_stopping = EarlyStopping(
+        patience=settings.early_stopping_patience,
+        min_episode=settings.early_stopping_min_episode,
+    )
 
     timestamp_start = datetime.now()
     tot_episodes = settings.total_episodes
@@ -189,20 +192,19 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
                     coordinator.save_models(out_path / f"checkpoint_ep{ep_num}")
                     logger.info(f"\tCheckpoint saved at episode {ep_num}")
 
-                if ep_num >= settings.early_stopping_min_episode:
-                    if early_stopping.step(ep_reward):
-                        logger.info(
-                            f"\tEarly stopping triggered after {ep_num} episodes "
-                            f"(no improvement for {settings.early_stopping_patience} episodes, "
-                            f"best reward: {early_stopping.best:.1f})"
-                        )
-                        should_stop = True
-                        break
+                if early_stopping.step(ep_reward):
+                    logger.info(
+                        f"\tEarly stopping triggered after {ep_num} episodes "
+                        f"(no improvement for {settings.early_stopping_patience} episodes, "
+                        f"best reward: {early_stopping.best:.1f})"
+                    )
+                    should_stop = True
+                    break
 
-                    if early_stopping.improved:
-                        out_path.mkdir(parents=True, exist_ok=True)
-                        coordinator.save_models(out_path / "best")
-                        logger.info(f"\tNew best reward {early_stopping.best:.1f} — saved best/ models")
+                if early_stopping.improved:
+                    out_path.mkdir(parents=True, exist_ok=True)
+                    coordinator.save_models(out_path / "best")
+                    logger.info(f"\tNew best reward {early_stopping.best:.1f} — saved best/ models")
 
             episode_idx += batch_count
 
