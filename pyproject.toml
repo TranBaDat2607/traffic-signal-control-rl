@@ -1,11 +1,22 @@
 [project]
 name = "tlcs"
 version = "0.1.0"
-description = "Reference RL project: DQN and baselines for traffic signal control in SUMO."
+description = "Deep Q-Learning for traffic signal control in SUMO: a Gymnasium environment, DQN, max-pressure and fixed-time baselines, and a held-out evaluation protocol."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "nammovuivui", email = "tranbadat26072004@gmail.com" }]
 requires-python = ">=3.13,<3.14"
+keywords = [
+    "reinforcement-learning", "deep-q-learning", "dqn", "traffic-signal-control",
+    "sumo", "gymnasium", "pytorch", "max-pressure", "intelligent-transportation-systems",
+]
+classifiers = [
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 
 dependencies = [
     "gymnasium>=1.2",
@@ -20,6 +31,11 @@ dependencies = [
     # version as the installed SUMO, or the two backends may disagree.
     "libsumo>=1.24.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/TranBaDat2607/traffic-signal-control-rl"
+Repository = "https://github.com/TranBaDat2607/traffic-signal-control-rl"
+Issues = "https://github.com/TranBaDat2607/traffic-signal-control-rl/issues"
 
 [project.optional-dependencies]
 dev = [

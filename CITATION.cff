@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Traffic Signal Control with Deep Reinforcement Learning"
+abstract: >-
+  A reference reinforcement-learning project: a Deep Q-Network controls a
+  4-way intersection in the SUMO traffic simulator and is evaluated against
+  fixed-time, max-pressure and random controllers on held-out traffic.
+authors:
+  - family-names: Tran
+    given-names: Ba Dat
+  - family-names: Vidali
+    given-names: Andrea
+    affiliation: "Original TLCS project"
+repository-code: "https://github.com/TranBaDat2607/traffic-signal-control-rl"
+license: MIT
+version: 0.1.0
+keywords:
+  - reinforcement-learning
+  - deep-q-learning
+  - traffic-signal-control
+  - sumo
+  - gymnasium
