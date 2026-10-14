@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 # ---------------------------------------------------------------------------
 # Lane geometry constants (taken from environment.net.xml)
 # ---------------------------------------------------------------------------
@@ -351,9 +350,9 @@ def generate_grid_network(n: int, out_dir: Path, spacing: int = 1500) -> None:
     max_coord = (n - 1) * spacing + half
     sections.append('<?xml version="1.0" encoding="UTF-8"?>')
     sections.append(
-        f'<net version="1.0" junctionCornerDetail="5" limitTurnSpeed="5.50"'
-        f' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
-        f' xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">'
+        '<net version="1.0" junctionCornerDetail="5" limitTurnSpeed="5.50"'
+        ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+        ' xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">'
     )
     sections.append("")
     sections.append(

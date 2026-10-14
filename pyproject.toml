@@ -1,13 +1,14 @@
 [project]
 name = "tlcs"
 version = "0.1.0"
-description = "Deep Q-Learning agent controlling a single intersection in SUMO."
+description = "Reference RL project: DQN and baselines for traffic signal control in SUMO."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "nammovuivui", email = "tranbadat26072004@gmail.com" }]
 requires-python = ">=3.13,<3.14"
 
 dependencies = [
+    "gymnasium>=1.2",
     "matplotlib>=3.10.7",
     "numpy>=2.3.4",
     "pydantic>=2.12.4",
@@ -56,14 +57,32 @@ ignore = [
     "D100",   # undocumented-public-module
     "ISC001", # single-line-implicit-string-concatenation
     "COM812", # missing-trailing-comma
+    "CPY001", # missing-copyright-notice (LICENSE covers the repository)
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# The multi-agent grid extension is experimental. Correctness rules apply;
+# style rules are relaxed until it is brought up to the core's standard.
+"src/grid/*" = ["TC", "E501", "FBT003", "PLR09", "C901", "ERA001", "PERF401", "D107", "D417", "ISC004", "PLC0415", "ARG001", "RUF001", "RUF002"]
+"src/grid_train.py" = ["TC", "PLR0915", "RUF001"]
+"tests/*" = ["S101", "D", "ANN", "PLR2004", "INP001", "SLF001", "FBT"]
+"comparison/*" = ["INP001", "T201", "D103", "E402", "PLR2004"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint.isort]
-known-first-party = ["environment", "agent", "policy"]
+known-first-party = [
+    "agent", "constants", "environment", "episode", "evaluation_stats", "logger", "metrics",
+    "plots", "policy", "seeding", "settings", "sumo_api", "grid",
+]
 
 [tool.mypy]
 python_version = "3.13"
+mypy_path = "src"
+explicit_package_bases = true
 disable_error_code = ["import-untyped"]
+
+[[tool.mypy.overrides]]
+module = ["traci.*", "libsumo.*", "sumolib.*"]
+ignore_missing_imports = true

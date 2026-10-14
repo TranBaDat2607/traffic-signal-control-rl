@@ -1,12 +1,12 @@
-"""Tests for ``EarlyStopping`` (PROBLEMS.md P1-5).
+"""Tests for ``EarlyStopping``.
 
-``train.py`` used to construct ``EarlyStopping`` without reading
-``early_stopping_min_episode``, so patience could run out during the
-exploration phase. The guard now lives inside ``EarlyStopping`` so that every
-caller gets it; these tests pin its behaviour without needing SUMO.
+``early_stopping_min_episode`` keeps the exploration phase, where the metric
+reflects random actions, from exhausting patience or being selected as the best
+model. The guard lives inside ``EarlyStopping`` so that every caller gets it;
+these tests pin its behaviour without needing SUMO.
 """
 
-from agent.model import EarlyStopping
+from agent.early_stopping import EarlyStopping
 
 
 def _first_stop(es: EarlyStopping, metrics: list[float]) -> int | None:

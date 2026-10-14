@@ -12,8 +12,8 @@ from typing import TypedDict
 
 import torch
 
-from constants import DEFAULT_MODEL_PATH, DEFAULT_SETTINGS_PATH, TORCH_NUM_THREADS
-from agent.model import EarlyStopping
+from agent.early_stopping import EarlyStopping
+from constants import DEFAULT_SETTINGS_PATH, DEFAULT_TRAIN_OUT, TORCH_NUM_THREADS
 from grid.config import build_grid_config
 from grid.coordinator import MultiAgentCoordinator
 from grid.grid_env import GridEnvStats
@@ -264,8 +264,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--out",
         type=Path,
-        default=DEFAULT_MODEL_PATH,
-        help="Output directory for model weights and plots (default: model/)",
+        default=DEFAULT_TRAIN_OUT / "grid",
+        help="Output directory for model weights and plots (default: runs/train/grid/)",
     )
     args = parser.parse_args()
     grid_training_session(settings_file=args.settings, out_path=args.out)

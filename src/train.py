@@ -1,242 +1,199 @@
-"""Training entry point for the TLCS agent."""
+"""Train the DQN agent.
+
+    python src/train.py                                   # settings/training_settings.yaml
+    python src/train.py --seed 1 --out runs/train/dqn-seed1
+    python src/train.py --episodes 10 --out runs/train/smoke   # quick check
+
+Writes to ``--out``:
+
+- ``trained_model.pt``: weights after the last episode (the policy to evaluate),
+- ``best_model.pt``: weights of the training episode with the lowest total delay,
+- ``training_settings.yaml``: the settings actually used, overrides included,
+- ``training_log.csv`` and ``training_curves.png``: one row per episode.
+
+Training traffic uses seeds ``0 .. total_episodes - 1``. Evaluation
+(``evaluate.py``) uses held-out seeds from ``settings/testing_settings.yaml``.
+"""
+
+from __future__ import annotations
 
 import argparse
-from datetime import datetime
+import csv
+import time
 from pathlib import Path
-from shutil import copyfile
-from typing import TypedDict
+from typing import TYPE_CHECKING
 
 import torch
 
-from agent import Agent, Memory, Sample
-from agent.model import EarlyStopping
+from agent import Agent, Memory
+from agent.early_stopping import EarlyStopping
 from constants import (
-    DEFAULT_MODEL_PATH,
     DEFAULT_SETTINGS_PATH,
+    DEFAULT_TRAIN_OUT,
     TORCH_NUM_THREADS,
     TRAINING_SETTINGS_FILE,
 )
-from environment import Environment, EnvStats
-from episode import Record, run_episode
+from environment import Environment
+from episode import run_episode
 from logger import get_logger
-from metrics import (
-    ARRIVED_LABEL,
-    AVG_QUEUE_LABEL,
-    INSERTION_DELAY_LABEL,
-    NEG_REWARD_LABEL,
-    TOTAL_DELAY_LABEL,
-    avg_queue,
-    insertion_delay,
-    sum_negative_rewards,
-    total_delay,
-    vehicles_arrived,
-)
-from plots import save_data_and_plot
-from settings import load_training_settings
+from plots import plot_training_curves
+from seeding import seed_everything
+from settings import TrainingSettings, load_training_settings, save_settings
+
+if TYPE_CHECKING:
+    from agent.memory import Sample
 
 logger = get_logger(__name__)
 
+LOG_COLUMNS = (
+    "episode",
+    "epsilon",
+    "total_delay",
+    "avg_queue",
+    "arrived",
+    "insertion_delay",
+    "neg_reward",
+    "mean_loss",
+)
 
-class TrainingStats(TypedDict):
-    """Aggregated per-episode statistics collected during training.
 
-    Metric definitions live in ``metrics.py`` so that the agent and the
-    fixed-time baseline are scored by the same function.
+def linear_epsilon(episode: int, total_episodes: int) -> float:
+    """Exploration rate decaying linearly from 1 at the first episode towards 0.
+
+    Args:
+        episode: 0-based episode index.
+        total_episodes: Number of training episodes.
+
+    Returns:
+        ``1 - episode / total_episodes``.
     """
-
-    neg_reward: list[float]   # training diagnostic only, never a benchmark
-    total_delay: list[int]    # vehicle-seconds
-    avg_queue: list[float]    # vehicles
-    arrived: list[int]        # saturation guard: vehicles that completed their trip
-    insertion_delay: list[int]  # saturation guard: vehicle-seconds not in total_delay
+    return 1.0 - episode / total_episodes
 
 
-def add_experience_to_memory(memory: Memory, history: list[Record]) -> None:
-    """Add transitions from an episode history to replay memory.
+def training_session(
+    settings: TrainingSettings, out_path: Path, threads: int = TORCH_NUM_THREADS
+) -> list[dict[str, float]]:
+    """Train an agent and write the model, settings and training log.
 
-    Each pair of consecutive records is converted into a (s, a, r, s') sample.
+    Args:
+        settings: Validated training settings.
+        out_path: Output directory.
+        threads: PyTorch CPU threads. A run is repeatable bit for bit only with
+            the same thread count, which changes the order of float additions.
+
+    Returns:
+        The training log: one dict per episode, keys ``LOG_COLUMNS``.
     """
-    for i in range(len(history) - 1):
-        sample = Sample(
-            state=history[i].state,
-            action=history[i].action,
-            reward=history[i].reward,
-            next_state=history[i + 1].state,
-        )
-        memory.add_sample(sample)
-
-
-def update_training_stats(
-    episode_history: list[Record],
-    env_stats: list[EnvStats],
-    max_steps: int,
-    training_stats: TrainingStats,
-) -> TrainingStats:
-    """Update cumulative training statistics with metrics from one episode."""
-    queue_per_step = [stats.queue_length for stats in env_stats]
-
-    training_stats["total_delay"].append(total_delay(queue_per_step))
-    training_stats["avg_queue"].append(avg_queue(queue_per_step, max_steps))
-    training_stats["neg_reward"].append(
-        sum_negative_rewards([record.reward for record in episode_history])
-    )
-    training_stats["arrived"].append(vehicles_arrived([stats.arrived for stats in env_stats]))
-    training_stats["insertion_delay"].append(
-        insertion_delay([stats.pending for stats in env_stats])
-    )
-
-    return training_stats
-
-
-def training_session(settings_file: Path, out_path: Path) -> None:
-    """Run a full training session and save the trained model and statistics."""
-    settings = load_training_settings(settings_file)
-    torch.set_num_threads(TORCH_NUM_THREADS)
+    seed_everything(settings.seed)
+    torch.set_num_threads(threads)
+    out_path.mkdir(parents=True, exist_ok=True)
+    save_settings(settings, out_path / TRAINING_SETTINGS_FILE)
 
     memory = Memory(size_max=settings.memory_size_max, size_min=settings.memory_size_min)
     agent = Agent(settings=settings)
-
     early_stopping = EarlyStopping(
         patience=settings.early_stopping_patience,
         min_episode=settings.early_stopping_min_episode,
     )
+    env = Environment(
+        n_cars_generated=settings.n_cars_generated,
+        max_steps=settings.max_steps,
+        yellow_duration=settings.yellow_duration,
+        green_duration=settings.green_duration,
+        turn_chance=settings.turn_chance,
+        sumocfg_file=settings.sumocfg_file,
+        gui=settings.gui,
+    )
 
-    timestamp_start = datetime.now()
-    tot_episodes = settings.total_episodes
+    log: list[dict[str, float]] = []
+    start = time.perf_counter()
+    try:
+        for episode in range(settings.total_episodes):
+            agent.set_epsilon(linear_epsilon(episode, settings.total_episodes))
+            losses: list[float] = []
 
-    training_stats: TrainingStats = {
-        "neg_reward": [],
-        "total_delay": [],
-        "avg_queue": [],
-        "arrived": [],
-        "insertion_delay": [],
-    }
+            def learn(sample: Sample, losses: list[float] = losses) -> None:
+                # Online DQN: store the transition, then take gradient steps.
+                memory.add_sample(sample)
+                for _ in range(settings.training_epochs):
+                    loss = agent.replay(memory, settings.gamma, settings.batch_size)
+                    if loss is not None:
+                        losses.append(loss)
 
-    for episode in range(tot_episodes):
-        logger.info(f"Episode {episode + 1} of {tot_episodes}")
-
-        new_epsilon = round(1.0 - (episode / tot_episodes), 2)
-        agent.set_epsilon(new_epsilon)
-
-        env = Environment(
-            n_cars_generated=settings.n_cars_generated,
-            max_steps=settings.max_steps,
-            yellow_duration=settings.yellow_duration,
-            green_duration=settings.green_duration,
-            turn_chance=settings.turn_chance,
-            gui=settings.gui,
-            sumocfg_file=settings.sumocfg_file,
-        )
-
-        def on_step() -> None:
-            for _ in range(settings.training_epochs):
-                agent.replay(
-                    memory=memory,
-                    gamma=settings.gamma,
-                    batch_size=settings.batch_size,
-                )
-
-        episode_history, env_stats = run_episode(env=env, agent=agent, seed=episode, on_step=on_step)
-
-        add_experience_to_memory(memory=memory, history=episode_history)
-
-        training_stats = update_training_stats(
-            episode_history=episode_history,
-            env_stats=env_stats,
-            max_steps=settings.max_steps,
-            training_stats=training_stats,
-        )
-
-        logger.info(f"\tEpsilon: {agent.epsilon}")
-        logger.info(f"\tTotal delay (vehicle-seconds): {training_stats['total_delay'][-1]}")
-        logger.info(f"\tAvg queue length: {training_stats['avg_queue'][-1]}")
-        logger.info(
-            f"\tArrived: {training_stats['arrived'][-1]} of {settings.n_cars_generated}, "
-            f"insertion delay: {training_stats['insertion_delay'][-1]} vehicle-seconds"
-        )
-        logger.info(f"\tNeg-reward diagnostic: {training_stats['neg_reward'][-1]:.1f}")
-
-        if settings.checkpoint_interval > 0 and (episode + 1) % settings.checkpoint_interval == 0:
-            out_path.mkdir(parents=True, exist_ok=True)
-            agent.save_checkpoint(out_path, episode + 1)
-            logger.info(f"\tCheckpoint saved: checkpoint_ep{episode + 1}.pt")
-
-        # Select and stop on the metric that gets reported (total delay), not on
-        # the neg-reward diagnostic. EarlyStopping maximises, hence the negation.
-        if early_stopping.step(-training_stats["total_delay"][-1]):
+            result = run_episode(env, agent, seed=episode, on_transition=learn)
+            m = result.metrics()
+            log.append({
+                "episode": episode + 1,
+                "epsilon": round(agent.epsilon, 4),
+                "total_delay": m.total_delay,
+                "avg_queue": m.avg_queue,
+                "arrived": m.arrived,
+                "insertion_delay": m.insertion_delay,
+                "neg_reward": round(m.neg_reward, 1),
+                "mean_loss": round(sum(losses) / len(losses), 4) if losses else float("nan"),
+            })
             logger.info(
-                f"\tEarly stopping triggered after {episode + 1} episodes "
-                f"(no improvement for {settings.early_stopping_patience} episodes, "
-                f"best total delay: {-early_stopping.best:.0f})"
+                f"Episode {episode + 1}/{settings.total_episodes}  eps={agent.epsilon:.2f}  "
+                f"delay={m.total_delay} veh-s  queue={m.avg_queue}  "
+                f"arrived={m.arrived}/{settings.n_cars_generated}  "
+                f"loss={log[-1]['mean_loss']}  ({time.perf_counter() - start:.0f} s)"
             )
-            break
-        if early_stopping.improved:
-            out_path.mkdir(parents=True, exist_ok=True)
-            agent.model.save_weights(out_path / "best_model.pt")
-            logger.info(
-                f"\tNew best total delay {-early_stopping.best:.0f} — saved best_model.pt"
-            )
+            write_csv(log, out_path)  # every episode, so a long run can be monitored
 
-    out_path.mkdir(parents=True, exist_ok=True)
+            if settings.checkpoint_interval and (episode + 1) % settings.checkpoint_interval == 0:
+                agent.save_checkpoint(out_path, episode + 1)
+
+            # Select on the reported metric (total delay), not on the reward
+            # diagnostic. EarlyStopping maximises, hence the negation.
+            if early_stopping.step(-m.total_delay):
+                logger.info(f"Early stopping after {episode + 1} episodes")
+                break
+            if early_stopping.improved:
+                agent.model.save_weights(out_path / "best_model.pt")
+    finally:
+        env.close()
+
     agent.save_model(out_path)
+    if log:
+        plot_training_curves(
+            {key: [row[key] for row in log] for key in LOG_COLUMNS},
+            out_path / "training_curves.png",
+        )
+    logger.info(f"Training took {time.perf_counter() - start:.0f} s. Saved to {out_path}")
+    return log
 
-    logger.info(f"Start time: {timestamp_start}")
-    logger.info(f"End time: {datetime.now()}")
-    logger.info(f"Session info saved at: {out_path}")
 
-    copyfile(src=settings_file, dst=out_path / TRAINING_SETTINGS_FILE)
+def write_csv(log: list[dict[str, float]], out_path: Path) -> None:
+    """Write the training log so far to ``training_log.csv``."""
+    with (out_path / "training_log.csv").open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=LOG_COLUMNS)
+        writer.writeheader()
+        writer.writerows(log)
 
-    save_data_and_plot(
-        data=training_stats["neg_reward"],
-        filename="reward",
-        xlabel="Episode",
-        ylabel=NEG_REWARD_LABEL,
-        out_folder=out_path,
-    )
-    save_data_and_plot(
-        data=training_stats["total_delay"],
-        filename="delay",
-        xlabel="Episode",
-        ylabel=TOTAL_DELAY_LABEL,
-        out_folder=out_path,
-    )
-    save_data_and_plot(
-        data=training_stats["avg_queue"],
-        filename="queue",
-        xlabel="Episode",
-        ylabel=AVG_QUEUE_LABEL,
-        out_folder=out_path,
-    )
-    save_data_and_plot(
-        data=training_stats["arrived"],
-        filename="arrived",
-        xlabel="Episode",
-        ylabel=ARRIVED_LABEL,
-        out_folder=out_path,
-    )
-    save_data_and_plot(
-        data=training_stats["insertion_delay"],
-        filename="insertion_delay",
-        xlabel="Episode",
-        ylabel=INSERTION_DELAY_LABEL,
-        out_folder=out_path,
-    )
+
+def main() -> None:
+    """Command-line entry point."""
+    parser = argparse.ArgumentParser(description="Train the DQN traffic-signal agent.")
+    parser.add_argument("--settings", type=Path,
+                        default=DEFAULT_SETTINGS_PATH / TRAINING_SETTINGS_FILE,
+                        help="Training settings YAML (default: %(default)s)")
+    parser.add_argument("--out", type=Path, default=DEFAULT_TRAIN_OUT / "dqn",
+                        help="Output directory (default: %(default)s)")
+    parser.add_argument("--seed", type=int, default=None, help="Override the settings' seed")
+    parser.add_argument("--episodes", type=int, default=None,
+                        help="Override total_episodes, e.g. for a quick check")
+    parser.add_argument("--threads", type=int, default=TORCH_NUM_THREADS,
+                        help="PyTorch CPU threads (default: %(default)s). Use 1-2 per run "
+                             "when training several runs in parallel")
+    args = parser.parse_args()
+
+    settings = load_training_settings(args.settings)
+    overrides = {"seed": args.seed, "total_episodes": args.episodes}
+    overrides = {k: v for k, v in overrides.items() if v is not None}
+    if overrides:
+        settings = TrainingSettings.model_validate({**settings.model_dump(), **overrides})
+    training_session(settings, args.out, threads=args.threads)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train the TLCS agent.")
-    parser.add_argument(
-        "--settings",
-        type=Path,
-        default=DEFAULT_SETTINGS_PATH / TRAINING_SETTINGS_FILE,
-        help="Path to training_settings.yaml (default: settings/training_settings.yaml)",
-    )
-    parser.add_argument(
-        "--out",
-        type=Path,
-        default=DEFAULT_MODEL_PATH,
-        help="Output directory for model and plots (default: model/)",
-    )
-    args = parser.parse_args()
-
-    training_session(settings_file=args.settings, out_path=args.out)
+    main()

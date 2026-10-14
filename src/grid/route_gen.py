@@ -159,7 +159,7 @@ def generate_grid_routefile(
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     with out_path.open("w", encoding="utf-8") as f:
-        f.write('<routes>\n')
+        f.write("<routes>\n")
         f.write(
             '    <vType accel="1.0" decel="4.5" id="standard_car"'
             ' length="5.0" minGap="2.5" maxSpeed="25" sigma="0.5" />\n\n'
@@ -184,4 +184,4 @@ def generate_grid_routefile(
                 f' departLane="random" departSpeed="10" />\n'
             )
 
-        f.write('</routes>\n')
+        f.write("</routes>\n")

@@ -1,31 +1,46 @@
-from pathlib import Path
+"""DQN agent: epsilon-greedy acting and the Q-learning update."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import torch
 
-from agent.memory import Memory
 from agent.model import Model
 from constants import NUM_ACTIONS, STATE_SIZE
 from policy import EpsilonGreedyPolicy
-from settings import TrainingSettings
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+    from pathlib import Path
+
+    from numpy.typing import NDArray
+
+    from agent.memory import Memory
+    from settings import TrainingSettings
 
 
 class Agent:
-    """Reinforcement-learning agent using an epsilon-greedy policy."""
+    """Deep Q-Network agent (Mnih et al., 2015) with a Polyak-averaged target.
+
+    Implements the :class:`~policy.Controller` interface, so it can be run and
+    evaluated exactly like the rule-based baselines.
+    """
 
     def __init__(
         self,
         settings: TrainingSettings,
         epsilon: float = 1.0,
         model_path: Path | None = None,
-        model: "Model | None" = None,
+        model: Model | None = None,
     ) -> None:
         """Initialize the agent, its model, and the epsilon-greedy policy.
 
         Args:
             settings: Training settings with model architecture and hyperparameters.
             epsilon: Initial exploration probability in [0, 1].
-            model_path: Optional path to load pre-trained model weights from.
+            model_path: Optional directory to load trained weights from.
             model: Optional pre-built :class:`~agent.model.Model` to use
                 instead of building one.  ``grid.coordinator`` passes the same
                 object to every junction's agent so they share weights.  When
@@ -58,70 +73,75 @@ class Agent:
         """
         self.policy.set_epsilon(epsilon)
 
-    def choose_action(self, state: np.ndarray) -> int:
-        """Choose an action for the given state.
+    def reset(self) -> None:
+        """Nothing to reset between episodes (part of the Controller interface)."""
+
+    def choose_action(
+        self,
+        state: NDArray[np.float32],
+        info: Mapping[str, Any] | None = None,  # noqa: ARG002 - the agent sees only the state
+    ) -> int:
+        """Choose an action for the given state with the epsilon-greedy policy.
 
         Args:
-            state: Current state representation as a 1-D array.
+            state: Current observation as a 1-D array.
+            info: Ignored. The agent acts on its observation only.
 
         Returns:
             Index of the selected action.
         """
         return self.policy.select_action(state)
 
-    def replay(self, memory: Memory, gamma: float, batch_size: int) -> None:
-        """Sample from replay memory and perform a Q-learning update.
+    def replay(self, memory: Memory, gamma: float, batch_size: int) -> float | None:
+        """Sample a minibatch from replay memory and take one Q-learning step.
+
+        The loss is the Huber loss between ``Q(s, a)`` from the online network
+        and the bootstrap target
+
+            y = r + gamma * (1 - terminated) * max_a' Q_target(s', a').
+
+        Episodes in this project end on a time limit (truncation), never in a
+        terminal state, so ``terminated`` is always 0 here and the target always
+        bootstraps. Treating the time limit as terminal would teach the agent
+        that the world ends at t = max_steps.
 
         Args:
             memory: Experience replay buffer.
             gamma: Discount factor for future rewards.
             batch_size: Number of samples to draw.
+
+        Returns:
+            The loss of this step, or ``None`` if memory is still warming up.
         """
         batch = memory.get_samples(batch_size)
-
         if not batch:
-            return
+            return None
 
         device = self.model.device
-
-        # Transfer states to GPU once — reused for both inference and training.
-        states_t = torch.from_numpy(
-            np.array([s.state for s in batch], dtype=np.float32)
-        ).to(device, non_blocking=True)
-        next_states_t = torch.from_numpy(
-            np.array([s.next_state for s in batch], dtype=np.float32)
-        ).to(device, non_blocking=True)
-
-        # Both forward passes stay on GPU — no round-trip to CPU.
-        q_values_t = self.model.forward_online(states_t)
-        next_q_values_t = self.model.forward_target(next_states_t)
-
-        # Bellman targets computed entirely on GPU (vectorised, no Python loop).
-        rewards_t = torch.tensor(
-            [s.reward for s in batch], dtype=torch.float32, device=device
-        )
-        actions = [s.action for s in batch]
-        targets_t = q_values_t.clone()
-        targets_t[torch.arange(len(batch), device=device), actions] = (
-            rewards_t + gamma * next_q_values_t.max(dim=1).values
+        states = torch.from_numpy(np.stack([s.state for s in batch])).to(device)
+        next_states = torch.from_numpy(np.stack([s.next_state for s in batch])).to(device)
+        actions = torch.tensor([s.action for s in batch], device=device)
+        rewards = torch.tensor([s.reward for s in batch], dtype=torch.float32, device=device)
+        not_terminal = torch.tensor(
+            [0.0 if s.terminated else 1.0 for s in batch], dtype=torch.float32, device=device
         )
 
-        self.model.train_on_tensors(states_t, targets_t)
+        with torch.no_grad():
+            next_q = self.model.target_model(next_states).max(dim=1).values
+            targets = rewards + gamma * not_terminal * next_q
+
+        self.model.model.train()
+        q_sa = self.model.model(states).gather(1, actions.unsqueeze(1)).squeeze(1)
+        loss = self.model.loss_fn(q_sa, targets)
+
+        self.model.optimize(loss)
         self.model.update_target_network(self.tau)
+        return float(loss.item())
 
     def save_model(self, out_path: Path) -> None:
-        """Save the underlying model weights to disk.
-
-        Args:
-            out_path: Destination directory for the saved model.
-        """
+        """Save the online network's weights to ``out_path / MODEL_FILE``."""
         self.model.save_model(out_path)
 
     def save_checkpoint(self, out_path: Path, episode: int) -> None:
-        """Save a checkpoint of the model weights for a specific episode.
-
-        Args:
-            out_path: Directory to write the checkpoint file into.
-            episode: Episode number used in the checkpoint filename.
-        """
+        """Save the online network's weights as ``checkpoint_ep<episode>.pt``."""
         self.model.save_weights(out_path / f"checkpoint_ep{episode}.pt")

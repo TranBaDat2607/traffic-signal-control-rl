@@ -8,11 +8,14 @@ Channels (each of length NUM_CELLS):
 
 from __future__ import annotations
 
+from collections import Counter
+from typing import TYPE_CHECKING
+
 import numpy as np
-from numpy.typing import NDArray
 
 from constants import (
     CELLS_PER_LANE_GROUP,
+    HALTING_SPEED,
     LANE_DISTANCE_TO_CELL,
     LANE_ID_TO_GROUP,
     MAX_SPEED,
@@ -22,6 +25,9 @@ from constants import (
 )
 from environment.subscriptions import vehicle_data
 from sumo_api import tc, traci
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
 def get_lane_cell(lane_pos: float) -> int:
@@ -98,4 +104,21 @@ def get_state() -> NDArray:
     speed_norm = np.clip(speed_sum / denom / MAX_SPEED,     0.0, 1.0)
     wait_norm  = np.clip(wait_sum  / denom / MAX_WAIT_TIME, 0.0, 1.0)
 
-    return np.concatenate([presence, speed_norm, wait_norm])
+    return np.concatenate([presence, speed_norm, wait_norm]).astype(np.float32)
+
+
+def get_lane_queues() -> dict[str, int]:
+    """Count halted vehicles on every lane that has at least one.
+
+    This is not part of the agent's state. It is exposed in the environment's
+    ``info`` dict for rule-based controllers such as max-pressure, which need
+    queue counts on both the incoming and the outgoing lanes.
+
+    Returns:
+        ``{lane_id: number of vehicles slower than HALTING_SPEED}``.
+    """
+    queues: Counter[str] = Counter()
+    for car in vehicle_data().values():
+        if car[tc.VAR_SPEED] < HALTING_SPEED:
+            queues[car[tc.VAR_LANE_ID]] += 1
+    return dict(queues)

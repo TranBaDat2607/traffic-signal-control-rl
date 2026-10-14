@@ -1,14 +1,13 @@
 """Single source of truth for episode-level performance metrics.
 
 Every entry point that reports how well a controller performed — ``train.py``,
-``test.py``, ``grid_train.py`` and ``comparison/run_baseline.py`` — computes its
-numbers here. The point is that a controller is only comparable to another
-controller when both were measured by the same function.
+``evaluate.py`` and ``grid_train.py`` — computes its numbers here. A controller
+is only comparable to another controller when both were measured by the same
+function, so there must be exactly one definition of each number.
 
-Historically this was not the case: the RL path and the baseline path each had
-their own aggregation, and ``compare_results.py`` joined the two by string key
-name and drew them on one axis. The two quantities were not commensurable, and
-nothing in the code could notice. See PROBLEMS.md P0-1 / P0-2 / P0-3.
+(This is a lesson learned the hard way: an earlier version of this project had
+one aggregation for the agent and another for the baseline, plotted them on one
+axis, and compared seconds with queue-steps without anything noticing.)
 
 Definitions
 -----------
@@ -26,7 +25,7 @@ Definitions
     ``total_delay`` only sees vehicles that are *on* an incoming edge. A vehicle
     SUMO cannot insert because its approach is full is on no edge and
     contributes nothing, so under saturation ``total_delay`` understates delay
-    exactly where congestion is worst (PROBLEMS.md P2-4). ``insertion_delay``
+    exactly where congestion is worst. ``insertion_delay``
     is the delay those vehicles spend waiting outside the network:
     the per-step count of pending vehicles, summed over the episode, in
     vehicle-seconds. It is reported *alongside* ``total_delay``, not folded into

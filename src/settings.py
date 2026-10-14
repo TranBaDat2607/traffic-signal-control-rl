@@ -1,12 +1,32 @@
+"""Validated settings, loaded from the YAML files in ``settings/``.
+
+Unknown keys are rejected, so a misspelled hyperparameter fails loudly instead
+of silently falling back to a default.
+"""
+
 from pathlib import Path
 from typing import Annotated, Any, Self
 
 import yaml
-from pydantic import BaseModel, Field, NonNegativeInt, PositiveFloat, PositiveInt, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    NonNegativeInt,
+    PositiveFloat,
+    PositiveInt,
+    model_validator,
+)
 
 
 class TrainingSettings(BaseModel):
     """Configuration options for training the RL agent."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # reproducibility: seeds the network initialisation, exploration and replay
+    # sampling. Training traffic always uses seeds 0 .. total_episodes - 1.
+    seed: int = 0
 
     # simulation
     gui: bool
@@ -51,7 +71,9 @@ class TrainingSettings(BaseModel):
 
 
 class TestingSettings(BaseModel):
-    """Configuration options for testing a trained RL agent."""
+    """The evaluation protocol: which traffic every controller is scored on."""
+
+    model_config = ConfigDict(extra="forbid")
 
     # simulation
     gui: bool
@@ -62,9 +84,6 @@ class TestingSettings(BaseModel):
     yellow_duration: PositiveInt
     green_duration: PositiveInt
     turn_chance: Annotated[float, Field(ge=0, le=1)]
-
-    # agent
-    gamma: Annotated[float, Field(ge=0, le=1)]
 
     # paths
     sumocfg_file: Path
@@ -90,6 +109,19 @@ def load_yaml(path: Path) -> dict[str, Any]:
         raise TypeError(msg)
 
     return data
+
+
+def save_settings(settings: BaseModel, path: Path) -> None:
+    """Write the settings actually used, including defaults and overrides.
+
+    Args:
+        settings: Any validated settings object.
+        path: Destination YAML file.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        yaml.safe_dump(settings.model_dump(mode="json"), sort_keys=False), encoding="utf-8"
+    )
 
 
 def load_training_settings(settings_file: Path) -> TrainingSettings:

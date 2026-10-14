@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from numpy.typing import NDArray
 
 from grid.coordinator import MultiAgentCoordinator
-from grid.grid_env import GridEnvStats, GridEnvironment
+from grid.grid_env import GridEnvironment, GridEnvStats
 
 
 @dataclass
@@ -56,7 +56,7 @@ def run_grid_episode(
 
     history: dict[str, list[GridRecord]] = {tl: [] for tl in env.grid_cfg.tl_ids}
     env_stats: list[GridEnvStats] = []
-    previous_wait: dict[str, float] = {tl: 0.0 for tl in env.grid_cfg.tl_ids}
+    previous_wait: dict[str, float] = dict.fromkeys(env.grid_cfg.tl_ids, 0.0)
 
     while not env.is_over():
         states = env.get_states()

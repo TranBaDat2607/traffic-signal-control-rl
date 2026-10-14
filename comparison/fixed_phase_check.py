@@ -1,97 +1,89 @@
-"""
-fixed_phase_check.py
---------------------
-Equivalence check between the agent's measurement path and the baseline's.
+"""End-to-end check that the measurement path is right.
 
-Runs one episode twice on the same seed:
+For each fixed-time plan, one episode is run twice on the same seed:
 
-  1. RL path: a round-robin "agent" (actions 0, 1, 2, 3, 0, ...) driven through
-     ``Environment.execute()``, exactly as ``train.py`` / ``test.py`` drive it.
-  2. Baseline path: SUMO running the signal plan by itself (as
-     ``run_baseline.py`` does), with the static program's durations set to the
-     same green / yellow durations so that both paths show the same lights.
+  1. Controller path: ``FixedTimeController`` driven through
+     ``Environment.step()`` by ``episode.run_episode()``, exactly as the agent
+     is trained and evaluated.
+  2. Native path: SUMO running the same static signal program by itself, with
+     Python only measuring.
 
-Both must report the same total delay. With the defaults (seed 0, 1000 cars,
-5400 steps, 10 s green / 4 s yellow) that is 18,195 vehicle-seconds
-(PROBLEMS.md P0-1). Any change to how data is read from SUMO (PROBLEMS.md P3-1)
-must leave this number unchanged.
+Both must report the same total delay, vehicle for vehicle. If they do, the
+environment's phase switching and its per-second measurement are faithful, and
+any controller evaluated through it is measured the same way.
 
-``--dump-states`` saves the state vector observed at every decision step, so
-that two implementations of ``get_state()`` can be compared array for array.
+Plans checked (seed 0, 1000 cars, 5400 s):
+
+  - 10 s green / 4 s yellow: 18,195 vehicle-seconds (pinned below)
+  - 30 s green / 4 s yellow: the plan in ``intersection/environment.net.xml``
+
+Run it after any change to how data is read from SUMO.
 
 Usage (from the project root):
     python comparison/fixed_phase_check.py
-    python comparison/fixed_phase_check.py --dump-states /tmp/states.npy
 """
 
 import argparse
 import sys
-import time
 from pathlib import Path
-
-import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from constants import TL_GREEN_TO_YELLOW, TRAFFIC_LIGHT_ID
 from environment import Environment
-from environment.generator import generate_routefile
-from metrics import insertion_delay, total_delay, vehicles_arrived
-from run_baseline import apply_fixed_plan
-from sumo_api import backend_name
+from episode import EpisodeResult, run_episode
+from policy import FixedTimeController
+from sumo_api import backend_name, traci
 
-EXPECTED_DEFAULT_DELAY = 18_195
+EXPECTED_10_4_DELAY = 18_195
 
 
-def _make_env(args: argparse.Namespace) -> Environment:
+def apply_fixed_plan(green: int, yellow: int) -> None:
+    """Set the static program's durations; SUMO then runs it by itself."""
+    logic = traci.trafficlight.getAllProgramLogics(TRAFFIC_LIGHT_ID)[0]
+    yellow_phases = set(TL_GREEN_TO_YELLOW.values())
+    for i, phase in enumerate(logic.phases):
+        phase.duration = yellow if i in yellow_phases else green
+        phase.minDur = phase.maxDur = phase.duration
+    traci.trafficlight.setProgramLogic(TRAFFIC_LIGHT_ID, logic)
+    traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
+
+
+def make_env(args: argparse.Namespace) -> Environment:
     return Environment(
         n_cars_generated=args.cars,
         max_steps=args.steps,
-        yellow_duration=args.yellow,
-        green_duration=args.green,
+        yellow_duration=4,
+        green_duration=10,
         turn_chance=0.25,
         sumocfg_file=Path("intersection/sumo_config.sumocfg"),
-        gui=False,
     )
 
 
-def run_rl_path(args: argparse.Namespace) -> tuple[dict, list[np.ndarray]]:
-    """Round-robin actions through Environment.execute()."""
-    env = _make_env(args)
-    env.generate_routefile(seed=args.seed)
-    env.activate()
-
-    stats, states, action = [], [], 0
-    while not env.is_over():
-        states.append(env.get_state())
-        stats.extend(env.execute(action))
-        env.get_cumulated_waiting_time()  # the reward read, as run_episode() does
-        action = (action + 1) % 4
-    env.deactivate()
-
-    return {
-        "total_delay": total_delay([s.queue_length for s in stats]),
-        "arrived": vehicles_arrived([s.arrived for s in stats]),
-        "insertion_delay": insertion_delay([s.pending for s in stats]),
-    }, states
+def controller_path(args: argparse.Namespace, green: int) -> dict:
+    env = make_env(args)
+    try:
+        result = run_episode(env, FixedTimeController(green, env.green_duration), seed=args.seed)
+    finally:
+        env.close()
+    return as_dict(result)
 
 
-def run_native_path(args: argparse.Namespace) -> dict:
-    """SUMO runs a static program with matched durations; Python only measures."""
-    env = _make_env(args)
-    generate_routefile(
-        seed=args.seed, n_cars_generated=args.cars, max_steps=args.steps, turn_chance=0.25
-    )
-    env.activate()
-    apply_fixed_plan(args.green, args.yellow)
+def native_path(args: argparse.Namespace, green: int) -> dict:
+    env = make_env(args)
+    try:
+        env.reset(seed=args.seed)
+        apply_fixed_plan(green, 4)
+        stats = env._simulate(args.steps)  # noqa: SLF001 - same per-second measurement
+    finally:
+        env.close()
+    return as_dict(EpisodeResult(seed=args.seed, max_steps=args.steps, stats=stats))
 
-    stats = env._simulate(args.steps)  # noqa: SLF001 — same per-step measurement
-    env.deactivate()
 
-    return {
-        "total_delay": total_delay([s.queue_length for s in stats]),
-        "arrived": vehicles_arrived([s.arrived for s in stats]),
-        "insertion_delay": insertion_delay([s.pending for s in stats]),
-    }
+def as_dict(result: EpisodeResult) -> dict:
+    m = result.metrics()
+    return {"total_delay": m.total_delay, "arrived": m.arrived,
+            "insertion_delay": m.insertion_delay}
 
 
 def main() -> int:
@@ -99,31 +91,25 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--cars", type=int, default=1000)
     parser.add_argument("--steps", type=int, default=5400)
-    parser.add_argument("--green", type=int, default=10)
-    parser.add_argument("--yellow", type=int, default=4)
-    parser.add_argument("--dump-states", type=Path, default=None,
-                        help="Save the RL path's per-decision states to this .npy file")
     args = parser.parse_args()
+    defaults = (args.seed, args.cars, args.steps) == (0, 1000, 5400)
 
-    t0 = time.perf_counter()
-    rl, states = run_rl_path(args)
-    t1 = time.perf_counter()
-    native = run_native_path(args)
-    t2 = time.perf_counter()
+    ok = True
+    for green in (10, 30):
+        ctrl = controller_path(args, green)
+        native = native_path(args, green)
+        same = ctrl == native
+        if green == 10 and defaults:
+            same = same and ctrl["total_delay"] == EXPECTED_10_4_DELAY
+        ok = ok and same
+        print(f"{green} s green / 4 s yellow")
+        print(f"  controller path: {ctrl}")
+        print(f"  native path:     {native}")
+        if green == 10 and defaults:
+            print(f"  expected total delay: {EXPECTED_10_4_DELAY}")
+        print(f"  {'PASS' if same else 'FAIL'}")
 
-    print(f"RL path     (Environment.execute): {rl}  [{t1 - t0:.2f} s]")
-    print(f"Native path (SUMO static program): {native}  [{t2 - t1:.2f} s]")
-    print(f"Decision steps: {len(states)}  (SUMO backend: {backend_name()})")
-
-    if args.dump_states is not None:
-        np.save(args.dump_states, np.stack(states))
-        print(f"States saved to {args.dump_states}")
-
-    defaults = (args.seed, args.cars, args.steps, args.green, args.yellow) == (0, 1000, 5400, 10, 4)
-    ok = rl["total_delay"] == native["total_delay"]
-    if defaults:
-        ok = ok and rl["total_delay"] == EXPECTED_DEFAULT_DELAY
-        print(f"Expected total delay: {EXPECTED_DEFAULT_DELAY}")
+    print(f"SUMO backend: {backend_name()}")
     print("PASS" if ok else "FAIL")
     return 0 if ok else 1
 

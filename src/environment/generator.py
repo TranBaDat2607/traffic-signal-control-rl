@@ -1,8 +1,11 @@
+"""Random traffic demand: one SUMO route file per episode."""
+
+from pathlib import Path
+
 import numpy as np
 from numpy.typing import NDArray
 
 from constants import (
-    ROUTES_FILE,
     ROUTES_FILE_HEADER,
     STRAIGHT_ROUTES,
     TURN_ROUTES,
@@ -42,6 +45,7 @@ def _get_car_row(route_id: str, car_i: int, step: int) -> str:
 
 
 def generate_routefile(
+    path: Path,
     seed: int,
     n_cars_generated: int,
     max_steps: int,
@@ -52,7 +56,11 @@ def generate_routefile(
     Car departure times follow a Weibull distribution re-scaled to [0, max_steps].
     A fraction of cars go straight and the rest turn, controlled by turn_chance.
 
+    The same seed always produces the same file, so two controllers evaluated
+    on the same seed face exactly the same vehicles.
+
     Args:
+        path: Route file to write (overwritten).
         seed: Random seed for reproducible generation.
         n_cars_generated: Number of cars to generate in the episode.
         max_steps: Maximum simulation step for car departures.
@@ -69,9 +77,9 @@ def generate_routefile(
     # Round to integer steps -> effective depart times for each car
     depart_steps = np.rint(generated_steps).astype(int)
 
-    ROUTES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
 
-    with ROUTES_FILE.open("w", encoding="utf-8") as routes_file:
+    with path.open("w", encoding="utf-8") as routes_file:
         print(ROUTES_FILE_HEADER, file=routes_file)
 
         for car_i, step in enumerate(depart_steps):

@@ -3,7 +3,8 @@
 Reading vehicle data one getter at a time costs one call per vehicle per
 variable, a blocking socket round-trip under TraCI. Subscriptions make SUMO
 push the values after every simulation step, so each reader below is a
-single call however many vehicles there are (PROBLEMS.md P3-1).
+single call however many vehicles there are. Under TraCI this made a training
+episode about three times faster.
 
 ``subscribe()`` must be called once after ``traci.start()``. The readers
 raise if it was not, rather than quietly returning empty data.
@@ -16,7 +17,8 @@ from typing import Any
 from constants import INCOMING_EDGES, TRAFFIC_LIGHT_ID
 from sumo_api import tc, traci
 
-# Vehicle variables read by get_state() and get_cumulated_waiting_time().
+# Vehicle variables read by get_state(), get_lane_queues() and
+# get_cumulated_waiting_time().
 VEHICLE_VARS = (
     tc.VAR_LANE_ID,
     tc.VAR_LANEPOSITION,

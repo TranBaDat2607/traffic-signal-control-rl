@@ -1,18 +1,25 @@
+"""Fixed facts about the simulated intersection, plus default paths.
+
+Everything here describes ``intersection/environment.net.xml``: lane IDs, the
+traffic-light program, the state discretisation. Changing the network means
+changing this file.
+"""
+
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Paths and filenames
+# Paths and filenames (relative to the project root)
 # ---------------------------------------------------------------------------
 
 DEFAULT_SETTINGS_PATH = Path("settings")
-DEFAULT_MODEL_PATH = Path("model")
+DEFAULT_TRAIN_OUT = Path("runs/train")
+DEFAULT_EVAL_OUT = Path("runs/eval")
 
 TRAINING_SETTINGS_FILE = Path("training_settings.yaml")
 TESTING_SETTINGS_FILE = Path("testing_settings.yaml")
 
 MODEL_FILE = Path("trained_model.pt")
-
-DEFAULT_TEST_FOLDER = "test"
+EVAL_RESULTS_FILE = Path("eval_results.json")
 
 # ---------------------------------------------------------------------------
 # Compute
@@ -20,15 +27,12 @@ DEFAULT_TEST_FOLDER = "test"
 
 # PyTorch CPU threads. The Q-network is a small MLP (batch 100), so more threads
 # mostly busy-wait: on a 12-core machine one replay() step took 9.3 ms at 4
-# threads, 13.9 ms at 12 and 13.5 ms at 2 (PROBLEMS.md P3-1).
+# threads, 13.9 ms at 12 and 13.5 ms at 2.
 TORCH_NUM_THREADS = 4
 
 # ---------------------------------------------------------------------------
 # SUMO route file configuration
 # ---------------------------------------------------------------------------
-
-# Route file used in the SUMO config.
-ROUTES_FILE = Path("intersection/episode_routes.rou.xml")
 
 # Header for the generated routes file: vehicle type and all OD routes.
 ROUTES_FILE_HEADER = """<routes>
@@ -85,12 +89,16 @@ TL_GREEN_TO_YELLOW = {
 # RL state / action space
 # ---------------------------------------------------------------------------
 
-NUM_CELLS = 80          # 8 lane groups × 10 cells — occupancy grid size
+NUM_CELLS = 80          # 8 lane groups x 10 cells — occupancy grid size
 STATE_SIZE = NUM_CELLS * 3  # presence + normalised speed + normalised wait = 240
 NUM_ACTIONS = 4  # matches keys in ACTION_TO_TL_PHASE
 
 MAX_SPEED     = 25.0   # m/s — from vehicle type maxSpeed in SUMO config
 MAX_WAIT_TIME = 400.0  # s   — normalisation ceiling for per-vehicle wait time
+
+# A vehicle slower than this counts as halted (queued). Same threshold as SUMO's
+# own LAST_STEP_VEHICLE_HALTING_NUMBER, which total_delay is built from.
+HALTING_SPEED = 0.1    # m/s
 
 # ---------------------------------------------------------------------------
 # Lane geometry and discretization
