@@ -1,0 +1,110 @@
+Running 100 baseline episodes, seeds 10000..10099
+Mode: SUMO native tlLogic — no Python controller, no agent
+Signal plan overridden: 10 s green / 4 s yellow
+
+  Ep   1/100 (seed 10000)  delay=    17862 veh-s  queue=3.30  arrived=999/1000  insertion_delay=41 veh-s
+  Ep   2/100 (seed 10001)  delay=    17697 veh-s  queue=3.30  arrived=999/1000  insertion_delay=27 veh-s
+  Ep   3/100 (seed 10002)  delay=    16743 veh-s  queue=3.10  arrived=999/1000  insertion_delay=35 veh-s
+  Ep   4/100 (seed 10003)  delay=    18160 veh-s  queue=3.40  arrived=999/1000  insertion_delay=31 veh-s
+  Ep   5/100 (seed 10004)  delay=    17570 veh-s  queue=3.30  arrived=998/1000  insertion_delay=27 veh-s
+  Ep   6/100 (seed 10005)  delay=    17533 veh-s  queue=3.20  arrived=999/1000  insertion_delay=29 veh-s
+  Ep   7/100 (seed 10006)  delay=    17471 veh-s  queue=3.20  arrived=999/1000  insertion_delay=36 veh-s
+  Ep   8/100 (seed 10007)  delay=    19118 veh-s  queue=3.50  arrived=999/1000  insertion_delay=46 veh-s
+  Ep   9/100 (seed 10008)  delay=    17530 veh-s  queue=3.20  arrived=998/1000  insertion_delay=21 veh-s
+  Ep  10/100 (seed 10009)  delay=    17661 veh-s  queue=3.30  arrived=999/1000  insertion_delay=47 veh-s
+  Ep  11/100 (seed 10010)  delay=    18622 veh-s  queue=3.40  arrived=999/1000  insertion_delay=39 veh-s
+  Ep  12/100 (seed 10011)  delay=    17964 veh-s  queue=3.30  arrived=999/1000  insertion_delay=49 veh-s
+  Ep  13/100 (seed 10012)  delay=    19407 veh-s  queue=3.60  arrived=999/1000  insertion_delay=48 veh-s
+  Ep  14/100 (seed 10013)  delay=    18362 veh-s  queue=3.40  arrived=999/1000  insertion_delay=26 veh-s
+  Ep  15/100 (seed 10014)  delay=    18300 veh-s  queue=3.40  arrived=999/1000  insertion_delay=55 veh-s
+  Ep  16/100 (seed 10015)  delay=    18355 veh-s  queue=3.40  arrived=999/1000  insertion_delay=30 veh-s
+  Ep  17/100 (seed 10016)  delay=    17859 veh-s  queue=3.30  arrived=995/1000  insertion_delay=39 veh-s
+  Ep  18/100 (seed 10017)  delay=    18772 veh-s  queue=3.50  arrived=999/1000  insertion_delay=46 veh-s
+  Ep  19/100 (seed 10018)  delay=    18021 veh-s  queue=3.30  arrived=998/1000  insertion_delay=29 veh-s
+  Ep  20/100 (seed 10019)  delay=    18485 veh-s  queue=3.40  arrived=999/1000  insertion_delay=33 veh-s
+  Ep  21/100 (seed 10020)  delay=    17226 veh-s  queue=3.20  arrived=996/1000  insertion_delay=33 veh-s
+  Ep  22/100 (seed 10021)  delay=    18118 veh-s  queue=3.40  arrived=999/1000  insertion_delay=40 veh-s
+  Ep  23/100 (seed 10022)  delay=    18900 veh-s  queue=3.50  arrived=999/1000  insertion_delay=36 veh-s
+  Ep  24/100 (seed 10023)  delay=    18020 veh-s  queue=3.30  arrived=999/1000  insertion_delay=32 veh-s
+  Ep  25/100 (seed 10024)  delay=    17792 veh-s  queue=3.30  arrived=998/1000  insertion_delay=31 veh-s
+  Ep  26/100 (seed 10025)  delay=    17669 veh-s  queue=3.30  arrived=998/1000  insertion_delay=32 veh-s
+  Ep  27/100 (seed 10026)  delay=    16591 veh-s  queue=3.10  arrived=999/1000  insertion_delay=29 veh-s
+  Ep  28/100 (seed 10027)  delay=    17573 veh-s  queue=3.30  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  29/100 (seed 10028)  delay=    17931 veh-s  queue=3.30  arrived=999/1000  insertion_delay=30 veh-s
+  Ep  30/100 (seed 10029)  delay=    17711 veh-s  queue=3.30  arrived=999/1000  insertion_delay=20 veh-s
+  Ep  31/100 (seed 10030)  delay=    19115 veh-s  queue=3.50  arrived=999/1000  insertion_delay=30 veh-s
+  Ep  32/100 (seed 10031)  delay=    17533 veh-s  queue=3.20  arrived=999/1000  insertion_delay=18 veh-s
+  Ep  33/100 (seed 10032)  delay=    19147 veh-s  queue=3.50  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  34/100 (seed 10033)  delay=    18036 veh-s  queue=3.30  arrived=999/1000  insertion_delay=25 veh-s
+  Ep  35/100 (seed 10034)  delay=    17099 veh-s  queue=3.20  arrived=998/1000  insertion_delay=31 veh-s
+  Ep  36/100 (seed 10035)  delay=    20894 veh-s  queue=3.90  arrived=999/1000  insertion_delay=36 veh-s
+  Ep  37/100 (seed 10036)  delay=    18191 veh-s  queue=3.40  arrived=999/1000  insertion_delay=36 veh-s
+  Ep  38/100 (seed 10037)  delay=    18097 veh-s  queue=3.40  arrived=998/1000  insertion_delay=27 veh-s
+  Ep  39/100 (seed 10038)  delay=    18682 veh-s  queue=3.50  arrived=998/1000  insertion_delay=36 veh-s
+  Ep  40/100 (seed 10039)  delay=    18157 veh-s  queue=3.40  arrived=999/1000  insertion_delay=37 veh-s
+  Ep  41/100 (seed 10040)  delay=    17026 veh-s  queue=3.20  arrived=999/1000  insertion_delay=30 veh-s
+  Ep  42/100 (seed 10041)  delay=    18169 veh-s  queue=3.40  arrived=999/1000  insertion_delay=33 veh-s
+  Ep  43/100 (seed 10042)  delay=    17492 veh-s  queue=3.20  arrived=999/1000  insertion_delay=31 veh-s
+  Ep  44/100 (seed 10043)  delay=    18128 veh-s  queue=3.40  arrived=999/1000  insertion_delay=40 veh-s
+  Ep  45/100 (seed 10044)  delay=    16742 veh-s  queue=3.10  arrived=998/1000  insertion_delay=19 veh-s
+  Ep  46/100 (seed 10045)  delay=    18058 veh-s  queue=3.30  arrived=998/1000  insertion_delay=34 veh-s
+  Ep  47/100 (seed 10046)  delay=    17367 veh-s  queue=3.20  arrived=997/1000  insertion_delay=35 veh-s
+  Ep  48/100 (seed 10047)  delay=    17806 veh-s  queue=3.30  arrived=999/1000  insertion_delay=33 veh-s
+  Ep  49/100 (seed 10048)  delay=    17737 veh-s  queue=3.30  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  50/100 (seed 10049)  delay=    17939 veh-s  queue=3.30  arrived=998/1000  insertion_delay=24 veh-s
+  Ep  51/100 (seed 10050)  delay=    17493 veh-s  queue=3.20  arrived=999/1000  insertion_delay=39 veh-s
+  Ep  52/100 (seed 10051)  delay=    17677 veh-s  queue=3.30  arrived=999/1000  insertion_delay=22 veh-s
+  Ep  53/100 (seed 10052)  delay=    17354 veh-s  queue=3.20  arrived=999/1000  insertion_delay=23 veh-s
+  Ep  54/100 (seed 10053)  delay=    18539 veh-s  queue=3.40  arrived=999/1000  insertion_delay=29 veh-s
+  Ep  55/100 (seed 10054)  delay=    17240 veh-s  queue=3.20  arrived=999/1000  insertion_delay=35 veh-s
+  Ep  56/100 (seed 10055)  delay=    18034 veh-s  queue=3.30  arrived=998/1000  insertion_delay=22 veh-s
+  Ep  57/100 (seed 10056)  delay=    18444 veh-s  queue=3.40  arrived=998/1000  insertion_delay=32 veh-s
+  Ep  58/100 (seed 10057)  delay=    18174 veh-s  queue=3.40  arrived=998/1000  insertion_delay=29 veh-s
+  Ep  59/100 (seed 10058)  delay=    16701 veh-s  queue=3.10  arrived=998/1000  insertion_delay=25 veh-s
+  Ep  60/100 (seed 10059)  delay=    17429 veh-s  queue=3.20  arrived=999/1000  insertion_delay=24 veh-s
+  Ep  61/100 (seed 10060)  delay=    18147 veh-s  queue=3.40  arrived=998/1000  insertion_delay=33 veh-s
+  Ep  62/100 (seed 10061)  delay=    16938 veh-s  queue=3.10  arrived=998/1000  insertion_delay=30 veh-s
+  Ep  63/100 (seed 10062)  delay=    18011 veh-s  queue=3.30  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  64/100 (seed 10063)  delay=    17653 veh-s  queue=3.30  arrived=998/1000  insertion_delay=26 veh-s
+  Ep  65/100 (seed 10064)  delay=    17091 veh-s  queue=3.20  arrived=999/1000  insertion_delay=19 veh-s
+  Ep  66/100 (seed 10065)  delay=    16830 veh-s  queue=3.10  arrived=999/1000  insertion_delay=26 veh-s
+  Ep  67/100 (seed 10066)  delay=    17470 veh-s  queue=3.20  arrived=999/1000  insertion_delay=45 veh-s
+  Ep  68/100 (seed 10067)  delay=    17312 veh-s  queue=3.20  arrived=999/1000  insertion_delay=26 veh-s
+  Ep  69/100 (seed 10068)  delay=    17587 veh-s  queue=3.30  arrived=999/1000  insertion_delay=31 veh-s
+  Ep  70/100 (seed 10069)  delay=    16713 veh-s  queue=3.10  arrived=999/1000  insertion_delay=36 veh-s
+  Ep  71/100 (seed 10070)  delay=    17275 veh-s  queue=3.20  arrived=998/1000  insertion_delay=33 veh-s
+  Ep  72/100 (seed 10071)  delay=    17264 veh-s  queue=3.20  arrived=998/1000  insertion_delay=32 veh-s
+  Ep  73/100 (seed 10072)  delay=    17631 veh-s  queue=3.30  arrived=998/1000  insertion_delay=24 veh-s
+  Ep  74/100 (seed 10073)  delay=    19417 veh-s  queue=3.60  arrived=999/1000  insertion_delay=32 veh-s
+  Ep  75/100 (seed 10074)  delay=    17896 veh-s  queue=3.30  arrived=997/1000  insertion_delay=31 veh-s
+  Ep  76/100 (seed 10075)  delay=    16289 veh-s  queue=3.00  arrived=998/1000  insertion_delay=30 veh-s
+  Ep  77/100 (seed 10076)  delay=    17963 veh-s  queue=3.30  arrived=999/1000  insertion_delay=45 veh-s
+  Ep  78/100 (seed 10077)  delay=    17383 veh-s  queue=3.20  arrived=998/1000  insertion_delay=27 veh-s
+  Ep  79/100 (seed 10078)  delay=    18103 veh-s  queue=3.40  arrived=999/1000  insertion_delay=24 veh-s
+  Ep  80/100 (seed 10079)  delay=    19343 veh-s  queue=3.60  arrived=999/1000  insertion_delay=58 veh-s
+  Ep  81/100 (seed 10080)  delay=    18357 veh-s  queue=3.40  arrived=998/1000  insertion_delay=35 veh-s
+  Ep  82/100 (seed 10081)  delay=    19023 veh-s  queue=3.50  arrived=999/1000  insertion_delay=21 veh-s
+  Ep  83/100 (seed 10082)  delay=    18911 veh-s  queue=3.50  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  84/100 (seed 10083)  delay=    17755 veh-s  queue=3.30  arrived=999/1000  insertion_delay=30 veh-s
+  Ep  85/100 (seed 10084)  delay=    18044 veh-s  queue=3.30  arrived=999/1000  insertion_delay=39 veh-s
+  Ep  86/100 (seed 10085)  delay=    18952 veh-s  queue=3.50  arrived=999/1000  insertion_delay=38 veh-s
+  Ep  87/100 (seed 10086)  delay=    17308 veh-s  queue=3.20  arrived=997/1000  insertion_delay=32 veh-s
+  Ep  88/100 (seed 10087)  delay=    17764 veh-s  queue=3.30  arrived=998/1000  insertion_delay=34 veh-s
+  Ep  89/100 (seed 10088)  delay=    17404 veh-s  queue=3.20  arrived=999/1000  insertion_delay=37 veh-s
+  Ep  90/100 (seed 10089)  delay=    18577 veh-s  queue=3.40  arrived=998/1000  insertion_delay=39 veh-s
+  Ep  91/100 (seed 10090)  delay=    17660 veh-s  queue=3.30  arrived=999/1000  insertion_delay=25 veh-s
+  Ep  92/100 (seed 10091)  delay=    17004 veh-s  queue=3.10  arrived=997/1000  insertion_delay=30 veh-s
+  Ep  93/100 (seed 10092)  delay=    17050 veh-s  queue=3.20  arrived=998/1000  insertion_delay=38 veh-s
+  Ep  94/100 (seed 10093)  delay=    16966 veh-s  queue=3.10  arrived=998/1000  insertion_delay=28 veh-s
+  Ep  95/100 (seed 10094)  delay=    17726 veh-s  queue=3.30  arrived=999/1000  insertion_delay=36 veh-s
+  Ep  96/100 (seed 10095)  delay=    17653 veh-s  queue=3.30  arrived=999/1000  insertion_delay=31 veh-s
+  Ep  97/100 (seed 10096)  delay=    17644 veh-s  queue=3.30  arrived=998/1000  insertion_delay=30 veh-s
+  Ep  98/100 (seed 10097)  delay=    17368 veh-s  queue=3.20  arrived=999/1000  insertion_delay=34 veh-s
+  Ep  99/100 (seed 10098)  delay=    18245 veh-s  queue=3.40  arrived=999/1000  insertion_delay=37 veh-s
+  Ep 100/100 (seed 10099)  delay=    17043 veh-s  queue=3.20  arrived=997/1000  insertion_delay=28 veh-s
+
+Saved to: baseline_results_10-4/
+  Mean total delay : 17862.9 vehicle-seconds
+  Mean queue       : 3.31 vehicles
+  Mean arrived     : 998.5 of 1000 vehicles
+  Mean insertion delay (not in total delay): 32.5 veh-s
