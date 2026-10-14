@@ -15,8 +15,9 @@ logger = get_logger(__name__)
 class EarlyStopping:
     """Monitors a scalar metric and signals when training should stop.
 
-    Tracks the *maximum* of the monitored metric (e.g. cumulative reward,
-    which is negative and should increase toward zero as the agent improves).
+    Tracks the *maximum* of the monitored metric.  The training scripts pass
+    ``-total_delay`` so that the checkpoint they select is judged by the same
+    number that gets reported.
     Stops when no improvement greater than ``min_delta`` is seen for
     ``patience`` consecutive episodes.
 

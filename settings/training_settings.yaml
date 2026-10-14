@@ -22,7 +22,7 @@ memory_size_max: 50000
 gamma: 0.75
 tau: 0.005
 checkpoint_interval: 0
-early_stopping_patience: 0  # episodes with no reward improvement before stopping (0 = disabled)
+early_stopping_patience: 0  # episodes with no total-delay improvement before stopping (0 = disabled)
 
 # paths
 sumocfg_file: intersection/sumo_config.sumocfg
