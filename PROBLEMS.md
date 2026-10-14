@@ -1361,7 +1361,7 @@ what is read.
 ```bash
 # P0-1/P0-2: confirm there is exactly one aggregation, and the old names are gone
 grep -rn "cumulative_wait\|cumulative_reward\|sum_neg_reward" src/ comparison/ \
-  --exclude-dir=archive                                                           # expect no hits
+  --include=*.py --exclude-dir=archive                                            # expect no hits
 grep -rln "from metrics import" src/ comparison/                                  # expect 6 files*
 pytest -q                                                                          # expect 20 passed
 
@@ -1385,8 +1385,8 @@ grep -rn "get_neighbor_aware_state" --include=*.py .     # expect no hits
 sed 's/^total_episodes: .*/total_episodes: 3/' settings/training_settings.yaml > /tmp/prof.yaml
 python -m cProfile -o train.prof src/train.py --settings /tmp/prof.yaml --out /tmp/prof_model
 python -c "import pstats; pstats.Stats('train.prof').sort_stats('cumulative').print_stats(25)"
-#   expect ~18-20 s total, no socket send/recv entries; libsumo simulationStep and
-#   agent.replay() dominate (re-run on main: 18.3 s)
+#   expect roughly 18-22 s total (three runs on main: 18.3, 19.2, 21.5 s), no
+#   socket send/recv entries; libsumo simulationStep and agent.replay() dominate
 
 # P3-1 / P2-4: the agent's measurement path and SUMO's own agree exactly
 python comparison/fixed_phase_check.py                    # expect 18,195 on both paths, PASS
@@ -1396,6 +1396,11 @@ python comparison/compare_results.py --baseline results/dqn-300ep/baseline \
   --rl results/dqn-300ep/test --out /tmp/check
 cmp /tmp/check/comparison.png results/dqn-300ep/comparison/comparison.png   # expect no output
 ```
+
+The first grep is limited to `*.py`. Without that, stale `__pycache__/*.pyc`
+files compiled before the P0-1 fix still match: `test.py` and `grid_train.py`
+run as `__main__`, which Python never re-caches. They are ignored by git and
+absent from a clean clone.
 
 \* Was 5 when the audit was written. `comparison/fixed_phase_check.py`, added for
 P2-4/P3-1, is the sixth importer. It is a measurement check, not a fourth
