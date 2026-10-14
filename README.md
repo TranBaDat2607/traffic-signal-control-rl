@@ -1,15 +1,43 @@
-# Traffic Signal Control with Deep Q-Learning
+<div align="center">
 
-A reference reinforcement-learning project. A DQN agent controls the traffic light
+# Traffic Signal Control with Deep Reinforcement Learning
+
+**A Deep Q-Network that runs a traffic light in the SUMO simulator, tested against
+fixed-time, max-pressure and random controllers on traffic it has never seen.**
+
+[Results](#results) · [Quickstart](#quickstart) · [The MDP](#the-mdp) ·
+[Reproduce](#reproduce-the-results) · [Extend it](#extending-it)
+
+</div>
+
+This is a reference reinforcement-learning project. A DQN agent controls the traffic light
 of a 4-way intersection in the [SUMO](https://eclipse.dev/sumo/) traffic
-simulator, and is compared with fixed-time, max-pressure and random controllers
+simulator. It is compared with fixed-time, max-pressure and random controllers
 on traffic it has never seen.
 
-It is meant as a starting point for an RL course project: small enough to read
-in an afternoon, with a Gymnasium environment, a ~30-line DQN update, three
-baselines, and an evaluation protocol that makes results trustworthy (held-out
+It is meant as a starting point for an RL course project or a thesis. It is small enough to read
+in an afternoon and has a Gymnasium environment, a ~30-line DQN update, three
+baselines, and an evaluation protocol designed to give trustworthy results (held-out
 seeds, one metric definition for every controller, paired confidence intervals,
 several training seeds).
+
+### Highlights
+
+- **Gymnasium environment** around SUMO: `reset(seed)` / `step(action)`, a
+  240-dim observation, 4 green-phase actions, headless via `libsumo`.
+- **Readable DQN** in PyTorch: replay buffer, Polyak-averaged target network,
+  Huber loss, ε-greedy exploration.
+- **Strong baselines**: max-pressure (Varaiya, 2013), two fixed-time plans and
+  random, all run through the same environment and scored by the same metric.
+- **Honest evaluation**: 100 held-out traffic seeds, paired 95% confidence
+  intervals, 3 training seeds, and checks that no controller lowers its delay by
+  keeping vehicles out of the network.
+- **Reproducible**: seeded training is bit-for-bit repeatable on CPU. Trained
+  weights, logs and per-episode data are committed in [`results/`](results/).
+- **Tested**: 53 unit tests that need neither SUMO nor a GPU, plus an
+  end-to-end check against SUMO's own signal program.
+
+### Contents
 
 - [Results](#results)
 - [Quickstart](#quickstart)
@@ -73,6 +101,8 @@ Requires Python 3.13 and [SUMO](https://eclipse.dev/sumo/) with `SUMO_HOME` set
 Run everything from the project root.
 
 ```bash
+git clone https://github.com/TranBaDat2607/traffic-signal-control-rl.git
+cd traffic-signal-control-rl
 pip install -e ".[dev]"
 pytest -q                                   # 53 unit tests, no SUMO needed
 python comparison/fixed_phase_check.py      # end-to-end check with SUMO: prints PASS
@@ -245,6 +275,21 @@ scores it exactly like everything else.
   cycle are strong, but a Webster-optimised plan or a tuned actuated controller
   could be stronger still.
 - **Limited training budget.** Three seeds of 300 episodes each.
+
+## Citation
+
+If this project helps your work, please cite it (GitHub's "Cite this repository"
+button reads [`CITATION.cff`](CITATION.cff)):
+
+```bibtex
+@software{tran_traffic_signal_control_rl,
+  author = {Tran, Ba Dat},
+  title  = {Traffic Signal Control with Deep Reinforcement Learning},
+  url    = {https://github.com/TranBaDat2607/traffic-signal-control-rl},
+  year   = {2026},
+  note   = {DQN and baselines for traffic signal control in SUMO}
+}
+```
 
 ## Credits
 
