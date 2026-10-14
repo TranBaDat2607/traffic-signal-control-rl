@@ -26,7 +26,7 @@ Severity:
 | ~~[P0-4](#p0-4)~~ | P0 | Experiment | ~~The `du100` baseline is a strawman (100-second yellow lights)~~ **FIXED** (`166e967`) |
 | ~~[P0-5](#p0-5)~~ | P0 | Experiment | ~~Both charts reuse the same 10-episode run; no converged policy~~ **FIXED** |
 | ~~[P0-6](#p0-6)~~ | P0 | Repro | ~~The RL data behind the charts is not in the repository~~ **FIXED** |
-| [P0-7](#p0-7) | P0 | Result | On the only comparable metric, the agent loses to fixed-time |
+| ~~[P0-7](#p0-7)~~ | P0 | Result | ~~On the only comparable metric, the agent loses to fixed-time~~ **RESOLVED**: re-measured; the trained agent now wins |
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
 | [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
 | ~~[P1-3](#p1-3)~~ | P1 | Packaging | ~~`pyproject.toml`: dead entrypoint, unused dep, upstream author~~ **FIXED** |
@@ -562,6 +562,28 @@ against a 100-second yellow light does not.
 
 **Done when** the README's results section reports the queue metric from the
 re-run, against the realistic baseline, whatever its sign.
+
+> ### RESOLVED — re-measured; the sign flipped once there was a trained policy
+>
+> `README.md` now has a *Results* section that leads with the queue metric from
+> the P0-5 re-run against the realistic 30 s / 4 s baseline, with the episode
+> count and the held-out seeds stated:
+>
+> > Greedy evaluation (ε = 0) on 100 held-out episodes, seeds 10000–10099 …
+> > the agent's average queue is 5.44 vehicles shorter (−73.7%, 95% CI −5.48 to
+> > −5.39), and shorter in all 100 of 100 held-out episodes.
+>
+> Baseline 7.37 ± 0.22 vehicles, agent 1.94 ± 0.13. The README also reports the
+> stronger 10 s / 4 s fixed cycle (3.31 ± 0.14; agent −41.4%, 100/100 episodes),
+> and it states the limits: one training run, a policy not shown to be
+> converged, one demand scenario, untuned baselines, simulation only.
+>
+> The earlier "agent loses" reading (5.66 vs 3.26) was the queue of a
+> 10-episode, mostly random controller (P0-5). It was a correct measurement of
+> an untrained agent, not of this method. The figures it came from are withdrawn
+> and the README says so. The number reported now comes from the same
+> measurement (`metrics.avg_queue`, identical on both sides) applied to a
+> trained policy on held-out traffic.
 
 ---
 
