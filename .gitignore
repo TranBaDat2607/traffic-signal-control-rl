@@ -6,9 +6,21 @@ dist/
 build/
 .venv/
 
-# Training outputs
-models/
-plots/
+# Training outputs (src/constants.py:8 — singular "model")
+model/
+
+# Generated SUMO inputs
+intersection/episode_routes.rou.xml
+intersection_grid/
+
+# Baseline / comparison scratch runs (default --out paths, run from the root).
+# Published results under comparison/comparison_du*/ are committed deliberately.
+/baseline_results*/
+/comparison_output*/
+/comparison/comparison.png
+
+# Published run data is committed on purpose — keep it out of the ignore rules.
+!results/
 
 # Environment
 .env
