@@ -40,3 +40,7 @@ intersection_grid/
 .DS_Store
 Thumbs.db
 instruction.md
+
+# Local-only notes (kept off GitHub)
+/PROBLEMS.md
+/FUTURE_WORK.md
