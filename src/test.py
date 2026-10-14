@@ -14,7 +14,7 @@ from constants import (
 from environment import Environment
 from episode import run_episode
 from logger import get_logger
-from metrics import avg_queue, total_delay
+from metrics import avg_queue, insertion_delay, total_delay, vehicles_arrived
 from settings import load_testing_settings, load_training_settings
 
 logger = get_logger(__name__)
@@ -30,6 +30,8 @@ class TestStats(TypedDict):
 
     total_delay: list[int]   # vehicle-seconds
     avg_queue: list[float]   # vehicles
+    arrived: list[int]       # saturation guard
+    insertion_delay: list[int]  # saturation guard: vehicle-seconds not in total_delay
 
 
 def testing_session(model_path: Path, settings_file: Path) -> None:
@@ -54,6 +56,8 @@ def testing_session(model_path: Path, settings_file: Path) -> None:
     test_stats: TestStats = {
         "total_delay": [],
         "avg_queue": [],
+        "arrived": [],
+        "insertion_delay": [],
     }
 
     for episode in range(settings.total_episodes):
@@ -76,11 +80,20 @@ def testing_session(model_path: Path, settings_file: Path) -> None:
         episode_delay = total_delay(queue_per_step)
         episode_queue = avg_queue(queue_per_step, settings.max_steps)
 
+        episode_arrived = vehicles_arrived([s.arrived for s in env_stats])
+        episode_insertion = insertion_delay([s.pending for s in env_stats])
+
         test_stats["total_delay"].append(episode_delay)
         test_stats["avg_queue"].append(episode_queue)
+        test_stats["arrived"].append(episode_arrived)
+        test_stats["insertion_delay"].append(episode_insertion)
 
         logger.info(f"\tTotal delay (vehicle-seconds): {episode_delay}")
         logger.info(f"\tAvg queue length: {episode_queue}")
+        logger.info(
+            f"\tArrived: {episode_arrived} of {settings.n_cars_generated}, "
+            f"insertion delay: {episode_insertion} vehicle-seconds"
+        )
 
     mean_delay = sum(test_stats["total_delay"]) / settings.total_episodes
     mean_queue = sum(test_stats["avg_queue"]) / settings.total_episodes
@@ -89,6 +102,15 @@ def testing_session(model_path: Path, settings_file: Path) -> None:
     logger.info(f"Episodes:                           {settings.total_episodes}")
     logger.info(f"Mean total delay (vehicle-seconds): {mean_delay:.1f}")
     logger.info(f"Mean queue length:                  {mean_queue:.2f}")
+    logger.info(
+        f"Mean vehicles arrived:              "
+        f"{sum(test_stats['arrived']) / settings.total_episodes:.1f} "
+        f"of {settings.n_cars_generated}"
+    )
+    logger.info(
+        f"Mean insertion delay (veh-s):       "
+        f"{sum(test_stats['insertion_delay']) / settings.total_episodes:.1f}"
+    )
 
 
 if __name__ == "__main__":

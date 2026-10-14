@@ -37,7 +37,7 @@ Severity:
 | [P2-2](#p2-2) | P2 | Claims | Three multi-agent modes documented, one implemented |
 | [P2-3](#p2-3) | P2 | Cosmetic | Repository name is misspelled (`trafic`) |
 | ~~[P1-7](#p1-7)~~ | P1 | Method | ~~Model selection uses the metric now demoted to a diagnostic~~ **FIXED** |
-| [P2-4](#p2-4) | P2 | Metrics | `total_delay` understates delay when vehicles cannot be inserted |
+| ~~[P2-4](#p2-4)~~ | P2 | Metrics | ~~`total_delay` understates delay when vehicles cannot be inserted~~ **FIXED** |
 | [P3-1](#p3-1) | P3 | Speed | Training time is dominated by per-vehicle TraCI round-trips, not SUMO or the network |
 
 ## Suggested order
@@ -870,6 +870,47 @@ bound. Keep the TraCI call at the call sites so `metrics.py` stays TraCI-free.
 
 **Done when** every published delay figure is accompanied by the arrived-vehicle
 count, or a statement that the episode drained.
+
+> ### RESOLVED
+>
+> **The defect is real, and arrivals alone cannot detect it.** Measured on seed 0,
+> 5,400 steps, with the 30 s / 4 s baseline plan:
+>
+> | cars | `total_delay` | arrived | max pending | pending veh-s |
+> |---|---|---|---|---|
+> | 1,000 | 38,747 | 998 | 2 | 32 |
+> | 4,000 | 1,096,215 | 3,998 | 4 | 669 |
+> | 8,000 | 4,441,453 | 5,476 | 3,153 | **9,650,775** |
+>
+> At 8,000 cars, vehicles waiting outside the full approaches accumulate more
+> than twice the delay that `total_delay` sees. The arrived-vehicle count alone
+> is a weak guard here: `generator.py` schedules the last departure at exactly
+> `max_steps`, so even a healthy episode ends with a vehicle or two in transit
+> (998 of 1,000).
+>
+> **What was added** (`src/metrics.py`, `METRICS_VERSION` 2 → 3):
+>
+> - `vehicles_arrived()` — Σ `traci.simulation.getArrivedNumber()` per step.
+> - `insertion_delay()` — Σ `len(traci.simulation.getPendingVehicles())` per step:
+>   vehicle-seconds spent waiting to enter the network, in the same unit as
+>   `total_delay` and **not included in it**. It is a separate column rather than
+>   folded into `total_delay`, so the P0-1 equivalence still holds.
+>
+> The TraCI reads are at the call sites (`environment/reward.py`, recorded per
+> step in `EnvStats`; `run_baseline.py`), so `metrics.py` stays TraCI-free. Both
+> numbers go into `baseline_results.json` (`vehicles_arrived`,
+> `insertion_delays`), the training log and `plot_arrived_data.txt` /
+> `plot_insertion_delay_data.txt`, and the `test.py` summary. They are also in
+> the `compare_results.py` table and caption, which requires them on both sides.
+>
+> **Verified:** `python comparison/fixed_phase_check.py` (new; it re-runs the
+> P0-1 check) gives `total_delay` **18,195** on both paths, plus
+> `arrived 998, insertion_delay 32` on both. `pytest -q`: 20 passed.
+> A 2-episode baseline → train → compare cycle shows the guard values in the
+> table and in the chart caption.
+>
+> The grid entry point (`grid_train.py`) does not record the guard. It
+> publishes no comparison figure.
 
 ---
 

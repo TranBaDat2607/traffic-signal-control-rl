@@ -13,12 +13,16 @@ from environment import Environment, EnvStats
 from episode import Record, run_episode
 from logger import get_logger
 from metrics import (
+    ARRIVED_LABEL,
     AVG_QUEUE_LABEL,
+    INSERTION_DELAY_LABEL,
     NEG_REWARD_LABEL,
     TOTAL_DELAY_LABEL,
     avg_queue,
+    insertion_delay,
     sum_negative_rewards,
     total_delay,
+    vehicles_arrived,
 )
 from plots import save_data_and_plot
 from settings import load_training_settings
@@ -36,6 +40,8 @@ class TrainingStats(TypedDict):
     neg_reward: list[float]   # training diagnostic only, never a benchmark
     total_delay: list[int]    # vehicle-seconds
     avg_queue: list[float]    # vehicles
+    arrived: list[int]        # saturation guard: vehicles that completed their trip
+    insertion_delay: list[int]  # saturation guard: vehicle-seconds not in total_delay
 
 
 def add_experience_to_memory(memory: Memory, history: list[Record]) -> None:
@@ -67,6 +73,10 @@ def update_training_stats(
     training_stats["neg_reward"].append(
         sum_negative_rewards([record.reward for record in episode_history])
     )
+    training_stats["arrived"].append(vehicles_arrived([stats.arrived for stats in env_stats]))
+    training_stats["insertion_delay"].append(
+        insertion_delay([stats.pending for stats in env_stats])
+    )
 
     return training_stats
 
@@ -90,6 +100,8 @@ def training_session(settings_file: Path, out_path: Path) -> None:
         "neg_reward": [],
         "total_delay": [],
         "avg_queue": [],
+        "arrived": [],
+        "insertion_delay": [],
     }
 
     for episode in range(tot_episodes):
@@ -130,6 +142,10 @@ def training_session(settings_file: Path, out_path: Path) -> None:
         logger.info(f"\tEpsilon: {agent.epsilon}")
         logger.info(f"\tTotal delay (vehicle-seconds): {training_stats['total_delay'][-1]}")
         logger.info(f"\tAvg queue length: {training_stats['avg_queue'][-1]}")
+        logger.info(
+            f"\tArrived: {training_stats['arrived'][-1]} of {settings.n_cars_generated}, "
+            f"insertion delay: {training_stats['insertion_delay'][-1]} vehicle-seconds"
+        )
         logger.info(f"\tNeg-reward diagnostic: {training_stats['neg_reward'][-1]:.1f}")
 
         if settings.checkpoint_interval > 0 and (episode + 1) % settings.checkpoint_interval == 0:
@@ -181,6 +197,20 @@ def training_session(settings_file: Path, out_path: Path) -> None:
         filename="queue",
         xlabel="Episode",
         ylabel=AVG_QUEUE_LABEL,
+        out_folder=out_path,
+    )
+    save_data_and_plot(
+        data=training_stats["arrived"],
+        filename="arrived",
+        xlabel="Episode",
+        ylabel=ARRIVED_LABEL,
+        out_folder=out_path,
+    )
+    save_data_and_plot(
+        data=training_stats["insertion_delay"],
+        filename="insertion_delay",
+        xlabel="Episode",
+        ylabel=INSERTION_DELAY_LABEL,
         out_folder=out_path,
     )
 

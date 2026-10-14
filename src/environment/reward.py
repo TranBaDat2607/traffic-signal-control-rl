@@ -1,4 +1,4 @@
-"""Reward and queue-length computation from TraCI vehicle data."""
+"""Reward and per-step measurements from TraCI data."""
 
 from __future__ import annotations
 
@@ -32,3 +32,25 @@ def get_queue_length() -> int:
         Total number of vehicles with speed 0 on all four incoming edges.
     """
     return sum(traci.edge.getLastStepHaltingNumber(edge) for edge in INCOMING_EDGES)
+
+
+def get_arrived_number() -> int:
+    """Return the number of vehicles that reached their destination in the last step.
+
+    Returns:
+        Vehicles that left the network during the last simulation step.
+    """
+    return traci.simulation.getArrivedNumber()
+
+
+def get_pending_number() -> int:
+    """Return the number of vehicles waiting to be inserted into the network.
+
+    A vehicle is pending when its departure time has passed but SUMO could not
+    insert it, typically because its approach is full. It is on no edge, so
+    ``get_queue_length()`` does not count it.
+
+    Returns:
+        Vehicles past their departure time that are not yet in the network.
+    """
+    return len(traci.simulation.getPendingVehicles())

@@ -22,6 +22,20 @@ Definitions
     ``total_delay / max_steps`` — the mean number of vehicles queued at any
     instant, in vehicles.
 
+``vehicles_arrived`` and ``insertion_delay`` — the saturation guard
+    ``total_delay`` only sees vehicles that are *on* an incoming edge. A vehicle
+    SUMO cannot insert because its approach is full is on no edge and
+    contributes nothing, so under saturation ``total_delay`` understates delay
+    exactly where congestion is worst (PROBLEMS.md P2-4). ``insertion_delay``
+    is the delay those vehicles spend waiting outside the network:
+    the per-step count of pending vehicles, summed over the episode, in
+    vehicle-seconds. It is reported *alongside* ``total_delay``, not folded into
+    it. When it is small relative to ``total_delay``, the delay figure is
+    complete. When it is not, ``total_delay`` is a lower bound.
+    ``vehicles_arrived`` counts vehicles that completed their trip. It is below
+    ``n_cars_generated`` even in a healthy episode, because the route generator
+    schedules the last departures right at the end of the episode.
+
 ``neg_reward``
     The sum of the negative per-step rewards. This is a *training* diagnostic
     for the learning curve, not a measure of controller quality: it is defined
@@ -41,11 +55,13 @@ from collections.abc import Sequence
 # Bumped whenever a definition in this module changes. Serialized alongside
 # results so that data written under an older definition fails loudly instead of
 # being silently compared against data written under a newer one.
-METRICS_VERSION = 2
+METRICS_VERSION = 3
 
 TOTAL_DELAY_LABEL = "Total delay (vehicle-seconds)"
 AVG_QUEUE_LABEL = "Average queue length (vehicles)"
 NEG_REWARD_LABEL = "Training diagnostic: sum of negative rewards"
+ARRIVED_LABEL = "Vehicles arrived"
+INSERTION_DELAY_LABEL = "Insertion delay (vehicle-seconds, not in total delay)"
 
 
 def total_delay(queue_per_step: Sequence[int]) -> int:
@@ -72,6 +88,33 @@ def avg_queue(queue_per_step: Sequence[int], max_steps: int) -> float:
         Mean number of queued vehicles per step, rounded to one decimal.
     """
     return round(total_delay(queue_per_step) / max(max_steps, 1), 1)
+
+
+def vehicles_arrived(arrived_per_step: Sequence[int]) -> int:
+    """Count the vehicles that completed their trip during an episode.
+
+    Args:
+        arrived_per_step: Number of vehicles that arrived at each simulation step.
+
+    Returns:
+        Total vehicles arrived over the episode.
+    """
+    return sum(arrived_per_step)
+
+
+def insertion_delay(pending_per_step: Sequence[int]) -> int:
+    """Compute vehicle-seconds spent waiting to be inserted into the network.
+
+    This delay is invisible to :func:`total_delay`. See the module docstring.
+
+    Args:
+        pending_per_step: Vehicles past their departure time but not yet
+            inserted, at each simulation step.
+
+    Returns:
+        The sum of the per-step pending counts, in vehicle-seconds.
+    """
+    return sum(pending_per_step)
 
 
 def sum_negative_rewards(rewards: Sequence[float]) -> float:

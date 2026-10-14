@@ -31,6 +31,11 @@ ruff format src/
 pytest
 ```
 
+`python comparison/fixed_phase_check.py` is the end-to-end measurement check
+(needs SUMO): a round-robin agent through `Environment.execute()` and SUMO's
+own static program must both give exactly 18,195 vehicle-seconds on seed 0.
+Run it after touching anything that reads from SUMO.
+
 Unit tests cover the shared metric definitions (`tests/test_metrics.py`) and
 `EarlyStopping` (`tests/test_early_stopping.py`); they need neither SUMO nor a
 trained model. Everything else is verified by running.

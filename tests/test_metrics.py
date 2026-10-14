@@ -12,8 +12,10 @@ import pytest
 from metrics import (
     METRICS_VERSION,
     avg_queue,
+    insertion_delay,
     sum_negative_rewards,
     total_delay,
+    vehicles_arrived,
 )
 
 
@@ -130,3 +132,27 @@ def test_delay_is_independent_of_reward_sampling_rate() -> None:
     often the agent happens to make a decision -- unlike the reward sum, which
     is why the two were never comparable across the two paths."""
     assert total_delay([2] * 28) == 56
+
+
+# --- Saturation guard (P2-4) --------------------------------------------------
+
+
+def test_vehicles_arrived_sums_per_step_arrivals() -> None:
+    assert vehicles_arrived([0, 2, 0, 1]) == 3
+
+
+def test_insertion_delay_counts_each_pending_vehicle_once_per_step() -> None:
+    # Two vehicles stuck outside a full approach for three steps: 6 veh-s.
+    assert insertion_delay([2, 2, 2, 0]) == 6
+
+
+def test_insertion_delay_is_not_part_of_total_delay() -> None:
+    """A vehicle that cannot be inserted is on no edge: invisible to total_delay.
+
+    The guard is reported alongside total_delay rather than folded in, so the
+    P0-1 equivalence (both paths = 18,195 on seed 0) keeps holding.
+    """
+    queue_per_step = [0, 0, 0]
+    pending_per_step = [5, 5, 5]
+    assert total_delay(queue_per_step) == 0
+    assert insertion_delay(pending_per_step) == 15

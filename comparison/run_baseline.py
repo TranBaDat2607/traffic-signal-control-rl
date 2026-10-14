@@ -25,8 +25,8 @@ from sumolib import checkBinary
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from environment.generator import generate_routefile
-from environment.reward import get_queue_length
-from metrics import METRICS_VERSION, avg_queue, total_delay
+from environment.reward import get_arrived_number, get_pending_number, get_queue_length
+from metrics import METRICS_VERSION, avg_queue, insertion_delay, total_delay, vehicles_arrived
 
 
 def load_settings(path: str) -> dict:
@@ -53,19 +53,25 @@ def run_one_episode(sumocfg_file: Path, max_steps: int, gui: bool) -> dict:
         "--waiting-time-memory", str(max_steps),
     ])
 
-    queue_per_step = []
-    step           = 0
+    queue_per_step   = []
+    arrived_per_step = []
+    pending_per_step = []
+    step             = 0
 
     while step < max_steps:
         traci.simulationStep()   # SUMO tự chạy đèn theo tlLogic
         step += 1
         queue_per_step.append(get_queue_length())
+        arrived_per_step.append(get_arrived_number())
+        pending_per_step.append(get_pending_number())
 
     traci.close()
 
     return {
-        "total_delay": total_delay(queue_per_step),
-        "avg_queue":   avg_queue(queue_per_step, max_steps),
+        "total_delay":     total_delay(queue_per_step),
+        "avg_queue":       avg_queue(queue_per_step, max_steps),
+        "arrived":         vehicles_arrived(arrived_per_step),
+        "insertion_delay": insertion_delay(pending_per_step),
     }
 
 
@@ -80,8 +86,10 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
 
     os.makedirs(out_dir, exist_ok=True)
 
-    all_delays = []
-    all_queues = []
+    all_delays    = []
+    all_queues    = []
+    all_arrived   = []
+    all_insertion = []
 
     print(f"Running {total_episodes} baseline episodes")
     print("Mode: SUMO native tlLogic — no Python controller, no agent\n")
@@ -99,11 +107,15 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
 
         all_delays.append(result["total_delay"])
         all_queues.append(result["avg_queue"])
+        all_arrived.append(result["arrived"])
+        all_insertion.append(result["insertion_delay"])
 
         print(
             f"  Ep {ep+1:3d}/{total_episodes}"
             f"  delay={result['total_delay']:9d} veh-s"
             f"  queue={result['avg_queue']:.2f}"
+            f"  arrived={result['arrived']}/{n_cars}"
+            f"  insertion_delay={result['insertion_delay']} veh-s"
         )
 
     # Lưu kết quả
@@ -111,8 +123,13 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
         "metrics_version": METRICS_VERSION,
         "mode":            "baseline_sumo_native",
         "total_episodes":  total_episodes,
+        "n_cars_generated": n_cars,
         "total_delays":    all_delays,
         "avg_queues":      all_queues,
+        # Saturation guard (PROBLEMS.md P2-4): total_delay không đếm xe chưa
+        # vào được mạng; insertion_delays là phần delay bị bỏ sót đó.
+        "vehicles_arrived": all_arrived,
+        "insertion_delays": all_insertion,
     }
     with open(os.path.join(out_dir, "baseline_results.json"), "w") as f:
         json.dump(results, f, indent=2)
@@ -123,6 +140,8 @@ def run_baseline(config_path: str, out_dir: str, n_episodes=None, gui: bool = Fa
     print(f"\nSaved to: {out_dir}/")
     print(f"  Mean total delay : {np.mean(all_delays):.1f} vehicle-seconds")
     print(f"  Mean queue       : {np.mean(all_queues):.2f} vehicles")
+    print(f"  Mean arrived     : {np.mean(all_arrived):.1f} of {n_cars} vehicles")
+    print(f"  Mean insertion delay (not in total delay): {np.mean(all_insertion):.1f} veh-s")
     return results
 
 
