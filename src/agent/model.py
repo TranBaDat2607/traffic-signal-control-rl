@@ -22,10 +22,18 @@ class EarlyStopping:
 
     Set ``patience=0`` to disable early stopping entirely.
 
+    Episodes numbered below ``min_episode`` (1-based, counted by calls to
+    :meth:`step`) are ignored entirely: they neither set a best value nor
+    count toward patience.  This keeps the exploration phase, where the metric
+    reflects random actions rather than the policy, from triggering a stop or
+    being selected as the best model.
+
     Args:
         patience: Number of consecutive episodes without improvement before
             stopping.  ``0`` disables early stopping.
         min_delta: Minimum change to qualify as an improvement.
+        min_episode: First episode (1-based) that is monitored.  ``0`` or
+            ``1`` monitors every episode.
 
     Example::
 
@@ -38,16 +46,19 @@ class EarlyStopping:
                 save_best_model()
     """
 
-    def __init__(self, patience: int, min_delta: float = 0.0) -> None:
+    def __init__(self, patience: int, min_delta: float = 0.0, min_episode: int = 0) -> None:
         self.patience = patience
         self.min_delta = min_delta
+        self.min_episode = min_episode
         self._best: float = -float("inf")
         self._no_improve_count: int = 0
+        self._episode: int = 0
+        self._improved: bool = False
 
     @property
     def improved(self) -> bool:
         """True immediately after a :meth:`step` call that set a new best."""
-        return self._no_improve_count == 0
+        return self._improved
 
     @property
     def best(self) -> float:
@@ -66,9 +77,16 @@ class EarlyStopping:
             metric: Latest episode metric (higher = better).
 
         Returns:
-            ``True`` if training should stop (patience exhausted).
+            ``True`` if training should stop (patience exhausted).  Always
+            ``False`` before ``min_episode``.
         """
-        if metric > self._best + self.min_delta:
+        self._episode += 1
+        if self._episode < self.min_episode:
+            self._improved = False
+            return False
+
+        self._improved = metric > self._best + self.min_delta
+        if self._improved:
             self._best = metric
             self._no_improve_count = 0
         else:

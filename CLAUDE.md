@@ -31,8 +31,9 @@ ruff format src/
 pytest
 ```
 
-Unit tests cover the shared metric definitions (`tests/test_metrics.py`); they
-need neither SUMO nor a trained model. Everything else is verified by running.
+Unit tests cover the shared metric definitions (`tests/test_metrics.py`) and
+`EarlyStopping` (`tests/test_early_stopping.py`); they need neither SUMO nor a
+trained model. Everything else is verified by running.
 
 The import smoke-test from the root:
 

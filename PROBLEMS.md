@@ -31,7 +31,7 @@ Severity:
 | [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
 | [P1-3](#p1-3) | P1 | Packaging | `pyproject.toml`: dead entrypoint, unused dep, upstream author |
 | [P1-4](#p1-4) | P1 | Hygiene | `.gitignore` misses the paths the code actually writes to |
-| [P1-5](#p1-5) | P1 | Bug | `early_stopping_min_episode` is silently ignored by `train.py` |
+| ~~[P1-5](#p1-5)~~ | P1 | Bug | ~~`early_stopping_min_episode` is silently ignored by `train.py`~~ **FIXED** |
 | [P1-6](#p1-6) | P1 | Legal | MIT declared in `pyproject.toml`, no `LICENSE` file |
 | [P2-1](#p2-1) | P2 | Claims | `get_neighbor_aware_state()` is dead code |
 | [P2-2](#p2-2) | P2 | Claims | Three multi-agent modes documented, one implemented |
@@ -648,6 +648,33 @@ minimum-episode logic into `EarlyStopping` itself so both callers get it.
 
 **Done when** a training run with `early_stopping_patience: 30` and
 `early_stopping_min_episode: 200` does not stop before episode 200.
+
+> ### RESOLVED
+>
+> The guard moved into `EarlyStopping` (`src/agent/model.py`) as a
+> `min_episode` argument, and both `train.py` and `grid_train.py` pass
+> `settings.early_stopping_min_episode` to it. `grid_train.py`'s own
+> `if ep_num >= ...` guard is gone, so the two callers cannot drift apart again.
+> Episodes below `min_episode` neither count toward patience nor set a best
+> value, so an exploration-phase episode can no longer be saved as
+> `best_model.pt`.
+>
+> Also fixed while there: `EarlyStopping.improved` was defined as
+> `no_improve_count == 0`, which is `True` *before the first call*. It is now
+> an explicit flag.
+>
+> **Unit test:** `tests/test_early_stopping.py::test_does_not_stop_before_min_episode`
+> feeds 1,000 non-improving episodes with `patience=30, min_episode=200`. The first
+> stop is at episode **230**: episode 200 sets the first best, and 30 more
+> episodes exhaust patience. `pytest -q`: 17 passed.
+>
+> **Scaled-down real run** (`train.py`, 300 steps, 60 cars, `patience: 2`,
+> `early_stopping_min_episode: 6`, 12 episodes, same seeds):
+>
+> | | stopped after | first `best_model.pt` |
+> |---|---|---|
+> | before (old `train.py`) | episode **3**, inside the warm-up window | episode 1 |
+> | after | episode **11** | episode 6 |
 
 ---
 
