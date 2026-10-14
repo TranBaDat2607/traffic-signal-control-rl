@@ -29,10 +29,10 @@ Severity:
 | [P0-7](#p0-7) | P0 | Result | On the only comparable metric, the agent loses to fixed-time |
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
 | [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
-| [P1-3](#p1-3) | P1 | Packaging | `pyproject.toml`: dead entrypoint, unused dep, upstream author |
+| ~~[P1-3](#p1-3)~~ | P1 | Packaging | ~~`pyproject.toml`: dead entrypoint, unused dep, upstream author~~ **FIXED** |
 | ~~[P1-4](#p1-4)~~ | P1 | Hygiene | ~~`.gitignore` misses the paths the code actually writes to~~ **FIXED** |
 | ~~[P1-5](#p1-5)~~ | P1 | Bug | ~~`early_stopping_min_episode` is silently ignored by `train.py`~~ **FIXED** |
-| [P1-6](#p1-6) | P1 | Legal | MIT declared in `pyproject.toml`, no `LICENSE` file |
+| ~~[P1-6](#p1-6)~~ | P1 | Legal | ~~MIT declared in `pyproject.toml`, no `LICENSE` file~~ **FIXED** |
 | [P2-1](#p2-1) | P2 | Claims | `get_neighbor_aware_state()` is dead code |
 | [P2-2](#p2-2) | P2 | Claims | Three multi-agent modes documented, one implemented |
 | [P2-3](#p2-3) | P2 | Cosmetic | Repository name is misspelled (`trafic`) |
@@ -573,6 +573,29 @@ and the dependency.
 **Done when** `pip install -e . && tlcs --help` either works or the command no
 longer exists.
 
+> ### RESOLVED — entrypoint and dependency removed
+>
+> - `authors` is now the repository owner from `git config user.name` /
+>   `user.email` (`nammovuivui <tranbadat26072004@gmail.com>`). Andrea Vidali is
+>   credited in the README's *Credits* section and in `LICENSE` (P1-6).
+> - `[project.scripts] tlcs = "cli:app"` is removed. There is no CLI to point
+>   it at, and both entry points are `argparse` scripts run as `python src/...`.
+> - `typer` is removed from `dependencies`. **Correction to the evidence above:**
+>   `typer` *was* imported, in `src/logger.py`, but only to pass to
+>   `RichHandler(tracebacks_suppress=[typer])`, which hides typer's own frames
+>   from tracebacks. Nothing in the call stack is typer, so that argument was a
+>   no-op and is gone with the import.
+>
+> **Verified:**
+>
+> ```
+> before: $ tlcs --help   → ModuleNotFoundError: No module named 'cli'
+> after:  $ pip install -e . && tlcs --help
+>         bash: tlcs: command not found      (exit 127)
+> ```
+>
+> The logger still configures and logs normally without `typer`.
+
 ---
 
 <a name="p1-4"></a>
@@ -722,6 +745,15 @@ Add an MIT `LICENSE`, and state the derivation from the original TLCS project in
 both the `LICENSE` and the README credits.
 
 **Done when** `LICENSE` exists and names both copyright holders.
+
+> ### RESOLVED
+>
+> `LICENSE` is the MIT License with two copyright lines,
+> `Copyright (c) 2026 nammovuivui` and `Copyright (c) 2019 Andrea Vidali`. The
+> second is upstream's own notice, taken verbatim from upstream's `LICENSE` (MIT,
+> checked with `gh api repos/AndreaVidali/Deep-QLearning-Agent-for-Traffic-Signal-Control/license`).
+> A paragraph states that the project derives from TLCS and links to it. The
+> README's *Credits* section says the same and names what came from upstream.
 
 ---
 
