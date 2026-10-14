@@ -76,7 +76,12 @@ def load_baseline(baseline_dir: str) -> dict:
             f"Re-run: python comparison/run_baseline.py --out {baseline_dir}"
         )
 
-    return {"total_delay": data["total_delays"], "avg_queue": data["avg_queues"]}
+    return {
+        "total_delay":     data["total_delays"],
+        "avg_queue":       data["avg_queues"],
+        "arrived":         data["vehicles_arrived"],
+        "insertion_delay": data["insertion_delays"],
+    }
 
 
 def _require_series(path: str) -> list:
@@ -98,8 +103,12 @@ def load_rl(rl_dir: str) -> dict:
     sánh với baseline (PROBLEMS.md P0-1).
     """
     return {
-        "total_delay": _require_series(os.path.join(rl_dir, "plot_delay_data.txt")),
-        "avg_queue":   _require_series(os.path.join(rl_dir, "plot_queue_data.txt")),
+        "total_delay":     _require_series(os.path.join(rl_dir, "plot_delay_data.txt")),
+        "avg_queue":       _require_series(os.path.join(rl_dir, "plot_queue_data.txt")),
+        "arrived":         _require_series(os.path.join(rl_dir, "plot_arrived_data.txt")),
+        "insertion_delay": _require_series(
+            os.path.join(rl_dir, "plot_insertion_delay_data.txt")
+        ),
     }
 
 
@@ -199,12 +208,20 @@ def plot_comparison(baseline: dict, rl: dict, out_dir: str, smooth_window: int =
                               edgecolor=COLOR_RL, alpha=0.8),
                 )
 
+    # Saturation guard (PROBLEMS.md P2-4): total delay ignores vehicles that
+    # could not enter the network, so every delay figure carries this context.
+    def _guard(d):
+        return (f"arrived {np.mean(d['arrived']):.0f} veh, "
+                f"insertion delay {np.mean(d['insertion_delay']):.0f} veh-s")
+
     fig.text(
-        0.5, -0.04,
+        0.5, -0.08,
         "Both series computed by src/metrics.py. Total delay = sum over simulation "
         "steps of halting vehicles on incoming edges (1 s steps).\n"
         "Avg queue = total delay / max_steps — the same measurement in another unit, "
-        "not independent corroboration.",
+        "not independent corroboration.\n"
+        f"Saturation guard, mean per episode — baseline: {_guard(baseline)}; "
+        f"DQN: {_guard(rl)}. Insertion delay is not in total delay.",
         ha="center", fontsize=8, color="#666666",
     )
 
@@ -227,6 +244,8 @@ def plot_comparison(baseline: dict, rl: dict, out_dir: str, smooth_window: int =
     for label, b_key, rl_key, higher in [
         ("Total delay (last 10)", "total_delay", "total_delay", False),
         ("Avg queue   (last 10)", "avg_queue",   "avg_queue",   False),
+        ("Arrived     (last 10)", "arrived",     "arrived",     True),
+        ("Insert. delay (last 10)", "insertion_delay", "insertion_delay", False),
     ]:
         bv  = _last_mean(baseline.get(b_key,  []))
         rlv = _last_mean(rl.get(rl_key, []))
@@ -239,11 +258,14 @@ def plot_comparison(baseline: dict, rl: dict, out_dir: str, smooth_window: int =
 
     print("=" * 60)
     print("(+) = RL higher than baseline  |  (-) = RL lower than baseline")
-    print("Lower is better for both metrics.")
+    print("Lower is better, except Arrived.")
     print("Avg queue = total delay / max_steps: the same measurement rescaled,")
     print("so the two rows agree by construction, not by corroboration.")
     print(f"Total delay = {TOTAL_DELAY_LABEL} (sum over simulation steps of")
     print("halting vehicles on the incoming edges; 1-second steps).")
+    print("Insert. delay = vehicle-seconds spent waiting to enter a full approach;")
+    print("NOT included in total delay. If it is not small, total delay is a lower")
+    print("bound (PROBLEMS.md P2-4).")
 
 
 if __name__ == "__main__":

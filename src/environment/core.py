@@ -15,15 +15,28 @@ from constants import (
     TRAFFIC_LIGHT_ID,
 )
 from environment.generator import generate_routefile
-from environment.reward import get_cumulated_waiting_time, get_queue_length
+from environment.reward import (
+    get_arrived_number,
+    get_cumulated_waiting_time,
+    get_pending_number,
+    get_queue_length,
+)
 from environment.state import get_state
 
 
 @dataclass
 class EnvStats:
-    """Snapshot of environment statistics for a single simulation step."""
+    """Snapshot of environment statistics for a single simulation step.
+
+    Attributes:
+        queue_length: Halted vehicles on the incoming edges.
+        arrived: Vehicles that left the network during this step.
+        pending: Vehicles past their departure time that SUMO could not insert yet.
+    """
 
     queue_length: int
+    arrived: int = 0
+    pending: int = 0
 
 
 class Environment:
@@ -173,7 +186,13 @@ class Environment:
         for _ in range(steps_todo):
             traci.simulationStep()
             self.step += 1
-            stats.append(EnvStats(queue_length=get_queue_length()))
+            stats.append(
+                EnvStats(
+                    queue_length=get_queue_length(),
+                    arrived=get_arrived_number(),
+                    pending=get_pending_number(),
+                )
+            )
 
         return stats
 
