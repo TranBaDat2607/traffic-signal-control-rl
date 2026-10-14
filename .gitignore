@@ -6,21 +6,28 @@ dist/
 build/
 .venv/
 
-# Training outputs (src/constants.py:8 — singular "model")
+# Where results live (PROBLEMS.md P1-4)
+#   Every script's default output directory is scratch space and is ignored.
+#   A run that the README cites is copied, deliberately, into
+#   results/<run-name>/ and committed there. Nothing under results/ is ignored.
+
+# train.py / test.py default output (src/constants.py — singular "model")
 model/
 
 # Generated SUMO inputs
-intersection/episode_routes.rou.xml
+**/episode_routes.rou.xml
 intersection_grid/
 
-# Baseline / comparison scratch runs (default --out paths, run from the root).
-# Published results under comparison/comparison_du*/ are committed deliberately.
+# run_baseline.py / compare_results.py default outputs (run from the root)
 /baseline_results*/
 /comparison_output*/
 /comparison/comparison.png
 
-# Published run data is committed on purpose — keep it out of the ignore rules.
-!results/
+# Profiler output (PROBLEMS.md verification commands)
+*.prof
+
+# Per-machine Claude Code permissions
+.claude/settings.local.json
 
 # Environment
 .env

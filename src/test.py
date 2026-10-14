@@ -1,6 +1,7 @@
 """Evaluation entry point for the TLCS agent."""
 
 import argparse
+import json
 from pathlib import Path
 from typing import TypedDict
 
@@ -8,13 +9,25 @@ from agent import Agent
 from constants import (
     DEFAULT_MODEL_PATH,
     DEFAULT_SETTINGS_PATH,
+    DEFAULT_TEST_FOLDER,
     TESTING_SETTINGS_FILE,
     TRAINING_SETTINGS_FILE,
 )
 from environment import Environment
 from episode import run_episode
 from logger import get_logger
-from metrics import avg_queue, insertion_delay, total_delay, vehicles_arrived
+from metrics import (
+    ARRIVED_LABEL,
+    AVG_QUEUE_LABEL,
+    INSERTION_DELAY_LABEL,
+    METRICS_VERSION,
+    TOTAL_DELAY_LABEL,
+    avg_queue,
+    insertion_delay,
+    total_delay,
+    vehicles_arrived,
+)
+from plots import save_data_and_plot
 from settings import load_testing_settings, load_training_settings
 
 logger = get_logger(__name__)
@@ -34,16 +47,22 @@ class TestStats(TypedDict):
     insertion_delay: list[int]  # saturation guard: vehicle-seconds not in total_delay
 
 
-def testing_session(model_path: Path, settings_file: Path) -> None:
+def testing_session(model_path: Path, settings_file: Path, out_path: Path) -> None:
     """Evaluate a trained model over multiple episodes and report statistics.
 
     Loads architecture from the training settings saved alongside the model,
     then runs each test episode with epsilon=0 (fully greedy policy).
 
+    Writes ``test_results.json`` and one ``plot_<metric>_data.txt`` per metric
+    into *out_path*. The ``.txt`` files use the same names as ``train.py``'s, so
+    ``compare_results.py --rl <out_path>`` compares the greedy evaluation
+    against a baseline.
+
     Args:
         model_path: Directory containing ``trained_model.pt`` and
             ``training_settings.yaml``.
         settings_file: Path to ``testing_settings.yaml``.
+        out_path: Directory to write the evaluation results into.
     """
     settings = load_testing_settings(settings_file)
 
@@ -112,6 +131,36 @@ def testing_session(model_path: Path, settings_file: Path) -> None:
         f"{sum(test_stats['insertion_delay']) / settings.total_episodes:.1f}"
     )
 
+    out_path.mkdir(parents=True, exist_ok=True)
+    results = {
+        "metrics_version": METRICS_VERSION,
+        "mode": "dqn_greedy",
+        "epsilon": agent.epsilon,
+        "model": str(model_path),
+        "total_episodes": settings.total_episodes,
+        "seeds": [settings.episode_seed + i for i in range(settings.total_episodes)],
+        "n_cars_generated": settings.n_cars_generated,
+        "total_delays": test_stats["total_delay"],
+        "avg_queues": test_stats["avg_queue"],
+        "vehicles_arrived": test_stats["arrived"],
+        "insertion_delays": test_stats["insertion_delay"],
+    }
+    (out_path / "test_results.json").write_text(json.dumps(results, indent=2) + "\n")
+    for key, filename, label in (
+        ("total_delay", "delay", TOTAL_DELAY_LABEL),
+        ("avg_queue", "queue", AVG_QUEUE_LABEL),
+        ("arrived", "arrived", ARRIVED_LABEL),
+        ("insertion_delay", "insertion_delay", INSERTION_DELAY_LABEL),
+    ):
+        save_data_and_plot(
+            data=test_stats[key],  # type: ignore[literal-required]
+            filename=filename,
+            xlabel="Test episode",
+            ylabel=label,
+            out_folder=out_path,
+        )
+    logger.info(f"Results saved at: {out_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Evaluate a trained TLCS agent.")
@@ -127,6 +176,16 @@ if __name__ == "__main__":
         default=DEFAULT_SETTINGS_PATH / TESTING_SETTINGS_FILE,
         help="Path to testing_settings.yaml (default: settings/testing_settings.yaml)",
     )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output directory for the evaluation results (default: <model>/test/)",
+    )
     args = parser.parse_args()
 
-    testing_session(model_path=args.model, settings_file=args.settings)
+    testing_session(
+        model_path=args.model,
+        settings_file=args.settings,
+        out_path=args.out or args.model / DEFAULT_TEST_FOLDER,
+    )
