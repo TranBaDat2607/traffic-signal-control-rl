@@ -88,7 +88,7 @@ class Environment:
             msg = f"SUMO config not found at '{self.sumocfg_file}'"
             raise FileNotFoundError(msg)
 
-        return [
+        cmd = [
             sumo_binary,
             "-c",
             str(self.sumocfg_file),
@@ -97,6 +97,11 @@ class Environment:
             "--waiting-time-memory",
             str(self.max_steps),
         ]
+        if self.gui:
+            # Run without waiting for the play button, and exit when TraCI
+            # closes; otherwise traci.close() blocks until the window is closed.
+            cmd += ["--start", "--quit-on-end"]
+        return cmd
 
     def activate(self) -> None:
         """Start the SUMO simulation and register the data subscriptions."""
