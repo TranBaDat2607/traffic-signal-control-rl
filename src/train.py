@@ -137,17 +137,21 @@ def training_session(settings_file: Path, out_path: Path) -> None:
             agent.save_checkpoint(out_path, episode + 1)
             logger.info(f"\tCheckpoint saved: checkpoint_ep{episode + 1}.pt")
 
-        if early_stopping.step(training_stats["neg_reward"][-1]):
+        # Select and stop on the metric that gets reported (total delay), not on
+        # the neg-reward diagnostic. EarlyStopping maximises, hence the negation.
+        if early_stopping.step(-training_stats["total_delay"][-1]):
             logger.info(
                 f"\tEarly stopping triggered after {episode + 1} episodes "
                 f"(no improvement for {settings.early_stopping_patience} episodes, "
-                f"best reward: {early_stopping.best:.1f})"
+                f"best total delay: {-early_stopping.best:.0f})"
             )
             break
         if early_stopping.improved:
             out_path.mkdir(parents=True, exist_ok=True)
             agent.model.save_weights(out_path / "best_model.pt")
-            logger.info(f"\tNew best reward {early_stopping.best:.1f} — saved best_model.pt")
+            logger.info(
+                f"\tNew best total delay {-early_stopping.best:.0f} — saved best_model.pt"
+            )
 
     out_path.mkdir(parents=True, exist_ok=True)
     agent.save_model(out_path)

@@ -36,7 +36,7 @@ Severity:
 | [P2-1](#p2-1) | P2 | Claims | `get_neighbor_aware_state()` is dead code |
 | [P2-2](#p2-2) | P2 | Claims | Three multi-agent modes documented, one implemented |
 | [P2-3](#p2-3) | P2 | Cosmetic | Repository name is misspelled (`trafic`) |
-| [P1-7](#p1-7) | P1 | Method | Model selection uses the metric now demoted to a diagnostic |
+| ~~[P1-7](#p1-7)~~ | P1 | Method | ~~Model selection uses the metric now demoted to a diagnostic~~ **FIXED** |
 | [P2-4](#p2-4) | P2 | Metrics | `total_delay` understates delay when vehicles cannot be inserted |
 | [P3-1](#p3-1) | P3 | Speed | Training time is dominated by per-vehicle TraCI round-trips, not SUMO or the network |
 
@@ -813,6 +813,30 @@ commit with a before/after run — not folded into a metrics refactor.
 
 **Done when** the quantity that selects `best_model.pt` is the quantity the
 README reports, or a comment at the call site states why it deliberately is not.
+
+> ### RESOLVED
+>
+> `train.py` and `grid_train.py` now call `early_stopping.step(-total_delay)`,
+> with a comment at each call site. `EarlyStopping` maximises, which is why the
+> value is negated. The log lines say "best total delay" instead of "best reward",
+> and the grid's per-episode log line now prints the delay as well.
+>
+> **Before/after run.** Same scaled config both times: 12 episodes, 600 steps,
+> 150 cars, `patience: 4`, `early_stopping_min_episode: 3`, seeds 0–11. Training
+> is not seeded, so the two runs follow different trajectories. What matters is
+> which episode each rule selects:
+>
+> | | rule | `best_model.pt` ends at | lowest-delay monitored episode |
+> |---|---|---|---|
+> | before | max neg-reward | episode 9 (delay 2,652) | episode **8** (delay 2,524) — **not** selected |
+> | after | min total delay | episode 9 (delay 3,378) | episode 9 — selected |
+>
+> Before the change, the published checkpoint was not the lowest-delay one.
+>
+> **Caveat that remains:** every training episode uses a different seed (and so
+> different demand), so "lowest training-episode delay" partly reflects an easy
+> seed, not only a better policy. That is why P0-5 reports a separate greedy
+> evaluation on held-out seeds and does not use the training-curve minimum.
 
 ---
 

@@ -182,9 +182,11 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
             for i in range(batch_count):
                 ep_num = episode_idx + i + 1
                 ep_reward = training_stats["neg_reward"][episode_idx + i]
+                ep_delay = training_stats["total_delay"][episode_idx + i]
                 ep_queue = training_stats["avg_queue"][episode_idx + i]
                 logger.info(
-                    f"\tEp {ep_num}: reward={ep_reward:.1f}  avg_queue={ep_queue:.1f}"
+                    f"\tEp {ep_num}: reward={ep_reward:.1f}  delay={ep_delay}  "
+                    f"avg_queue={ep_queue:.1f}"
                 )
 
                 if settings.checkpoint_interval > 0 and ep_num % settings.checkpoint_interval == 0:
@@ -192,11 +194,12 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
                     coordinator.save_models(out_path / f"checkpoint_ep{ep_num}")
                     logger.info(f"\tCheckpoint saved at episode {ep_num}")
 
-                if early_stopping.step(ep_reward):
+                # Select on the reported metric, not the neg-reward diagnostic.
+                if early_stopping.step(-ep_delay):
                     logger.info(
                         f"\tEarly stopping triggered after {ep_num} episodes "
                         f"(no improvement for {settings.early_stopping_patience} episodes, "
-                        f"best reward: {early_stopping.best:.1f})"
+                        f"best total delay: {-early_stopping.best:.0f})"
                     )
                     should_stop = True
                     break
@@ -204,7 +207,9 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
                 if early_stopping.improved:
                     out_path.mkdir(parents=True, exist_ok=True)
                     coordinator.save_models(out_path / "best")
-                    logger.info(f"\tNew best reward {early_stopping.best:.1f} — saved best/ models")
+                    logger.info(
+                        f"\tNew best total delay {-early_stopping.best:.0f} — saved best/ models"
+                    )
 
             episode_idx += batch_count
 
