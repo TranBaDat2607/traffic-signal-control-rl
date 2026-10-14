@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import multiprocessing
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
 from typing import TypedDict
 
-from constants import DEFAULT_MODEL_PATH, DEFAULT_SETTINGS_PATH
+import torch
+
+from constants import DEFAULT_MODEL_PATH, DEFAULT_SETTINGS_PATH, TORCH_NUM_THREADS
 from agent.model import EarlyStopping
 from grid.config import build_grid_config
 from grid.coordinator import MultiAgentCoordinator
@@ -92,6 +95,7 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
         out_path: Directory for model weights and plots.
     """
     settings = load_grid_training_settings(settings_file)
+    torch.set_num_threads(TORCH_NUM_THREADS)
 
     # Ensure network files exist
     grid_dir = settings.grid_net_file.parent
@@ -137,7 +141,11 @@ def grid_training_session(settings_file: Path, out_path: Path) -> None:
     should_stop = False
     episode_idx = 0
 
-    with ProcessPoolExecutor(max_workers=n_parallel) as pool:
+    # "spawn", not Linux's default "fork": a forked child inherits PyTorch's
+    # already-initialised thread pool and deadlocks on its first forward pass.
+    with ProcessPoolExecutor(
+        max_workers=n_parallel, mp_context=multiprocessing.get_context("spawn")
+    ) as pool:
         while episode_idx < tot_episodes and not should_stop:
             batch_count = min(n_parallel, tot_episodes - episode_idx)
             new_epsilon = round(1.0 - (episode_idx / tot_episodes), 2)

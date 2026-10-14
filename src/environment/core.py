@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import traci
 from numpy.typing import NDArray
 from sumolib import checkBinary
 
@@ -22,6 +21,8 @@ from environment.reward import (
     get_queue_length,
 )
 from environment.state import get_state
+from environment.subscriptions import subscribe
+from sumo_api import select_backend, traci
 
 
 @dataclass
@@ -98,10 +99,12 @@ class Environment:
         ]
 
     def activate(self) -> None:
-        """Start the SUMO simulation."""
+        """Start the SUMO simulation and register the data subscriptions."""
         if traci.isLoaded():
             traci.close()
+        select_backend(gui=self.gui)
         traci.start(self.build_sumo_cmd())
+        subscribe()
 
     def deactivate(self) -> None:
         """Stop the SUMO simulation."""

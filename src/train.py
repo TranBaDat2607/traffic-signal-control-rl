@@ -6,9 +6,16 @@ from pathlib import Path
 from shutil import copyfile
 from typing import TypedDict
 
+import torch
+
 from agent import Agent, Memory, Sample
 from agent.model import EarlyStopping
-from constants import DEFAULT_MODEL_PATH, DEFAULT_SETTINGS_PATH, TRAINING_SETTINGS_FILE
+from constants import (
+    DEFAULT_MODEL_PATH,
+    DEFAULT_SETTINGS_PATH,
+    TORCH_NUM_THREADS,
+    TRAINING_SETTINGS_FILE,
+)
 from environment import Environment, EnvStats
 from episode import Record, run_episode
 from logger import get_logger
@@ -84,6 +91,7 @@ def update_training_stats(
 def training_session(settings_file: Path, out_path: Path) -> None:
     """Run a full training session and save the trained model and statistics."""
     settings = load_training_settings(settings_file)
+    torch.set_num_threads(TORCH_NUM_THREADS)
 
     memory = Memory(size_max=settings.memory_size_max, size_min=settings.memory_size_min)
     agent = Agent(settings=settings)

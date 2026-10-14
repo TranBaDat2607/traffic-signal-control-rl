@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-import traci
 from numpy.typing import NDArray
 from sumolib import checkBinary
 
@@ -19,6 +18,7 @@ from grid.config import GridConfig
 from grid.reward import get_intersection_cumulated_waiting_time, get_intersection_queue_length
 from grid.route_gen import generate_grid_routefile
 from grid.state import get_intersection_state
+from sumo_api import select_backend, traci
 
 
 @dataclass
@@ -91,6 +91,7 @@ class GridEnvironment:
         self.step = 0
         if traci.isLoaded():
             traci.close()
+        select_backend(gui=self.gui)
         traci.start(self._build_sumo_cmd())
 
     def deactivate(self) -> None:
