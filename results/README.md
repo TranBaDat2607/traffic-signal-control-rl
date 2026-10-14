@@ -12,14 +12,21 @@ git. A run is published by copying its outputs here on purpose.
 
 | Path | Produced by | What it is |
 |---|---|---|
+| `README.md` | by hand | The exact commands, the commit, the machine |
 | `training_settings.yaml` | `src/train.py` | Settings snapshot of the training run |
 | `testing_settings.yaml` | copied by hand | Settings of the greedy evaluation |
-| `trained_model.pt` | `src/train.py` | Final weights (state_dict), the policy evaluated below |
+| `trained_model.pt` | `src/train.py` | Final weights (state_dict): the policy evaluated |
 | `train/plot_*_data.txt` | `src/train.py` | Per-training-episode curves (ε-greedy, training seeds) |
-| `train.log` | `src/train.py` stdout | Full training log |
 | `test/test_results.json`, `test/plot_*_data.txt` | `src/test.py` | Greedy (ε = 0) evaluation on held-out seeds |
-| `baseline/baseline_results.json` | `comparison/run_baseline.py` | Fixed-time baseline on the *same* held-out seeds |
-| `comparison.png` | `comparison/compare_results.py` | Greedy agent vs. baseline, per held-out episode |
+| `baseline*/baseline_results.json` | `comparison/run_baseline.py` | Fixed-time baseline(s) on the *same* held-out seeds |
+| `comparison*/comparison.png`, `comparison_summary.json` | `comparison/compare_results.py` | Greedy agent vs. one baseline, paired per seed |
+| `logs/` | console output | Full logs of each command |
+
+## Runs
+
+| Run | Summary |
+|---|---|
+| [`dqn-300ep/`](dqn-300ep/) | 300 training episodes; greedy evaluation on 100 held-out seeds vs fixed-time 30/4 and 10/4 |
 
 `train/plot_reward_data.txt` is a training diagnostic. It is never compared
 with the baseline (PROBLEMS.md P0-1).

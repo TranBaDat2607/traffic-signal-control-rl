@@ -25,7 +25,7 @@ Severity:
 | ~~[P0-3](#p0-3)~~ | P0 | Metrics | ~~`compare_results.py` silently substitutes a third unit~~ **FIXED** |
 | ~~[P0-4](#p0-4)~~ | P0 | Experiment | ~~The `du100` baseline is a strawman (100-second yellow lights)~~ **FIXED** (`166e967`) |
 | ~~[P0-5](#p0-5)~~ | P0 | Experiment | ~~Both charts reuse the same 10-episode run; no converged policy~~ **FIXED** |
-| [P0-6](#p0-6) | P0 | Repro | The RL data behind the charts is not in the repository |
+| ~~[P0-6](#p0-6)~~ | P0 | Repro | ~~The RL data behind the charts is not in the repository~~ **FIXED** |
 | [P0-7](#p0-7) | P0 | Result | On the only comparable metric, the agent loses to fixed-time |
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
 | [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
@@ -501,6 +501,31 @@ snapshot alongside the baseline data, in a directory named for the run.
 
 **Done when** `compare_results.py` can be re-run from a clean clone and
 reproduce the committed PNG.
+
+> ### RESOLVED
+>
+> The P0-5 run is committed under `results/dqn-300ep/` (3.9 MB), as decided in
+> P1-4. It contains the settings snapshots, the evaluated weights
+> (`trained_model.pt`), the per-episode training curves, the greedy evaluation,
+> both baselines on the same seeds, both comparison charts with their
+> `comparison_summary.json`, every command's console log, and a README with the
+> exact commands and commit.
+>
+> **Verified from a fresh `git clone`** of this branch:
+>
+> ```
+> python comparison/compare_results.py --baseline results/dqn-300ep/baseline \
+>     --rl results/dqn-300ep/test --out /tmp/check
+> cmp /tmp/check/comparison.png results/dqn-300ep/comparison/comparison.png   # identical
+> ```
+>
+> Both PNGs and both `comparison_summary.json` files came out **byte-identical**.
+> Going further than the "Done when", the clone also re-ran the *evaluation*
+> from the committed weights
+> (`python src/test.py --model results/dqn-300ep --settings results/dqn-300ep/testing_settings.yaml`).
+> All 100 per-episode delays, queues, arrivals and insertion delays were
+> identical to the committed `test_results.json`. The greedy policy and SUMO are
+> deterministic for a given seed.
 
 ---
 
