@@ -33,8 +33,8 @@ Severity:
 | ~~[P1-4](#p1-4)~~ | P1 | Hygiene | ~~`.gitignore` misses the paths the code actually writes to~~ **FIXED** |
 | ~~[P1-5](#p1-5)~~ | P1 | Bug | ~~`early_stopping_min_episode` is silently ignored by `train.py`~~ **FIXED** |
 | ~~[P1-6](#p1-6)~~ | P1 | Legal | ~~MIT declared in `pyproject.toml`, no `LICENSE` file~~ **FIXED** |
-| [P2-1](#p2-1) | P2 | Claims | `get_neighbor_aware_state()` is dead code |
-| [P2-2](#p2-2) | P2 | Claims | Three multi-agent modes documented, one implemented |
+| ~~[P2-1](#p2-1)~~ | P2 | Claims | ~~`get_neighbor_aware_state()` is dead code~~ **FIXED** (deleted) |
+| ~~[P2-2](#p2-2)~~ | P2 | Claims | ~~Three multi-agent modes documented, one implemented~~ **FIXED** |
 | [P2-3](#p2-3) | P2 | Cosmetic | Repository name is misspelled (`trafic`) |
 | ~~[P1-7](#p1-7)~~ | P1 | Method | ~~Model selection uses the metric now demoted to a diagnostic~~ **FIXED** |
 | ~~[P2-4](#p2-4)~~ | P2 | Metrics | ~~`total_delay` understates delay when vehicles cannot be inserted~~ **FIXED** |
@@ -785,6 +785,18 @@ delete it. Do not leave it as the basis for a claim.
 
 **Done when** the function is either called or gone.
 
+> ### RESOLVED — deleted, not wired up
+>
+> `get_neighbor_aware_state()` is removed from `src/grid/state.py`, along with
+> the `GridConfig` and `STATE_SIZE` imports only it used. Wiring it up would mean
+> a 1,200-input network and a retrain, and the grid has no published result to
+> justify that. `IntersectionConfig.neighbor_tl_ids` stays: it is a correct
+> description of the topology and costs nothing.
+>
+> ```
+> $ grep -rn "get_neighbor_aware_state" --include=*.py .     # no output, exit 1
+> ```
+
 ---
 
 <a name="p2-2"></a>
@@ -813,6 +825,36 @@ looks like an architecture diagram of the system.
 
 **Done when** no document in the repository describes a mode that cannot be
 selected.
+
+> ### RESOLVED — reduced to what is implemented; no modes added
+>
+> - `src/grid/coordinator.py`: the module and class docstrings say there is one
+>   design: shared parameters with independent, own-junction observations, and no
+>   mode selector. The `choose_actions()` docstring no longer mentions
+>   "other modes".
+> - `src/agent/agent.py`: the `model` parameter is documented as what it is
+>   (the coordinator passes one object to every agent), not as a "mode".
+> - `notebook/improvements.ipynb`: §4.7 text and the cell-21 figure now show the
+>   single implemented design. Its stale embedded output, the three-panel
+>   *Independent / SharedParameters / NeighborAware* image, is cleared.
+>
+> The same notebook made two more claims the code does not support, and three
+> of its cells would not run against the current code. Fixed here because they
+> are the same defect:
+>
+> - §4.1 and cell 9 described a periodic hard target refresh every
+>   `target_update_interval` steps, and cell 6 printed that setting. It does not
+>   exist; the code does a Polyak soft update with `tau` after every replay step.
+>   The text, the demo and the printout now match the code.
+> - Cell 33 called `testing_session()` without the `out_path` argument it has
+>   needed since P1-4.
+>
+> Cells 9 and 21 were executed headless after the edit and run cleanly.
+>
+> ```
+> $ grep -rn -i "SharedParameters\|other modes\|NeighborAware" --include=*.py \
+>     --include=*.ipynb --include=*.md . | grep -v PROBLEMS.md   # no output
+> ```
 
 ---
 

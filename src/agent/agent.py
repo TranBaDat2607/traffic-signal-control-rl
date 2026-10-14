@@ -26,9 +26,10 @@ class Agent:
             settings: Training settings with model architecture and hyperparameters.
             epsilon: Initial exploration probability in [0, 1].
             model_path: Optional path to load pre-trained model weights from.
-            model: Optional pre-built :class:`~agent.model.Model` to share
-                (used for SharedParameters multi-agent mode).  When provided,
-                *model_path* is ignored.
+            model: Optional pre-built :class:`~agent.model.Model` to use
+                instead of building one.  ``grid.coordinator`` passes the same
+                object to every junction's agent so they share weights.  When
+                provided, *model_path* is ignored.
         """
         if model is not None:
             self.model = model

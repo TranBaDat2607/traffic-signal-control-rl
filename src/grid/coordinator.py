@@ -1,7 +1,10 @@
 """Multi-agent coordinator for NxN intersection grids.
 
-All intersections share one model object (SharedParameters mode); gradients
-accumulate across all N² replay calls per epoch.
+All intersections share one model object (parameter sharing), and each
+junction observes only its own state: independent DQN with shared weights.
+This is the only implemented design; there is no mode selector, and no agent
+sees its neighbours' state. Gradients accumulate across all N² replay calls
+per epoch.
 """
 
 from __future__ import annotations
@@ -22,7 +25,7 @@ from settings import GridTrainingSettings
 class MultiAgentCoordinator:
     """Coordinates a collection of DQN agents for multi-intersection control.
 
-    All agents share a single model (SharedParameters mode).
+    All agents share a single model; each observes only its own junction.
 
     Args:
         tl_ids: Ordered list of junction IDs (row-major).
@@ -69,8 +72,7 @@ class MultiAgentCoordinator:
         """Select actions for all junctions.
 
         Exploring junctions pick a random action.  Exploiting junctions are
-        batched into a single CPU forward pass (SharedParameters mode) or
-        handled individually via the CPU inference shadow (other modes).
+        batched into a single CPU forward pass through the shared model.
 
         Args:
             states: Mapping from TL ID to its current state vector.
