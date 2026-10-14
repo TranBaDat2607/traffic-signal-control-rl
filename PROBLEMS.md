@@ -2,6 +2,12 @@
 
 Audit of the repository as of commit `46c64b8` (branch `main`).
 
+**Status (2026-10-14): every issue is resolved except P2-3**, which is left to the
+repository owner (renaming the GitHub repository is their call). Each entry
+below carries a *RESOLVED* note with the evidence that its "Done when" check
+passes. The *Verification commands* at the end were re-run on `main` after the
+last merge and give the results noted next to them.
+
 This document exists to be worked through and deleted. Each entry is self-contained:
 **Where** (file:line), **Evidence** (what was actually observed), **Why it's wrong**,
 **Fix**, and **Done when** (the check that closes it).
@@ -51,16 +57,14 @@ themselves once the re-run is committed.
 P1-1 ──► P0-1 ─┐
 P1-4 ──► P0-2 ─┼──► P0-4 ──► P0-5 ──► P0-6 ──► P0-7
          P0-3 ─┘
-  DONE     DONE      DONE      ▲
-                               └── next
+  DONE     DONE      DONE      DONE      DONE      DONE
 ```
 
-**Next: P0-5.** The metric is trustworthy and the baseline signal plan is
-realistic (P0-4, `166e967`). Nothing can be published until there is a trained
-policy to evaluate.
-
-P1-2, P1-3, P1-5, P1-6, P1-7 and all P2 items are independent and can be done
-any time.
+All done. The order actually followed was P1-5, P1-7, P2-4, P1-4 and P3-1
+before the long training run (so it ran with correct early stopping, selection,
+saturation guard and output layout, at a third of the cost), then P0-5 → P0-6
+→ P0-7, then P1-2, P1-3 + P1-6 and P2-1 + P2-2. Only P2-3 remains, left to the
+repository owner.
 
 P3-1 is independent of everything else, but P0-5 needs long training runs. Doing
 P3-1 first makes P0-5, and every re-run after it, cheaper. (Done: a training
@@ -615,6 +619,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 **Done when** `python comparison/run_baseline.py --help` prints usage from a
 clean checkout with SUMO installed.
+
+> ### RESOLVED (`396aa9a`)
+>
+> `comparison/run_baseline.py` now inserts
+> `Path(__file__).resolve().parent.parent / "src"`, exactly the fix above.
+> Verified on `main` after every later change to the script:
+>
+> ```
+> $ python comparison/run_baseline.py --help
+> usage: run_baseline.py [-h] [--config CONFIG] [--out OUT]
+>                        [--episodes EPISODES] [--gui] [--green GREEN]
+>                        [--yellow YELLOW]
+> ```
+>
+> The script has also run end to end many times since: P0-5's 100-episode
+> held-out baselines and the clean-clone re-run in P1-2.
 
 ---
 
@@ -1342,29 +1362,44 @@ what is read.
 # P0-1/P0-2: confirm there is exactly one aggregation, and the old names are gone
 grep -rn "cumulative_wait\|cumulative_reward\|sum_neg_reward" src/ comparison/ \
   --exclude-dir=archive                                                           # expect no hits
-grep -rln "from metrics import" src/ comparison/                                  # expect 5 files
-pytest -q                                                                          # metric definitions
+grep -rln "from metrics import" src/ comparison/                                  # expect 6 files*
+pytest -q                                                                          # expect 20 passed
 
 # P0-3: a missing series must stop the run, not change the chart's meaning
 python comparison/compare_results.py --baseline /nonexistent --rl model/   # expect exit 1
+#   (prints "Baseline results not found: /nonexistent/baseline_results.json")
 
 # P0-4: confirm the signal plan is realistic
-grep -n 'phase duration' intersection/environment.net.xml
+grep -n 'phase duration' intersection/environment.net.xml   # expect 30/4/30/4/30/4/30/4
 
 # P0-6 / P1-4: confirm outputs land where intended
-git status --short
+git status --short     # expect empty, even after train/test/baseline/compare runs
 
 # P1-1: confirm the baseline script imports
-python comparison/run_baseline.py --help
+python comparison/run_baseline.py --help                  # expect usage text
 
 # P2-1: confirm no dead neighbour-state code
-grep -rn "get_neighbor_aware_state" --include=*.py .
+grep -rn "get_neighbor_aware_state" --include=*.py .     # expect no hits
 
 # P3-1: profile 3 training episodes (from the project root), then inspect train.prof
 sed 's/^total_episodes: .*/total_episodes: 3/' settings/training_settings.yaml > /tmp/prof.yaml
 python -m cProfile -o train.prof src/train.py --settings /tmp/prof.yaml --out /tmp/prof_model
 python -c "import pstats; pstats.Stats('train.prof').sort_stats('cumulative').print_stats(25)"
+#   expect ~18-20 s total, no socket send/recv entries; libsumo simulationStep and
+#   agent.replay() dominate (re-run on main: 18.3 s)
+
+# P3-1 / P2-4: the agent's measurement path and SUMO's own agree exactly
+python comparison/fixed_phase_check.py                    # expect 18,195 on both paths, PASS
+
+# P0-6: the published chart regenerates byte-for-byte (no SUMO needed)
+python comparison/compare_results.py --baseline results/dqn-300ep/baseline \
+  --rl results/dqn-300ep/test --out /tmp/check
+cmp /tmp/check/comparison.png results/dqn-300ep/comparison/comparison.png   # expect no output
 ```
+
+\* Was 5 when the audit was written. `comparison/fixed_phase_check.py`, added for
+P2-4/P3-1, is the sixth importer. It is a measurement check, not a fourth
+aggregation.
 
 ## Provenance
 
