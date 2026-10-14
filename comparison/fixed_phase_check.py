@@ -33,11 +33,11 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from constants import TL_GREEN_TO_YELLOW, TRAFFIC_LIGHT_ID
 from environment import Environment
 from environment.generator import generate_routefile
 from metrics import insertion_delay, total_delay, vehicles_arrived
-from sumo_api import backend_name, traci
+from run_baseline import apply_fixed_plan
+from sumo_api import backend_name
 
 EXPECTED_DEFAULT_DELAY = 18_195
 
@@ -82,14 +82,7 @@ def run_native_path(args: argparse.Namespace) -> dict:
         seed=args.seed, n_cars_generated=args.cars, max_steps=args.steps, turn_chance=0.25
     )
     env.activate()
-
-    logic = traci.trafficlight.getAllProgramLogics(TRAFFIC_LIGHT_ID)[0]
-    yellow_phases = set(TL_GREEN_TO_YELLOW.values())
-    for i, phase in enumerate(logic.phases):
-        phase.duration = args.yellow if i in yellow_phases else args.green
-        phase.minDur = phase.maxDur = phase.duration
-    traci.trafficlight.setProgramLogic(TRAFFIC_LIGHT_ID, logic)
-    traci.trafficlight.setPhase(TRAFFIC_LIGHT_ID, 0)
+    apply_fixed_plan(args.green, args.yellow)
 
     stats = env._simulate(args.steps)  # noqa: SLF001 — same per-step measurement
     env.deactivate()

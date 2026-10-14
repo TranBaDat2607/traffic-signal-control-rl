@@ -24,7 +24,7 @@ Severity:
 | ~~[P0-2](#p0-2)~~ | P0 | Metrics | ~~Waiting-time panel compares seconds against queue-steps~~ **FIXED** |
 | ~~[P0-3](#p0-3)~~ | P0 | Metrics | ~~`compare_results.py` silently substitutes a third unit~~ **FIXED** |
 | ~~[P0-4](#p0-4)~~ | P0 | Experiment | ~~The `du100` baseline is a strawman (100-second yellow lights)~~ **FIXED** (`166e967`) |
-| [P0-5](#p0-5) | P0 | Experiment | Both charts reuse the same 10-episode run; no converged policy |
+| ~~[P0-5](#p0-5)~~ | P0 | Experiment | ~~Both charts reuse the same 10-episode run; no converged policy~~ **FIXED** |
 | [P0-6](#p0-6) | P0 | Repro | The RL data behind the charts is not in the repository |
 | [P0-7](#p0-7) | P0 | Result | On the only comparable metric, the agent loses to fixed-time |
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
@@ -414,6 +414,62 @@ evaluation set and is worth stating explicitly in the README.
 
 **Done when** the reported numbers come from a greedy (ε=0) evaluation on
 held-out seeds, with the episode count stated alongside them.
+
+> ### RESOLVED
+>
+> **Training.** `settings/training_settings.yaml`: `total_episodes: 300`
+> (linear ε from 1.0 to 0.0), training seeds 0–299, `checkpoint_interval: 50`,
+> early stopping off. All other hyperparameters unchanged. Run on 2026-10-14 on
+> this machine (12 cores, CPU only) with
+> `python src/train.py --settings settings/training_settings.yaml --out model/dqn-300ep`,
+> logged to a file: 35 min 10 s wall time (11:27:06 → 12:02:16).
+> Mean training-episode delay per block of 50 episodes:
+>
+> | episodes | 1–50 | 51–100 | 101–150 | 151–200 | 201–250 | 251–300 |
+> |---|---|---|---|---|---|---|
+> | ε | 1.00→0.84 | 0.83→0.67 | 0.67→0.50 | 0.50→0.34 | 0.33→0.17 | 0.17→0.00 |
+> | mean delay (veh-s) | 34,877 | 24,939 | 19,673 | 16,264 | 13,488 | 11,504 |
+>
+> The curve is still falling at episode 300, so this is **not shown to be a
+> converged policy**. It is a trained one, evaluated honestly.
+>
+> **Evaluation protocol, fixed before looking at results:**
+>
+> - The policy evaluated is the **final** model (`trained_model.pt`), not
+>   `best_model.pt`, and no checkpoint is chosen by its test score. Choosing on
+>   the test seeds would leak them into model selection.
+> - `python src/test.py --model model/dqn-300ep`, run greedily (`epsilon: 0.0` is
+>   recorded in `test_results.json`) on **100 held-out seeds, 10000–10099**
+>   (`settings/testing_settings.yaml`: `total_episodes: 100`, `gui: false`).
+>   These are disjoint from training seeds 0–299 and drawn from the same demand
+>   distribution (1,000 cars, Weibull departures, 25% turning).
+> - The baseline runs on the **same 100 seeds**. `run_baseline.py` now honours
+>   `episode_seed` from the config and records `seeds` and the phase durations
+>   it actually ran. `compare_results.py` has an evaluation mode that pairs
+>   episodes by seed and exits 1 if the seeds differ.
+>
+> **Result** (`compare_results.py`, means ± sample s.d. over 100 episodes; paired
+> difference with a normal-approximation 95% CI):
+>
+> | | total delay (veh-s) | avg queue (veh) | DQN lower in |
+> |---|---|---|---|
+> | Fixed-time 30 s / 4 s (net file, P0-4) | 39,823.2 ± 1,169.9 | 7.4 ± 0.2 | |
+> | Fixed-time 10 s / 4 s (agent's own phase lengths) | 17,862.9 ± 729.0 | 3.3 ± 0.1 | |
+> | **Greedy DQN** | **10,453.1 ± 646.8** | **1.9 ± 0.1** | |
+> | DQN − 30/4 | −29,370.1 [−29,626.1, −29,114.1], **−73.8%** | −73.7% | 100/100 episodes |
+> | DQN − 10/4 | −7,409.8 [−7,574.5, −7,245.1], **−41.5%** | −41.4% | 100/100 episodes |
+>
+> Saturation guard (P2-4): vehicles arrived 998.6 (DQN) vs 998.5 (both baselines)
+> of 1,000. Insertion delay is 32.6 vs 32.4 / 32.5 veh-s, about 0.1–0.3% of total
+> delay, so the delay figures are complete, not lower bounds. The equal arrival
+> counts also rule out the agent "winning" by starving an approach. A starved
+> approach would leave vehicles queued at episode end.
+>
+> The 10 s / 4 s fixed cycle is a second, stronger baseline added on purpose.
+> At this demand it already halves the delay of the 30 s / 4 s plan, so reporting
+> only against 30/4 would overstate what the agent learned. The agent beats both.
+> Neither baseline is *tuned* (e.g. Webster timing) or *actuated*, and that
+> limit is stated in the README.
 
 ---
 
