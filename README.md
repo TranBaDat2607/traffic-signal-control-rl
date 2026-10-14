@@ -65,8 +65,7 @@ evaluation itself.
 
 Earlier charts that compared against a 100-second-yellow signal plan, or that
 mixed units between the two sides, are withdrawn. See
-[`comparison/archive/README.md`](comparison/archive/README.md) and
-[`PROBLEMS.md`](PROBLEMS.md).
+[`comparison/archive/README.md`](comparison/archive/README.md).
 
 ## How it works
 
