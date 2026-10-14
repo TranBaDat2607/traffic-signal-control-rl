@@ -30,7 +30,7 @@ Severity:
 | ~~[P1-1](#p1-1)~~ | P1 | Bug | ~~`run_baseline.py` cannot import `constants` — broken `sys.path`~~ **FIXED** (`396aa9a`) |
 | [P1-2](#p1-2) | P1 | Docs | `HUONG_DAN_CHAY.md` commands are stale since files moved |
 | [P1-3](#p1-3) | P1 | Packaging | `pyproject.toml`: dead entrypoint, unused dep, upstream author |
-| [P1-4](#p1-4) | P1 | Hygiene | `.gitignore` misses the paths the code actually writes to |
+| ~~[P1-4](#p1-4)~~ | P1 | Hygiene | ~~`.gitignore` misses the paths the code actually writes to~~ **FIXED** |
 | ~~[P1-5](#p1-5)~~ | P1 | Bug | ~~`early_stopping_min_episode` is silently ignored by `train.py`~~ **FIXED** |
 | [P1-6](#p1-6) | P1 | Legal | MIT declared in `pyproject.toml`, no `LICENSE` file |
 | [P2-1](#p2-1) | P2 | Claims | `get_neighbor_aware_state()` is dead code |
@@ -610,6 +610,30 @@ Decide this deliberately rather than letting the ignore rule decide.
 
 **Done when** `git status` is clean after a full train + baseline + compare
 cycle, except for files intentionally kept.
+
+> ### RESOLVED
+>
+> **Decision: default outputs are scratch; published runs are copied on purpose
+> into `results/<run-name>/`.** Results are not kept in `model/` with a negation
+> rule. A training run overwrites `model/`, and a published number should not be
+> one `train.py` invocation away from being silently replaced. `results/README.md`
+> documents the layout of a run directory.
+>
+> - `.gitignore` now ignores `model/`, `**/episode_routes.rou.xml` (also catches
+>   the stray copy created when a script is run from `src/`), `intersection_grid/`,
+>   `/baseline_results*/`, `/comparison_output*/`, `/comparison/comparison.png`,
+>   `*.prof` and `.claude/settings.local.json`. The stale `models/`, `plots/` and
+>   `comparison/comparison_du*/` lines are gone, and so is the meaningless `!results/`.
+> - `intersection/episode_routes.rou.xml` was untracked in `9d95e12`.
+> - `test.py` used to print its numbers and write nothing. It now writes
+>   `test_results.json` (with the seeds and `epsilon`) and `plot_*_data.txt` into
+>   `<model>/test/` (the previously unused `DEFAULT_TEST_FOLDER`). It uses the
+>   same filenames as `train.py`, so `compare_results.py --rl model/test` works.
+>
+> **Verified:** ran train → test → baseline → compare, every script at its
+> default output path, then `git status --short --untracked-files=all`. It showed
+> only the two source files edited by this change (`.gitignore`, `src/test.py`),
+> no outputs.
 
 ---
 

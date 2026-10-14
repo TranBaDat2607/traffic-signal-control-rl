@@ -105,11 +105,17 @@ src/
 
 ## Runtime Artifacts
 
+Default outputs are scratch and git-ignored. A run the README cites is copied
+deliberately into `results/<run-name>/` (layout in `results/README.md`).
+
 | Path | Created by | Notes |
 |------|-----------|-------|
-| `intersection/episode_routes.rou.xml` | `generator.py` at episode start | Do not commit |
-| `model/trained_model.pt` | `train.py` after training | Weights only (state_dict) |
-| `model/plot_*.png` / `model/plot_*_data.txt` | `plots.py` after training | `delay` (vehicle-seconds) and `queue` are comparable to the baseline; `reward` is a training diagnostic only |
+| `intersection/episode_routes.rou.xml` | `generator.py` at episode start | Ignored |
+| `model/trained_model.pt`, `model/best_model.pt` | `train.py` after training | Weights only (state_dict). Ignored |
+| `model/plot_*.png` / `model/plot_*_data.txt` | `plots.py` after training | `delay` (vehicle-seconds) and `queue` are comparable to the baseline; `reward` is a training diagnostic only; `arrived` / `insertion_delay` are the saturation guard. Ignored |
+| `model/test/` | `test.py` | `test_results.json` + `plot_*_data.txt` of the greedy evaluation; `compare_results.py --rl model/test` reads it. Ignored |
+| `baseline_results/` | `run_baseline.py` | Ignored |
+| `results/<run>/` | copied by hand | Published runs, committed |
 | `comparison/archive/` | — | Results from before the metric fix; `compare_results.py` refuses them |
 
 ## Configuration
