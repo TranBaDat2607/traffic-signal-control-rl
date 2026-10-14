@@ -1,5 +1,17 @@
 # Run `dqn-300ep`: 300-episode training, greedy evaluation on 100 held-out seeds
 
+> **Superseded by [`../dqn-3seeds/`](../dqn-3seeds/)**, which trains three seeds and
+> adds max-pressure and random baselines. This run is kept because its numbers
+> were published. It was produced by an earlier version of the scripts
+> (`src/test.py` and `comparison/run_baseline.py`, since replaced by
+> `src/evaluate.py`); to rerun the commands below exactly, check out commit
+> `e792cd1`. Its result files are still read by the current
+> `comparison/compare_results.py`, and its weights load with the current code.
+>
+> Against max-pressure (added later, same 100 seeds), this policy's total delay
+> is 10,453 vs 10,669 vehicle-seconds: −2.0% (95% CI −3.0% to −1.1%), lower in
+> 64 of 100 episodes.
+
 Produced on 2026-10-14 on a 12-core CPU-only machine (PyTorch 2.13 CPU, SUMO /
 libsumo 1.27.1, Python 3.13), from commit `e792cd1` (`main` after PR #24).
 Training took 35 min 10 s.
@@ -30,18 +42,19 @@ The outputs were then copied here. `logs/` holds each command's console output.
 | `baseline_10-4/` | Fixed-time 10 s green / 4 s yellow (the agent's own phase lengths) on the same seeds |
 | `comparison/`, `comparison_10-4/` | Chart and paired statistics: DQN vs each baseline |
 
-## Re-deriving from a clean clone
+## Re-deriving with the current code
 
-The charts and statistics need neither SUMO nor training:
+The statistics need neither SUMO nor training (the chart's style has changed
+since, so it is not byte-identical):
 
 ```bash
-python comparison/compare_results.py --baseline results/dqn-300ep/baseline --rl results/dqn-300ep/test --out /tmp/check
-cmp /tmp/check/comparison.png results/dqn-300ep/comparison/comparison.png
+python comparison/compare_results.py results/dqn-300ep/baseline results/dqn-300ep/baseline_10-4 \
+    results/dqn-300ep/test --out /tmp/check
 ```
 
-Re-running the evaluation itself (needs SUMO, about 2–3 minutes) uses the
-committed weights:
+Re-running the evaluation itself (needs SUMO, a few minutes) uses the committed
+weights and gives the same per-episode numbers as `test/test_results.json`:
 
 ```bash
-python src/test.py --model results/dqn-300ep --settings results/dqn-300ep/testing_settings.yaml --out /tmp/test_check
+python src/evaluate.py dqn --model results/dqn-300ep --out /tmp/test_check
 ```

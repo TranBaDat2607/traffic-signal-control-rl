@@ -1,3 +1,9 @@
+"""The Q-network: an MLP, its target copy, and save/load.
+
+The Q-learning update itself is in ``agent.py``. This module only holds the
+networks and the optimizer.
+"""
+
 import copy
 from pathlib import Path
 
@@ -10,89 +16,6 @@ from constants import MODEL_FILE
 from logger import get_logger
 
 logger = get_logger(__name__)
-
-
-class EarlyStopping:
-    """Monitors a scalar metric and signals when training should stop.
-
-    Tracks the *maximum* of the monitored metric.  The training scripts pass
-    ``-total_delay`` so that the checkpoint they select is judged by the same
-    number that gets reported.
-    Stops when no improvement greater than ``min_delta`` is seen for
-    ``patience`` consecutive episodes.
-
-    Set ``patience=0`` to disable early stopping entirely.
-
-    Episodes numbered below ``min_episode`` (1-based, counted by calls to
-    :meth:`step`) are ignored entirely: they neither set a best value nor
-    count toward patience.  This keeps the exploration phase, where the metric
-    reflects random actions rather than the policy, from triggering a stop or
-    being selected as the best model.
-
-    Args:
-        patience: Number of consecutive episodes without improvement before
-            stopping.  ``0`` disables early stopping.
-        min_delta: Minimum change to qualify as an improvement.
-        min_episode: First episode (1-based) that is monitored.  ``0`` or
-            ``1`` monitors every episode.
-
-    Example::
-
-        es = EarlyStopping(patience=10)
-        for episode in range(total):
-            metric = run_episode()
-            if es.step(metric):
-                break  # no improvement for 10 episodes
-            if es.improved:
-                save_best_model()
-    """
-
-    def __init__(self, patience: int, min_delta: float = 0.0, min_episode: int = 0) -> None:
-        self.patience = patience
-        self.min_delta = min_delta
-        self.min_episode = min_episode
-        self._best: float = -float("inf")
-        self._no_improve_count: int = 0
-        self._episode: int = 0
-        self._improved: bool = False
-
-    @property
-    def improved(self) -> bool:
-        """True immediately after a :meth:`step` call that set a new best."""
-        return self._improved
-
-    @property
-    def best(self) -> float:
-        """Best metric value seen so far."""
-        return self._best
-
-    @property
-    def no_improve_count(self) -> int:
-        """Number of consecutive episodes without improvement."""
-        return self._no_improve_count
-
-    def step(self, metric: float) -> bool:
-        """Record a new metric value and check the stopping criterion.
-
-        Args:
-            metric: Latest episode metric (higher = better).
-
-        Returns:
-            ``True`` if training should stop (patience exhausted).  Always
-            ``False`` before ``min_episode``.
-        """
-        self._episode += 1
-        if self._episode < self.min_episode:
-            self._improved = False
-            return False
-
-        self._improved = metric > self._best + self.min_delta
-        if self._improved:
-            self._best = metric
-            self._no_improve_count = 0
-        else:
-            self._no_improve_count += 1
-        return self.patience > 0 and self._no_improve_count >= self.patience
 
 
 class MLP(nn.Module):
@@ -109,41 +32,38 @@ class MLP(nn.Module):
 
         Args:
             input_dim: Input feature dimension.
-            output_dim: Output feature dimension.
-            num_layers: Number of hidden layers of size ``width``.
+            output_dim: Output feature dimension (one Q-value per action).
+            num_layers: Number of hidden ``width x width`` layers after the
+                input layer, so the network has ``num_layers + 1`` hidden layers.
             width: Number of units in each hidden layer.
         """
         super().__init__()
 
-        layers: list[nn.Module] = []
-        layers.append(nn.Linear(input_dim, width))
-        layers.append(nn.ReLU())
-
+        layers: list[nn.Module] = [nn.Linear(input_dim, width), nn.ReLU()]
         for _ in range(num_layers):
-            layers.append(nn.Linear(width, width))
-            layers.append(nn.ReLU())
-
+            layers += [nn.Linear(width, width), nn.ReLU()]
         layers.append(nn.Linear(width, output_dim))
 
         self.net = nn.Sequential(*layers)
 
     def forward(self, x: Tensor) -> Tensor:
-        """Run a forward pass.
-
-        Args:
-            x: Input tensor of shape (batch_size, input_dim).
-
-        Returns:
-            Output tensor of shape (batch_size, output_dim).
-        """
+        """Map states of shape (batch, input_dim) to Q-values (batch, output_dim)."""
         return self.net(x)
 
 
 class Model:
-    """Wrapper around MLP with training, inference, save and load utilities."""
+    """Online Q-network, target Q-network and optimizer.
+
+    Attributes:
+        model: The online network, trained by gradient descent.
+        target_model: A slowly-moving copy used for the bootstrap target.
+        inference_model: A CPU copy of the online network for single-state
+            action selection, which is faster than a GPU round-trip.
+    """
 
     def __init__(  # noqa: PLR0913
         self,
+        *,
         num_layers: int,
         width: int,
         learning_rate: float,
@@ -151,7 +71,7 @@ class Model:
         output_dim: int,
         model_path: Path | None = None,
     ) -> None:
-        """Initialize the model, optionally loading weights from disk.
+        """Initialize the networks, optionally loading weights from disk.
 
         Architecture is always defined by the parameters; a saved file only
         supplies weights, never the structure.
@@ -163,67 +83,36 @@ class Model:
             input_dim: Input feature dimension.
             output_dim: Output feature dimension.
             model_path: Optional directory containing a saved ``MODEL_FILE``.
-        """
-        self.learning_rate = learning_rate
-        self.input_dim = input_dim
-        self.output_dim = output_dim
 
+        Raises:
+            FileNotFoundError: If ``model_path`` is given but has no ``MODEL_FILE``.
+        """
+        self.input_dim = input_dim
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         logger.info(f"Model device: {self.device}")
 
-        self.model = MLP(
-            input_dim=input_dim,
-            output_dim=output_dim,
-            num_layers=num_layers,
-            width=width,
-        ).to(self.device)
+        self.model = MLP(input_dim, output_dim, num_layers, width).to(self.device)
 
-        if model_path and (model_path / MODEL_FILE).exists():
+        if model_path is not None:
             model_file = model_path / MODEL_FILE
+            if not model_file.exists():
+                msg = f"No trained model at {model_file}"
+                raise FileNotFoundError(msg)
             logger.info(f"Loading trained model weights from {model_file}")
-            self._load_weights(model_file)
-        else:
-            logger.info("Creating new model for the Agent")
+            state_dict = torch.load(model_file, weights_only=True, map_location=self.device)
+            self.model.load_state_dict(state_dict)
 
         self.target_model = copy.deepcopy(self.model)
-        for param in self.target_model.parameters():
-            param.requires_grad = False
+        self.target_model.requires_grad_(requires_grad=False)
 
-        # CPU shadow for single-sample inference (avoids GPU round-trip overhead)
         self.inference_model: MLP = copy.deepcopy(self.model).cpu()
-        self.inference_model.eval()
-        for p in self.inference_model.parameters():
-            p.requires_grad = False
+        self.inference_model.requires_grad_(requires_grad=False)
 
         self.loss_fn = nn.HuberLoss()
-        self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
-
-    def _load_weights(self, model_file: Path) -> None:
-        """Load state_dict weights from disk into the already-constructed model.
-
-        Args:
-            model_file: Path to the ``.pt`` file produced by ``save_model``.
-        """
-        state_dict = torch.load(model_file, weights_only=True, map_location=self.device)
-        self.model.load_state_dict(state_dict)
-
-    def _predict(self, states: NDArray) -> NDArray:
-        """Run inference on a batch of states.
-
-        Args:
-            states: Array of shape (batch_size, input_dim).
-
-        Returns:
-            Array of shape (batch_size, output_dim).
-        """
-        self.model.eval()
-        with torch.no_grad():
-            arr = np.asarray(states, dtype=np.float32)
-            outputs = self.model(torch.from_numpy(arr).to(self.device))
-            return outputs.cpu().numpy()
+        self.optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
 
     def predict_one(self, state: NDArray) -> NDArray:
-        """Predict Q-values for a single state — always runs on CPU.
+        """Predict Q-values for a single state, on CPU.
 
         Args:
             state: 1-D array of shape (input_dim,).
@@ -232,139 +121,49 @@ class Model:
             Array of shape (1, output_dim).
         """
         with torch.no_grad():
-            t = torch.from_numpy(
-                np.asarray(state, dtype=np.float32).reshape(1, self.input_dim)
-            )
+            t = torch.from_numpy(np.asarray(state, dtype=np.float32).reshape(1, self.input_dim))
             return self.inference_model(t).numpy()
 
-    def predict_batch(self, states: NDArray) -> NDArray:
-        """Predict Q-values for a batch of states.
-
-        Args:
-            states: Array of shape (batch_size, input_dim).
-
-        Returns:
-            Array of shape (batch_size, output_dim).
-        """
-        return self._predict(states)
-
-    def predict_batch_target(self, states: NDArray) -> NDArray:
-        """Predict Q-values using the frozen target network.
-
-        Args:
-            states: Array of shape (batch_size, input_dim).
-
-        Returns:
-            Array of shape (batch_size, output_dim).
-        """
-        self.target_model.eval()
-        with torch.no_grad():
-            arr = np.asarray(states, dtype=np.float32)
-            outputs = self.target_model(torch.from_numpy(arr).to(self.device))
-            return outputs.cpu().numpy()
-
-    def update_target_network(self, tau: float = 0.005) -> None:
-        """Blend online network weights into the target network via Polyak averaging.
-
-        With tau=1.0 this degenerates to a hard copy (original behaviour).
-        With tau≈0.005 the target moves smoothly, avoiding the abrupt jumps
-        that a periodic hard copy introduces.
-
-        Args:
-            tau: Interpolation factor in (0, 1].  Target keeps (1-tau) of its
-                 current weights and absorbs tau of the online weights each call.
-        """
-        for p_online, p_target in zip(self.model.parameters(), self.target_model.parameters()):
-            p_target.data.mul_(1.0 - tau).add_(tau * p_online.data)
-        # Sync CPU shadow (cheap: ~80 KB for this MLP)
-        for p_cpu, p_online in zip(self.inference_model.parameters(), self.model.parameters()):
-            p_cpu.data.copy_(p_online.data.cpu())
-
-    def forward_online(self, states_t: Tensor) -> Tensor:
-        """Eval forward pass on a GPU tensor, returning a GPU tensor.
-
-        Args:
-            states_t: Tensor of shape (batch_size, input_dim) already on device.
-
-        Returns:
-            Q-value tensor of shape (batch_size, output_dim) on device.
-        """
-        self.model.eval()
-        with torch.no_grad():
-            return self.model(states_t)
-
-    def forward_target(self, states_t: Tensor) -> Tensor:
-        """Target network eval forward pass on a GPU tensor.
-
-        Args:
-            states_t: Tensor of shape (batch_size, input_dim) already on device.
-
-        Returns:
-            Q-value tensor of shape (batch_size, output_dim) on device.
-        """
-        self.target_model.eval()
-        with torch.no_grad():
-            return self.target_model(states_t)
-
-    def train_on_tensors(self, states_t: Tensor, targets_t: Tensor) -> None:
-        """Gradient step using pre-built GPU tensors (no CPU conversion).
-
-        Args:
-            states_t: Input states already on device.
-            targets_t: Target Q-values already on device.
-        """
-        self.model.train()
+    def optimize(self, loss: Tensor) -> None:
+        """Take one gradient step on ``loss`` and refresh the CPU copy."""
         self.optimizer.zero_grad()
-        loss = self.loss_fn(self.model(states_t), targets_t)
         loss.backward()
         self.optimizer.step()
+        self._sync_inference_model()
 
-    def train_batch(self, states: NDArray, q_sa: NDArray) -> None:
-        """Train the model for one step on a batch.
+    def update_target_network(self, tau: float) -> None:
+        """Blend online weights into the target network (Polyak averaging).
+
+        ``target <- (1 - tau) * target + tau * online``. With ``tau = 1`` this is
+        the hard copy of the original DQN paper; small ``tau`` moves the target
+        smoothly instead of in periodic jumps.
 
         Args:
-            states: Input states of shape (batch_size, input_dim).
-            q_sa: Target Q-values of shape (batch_size, output_dim).
+            tau: Interpolation factor in (0, 1].
         """
-        self.model.train()
-
-        states_tensor = torch.from_numpy(np.asarray(states, dtype=np.float32)).to(self.device)
-        q_sa_tensor = torch.from_numpy(np.asarray(q_sa, dtype=np.float32)).to(self.device)
-
-        self.optimizer.zero_grad()
-        predictions = self.model(states_tensor)
-        loss = self.loss_fn(predictions, q_sa_tensor)
-        loss.backward()
-        self.optimizer.step()
+        with torch.no_grad():
+            for p_online, p_target in zip(
+                self.model.parameters(), self.target_model.parameters(), strict=True
+            ):
+                p_target.mul_(1.0 - tau).add_(tau * p_online)
 
     def save_model(self, out_path: Path) -> None:
-        """Save model weights to ``out_path / MODEL_FILE``.
-
-        Saves ``state_dict`` only (portable across PyTorch versions).
-
-        Args:
-            out_path: Directory to write the model file into.
-        """
-        out_path.mkdir(parents=True, exist_ok=True)
-        torch.save(self.model.state_dict(), out_path / MODEL_FILE)
+        """Save the online weights (``state_dict``) to ``out_path / MODEL_FILE``."""
+        self.save_weights(out_path / MODEL_FILE)
 
     def save_weights(self, file_path: Path) -> None:
-        """Save model weights to an explicit file path.
-
-        Args:
-            file_path: Destination ``.pt`` file path.
-        """
+        """Save the online weights (``state_dict``) to an explicit file path."""
         file_path.parent.mkdir(parents=True, exist_ok=True)
         torch.save(self.model.state_dict(), file_path)
 
     def load_state_dict_np(self, weights_np: dict[str, NDArray]) -> None:
-        """Load online model weights from numpy arrays and sync the CPU shadow.
+        """Load online weights from numpy arrays (used by the grid extension)."""
+        self.model.load_state_dict({k: torch.from_numpy(v) for k, v in weights_np.items()})
+        self._sync_inference_model()
 
-        Args:
-            weights_np: Mapping from parameter name to numpy array (as returned
-                by :meth:`~coordinator.MultiAgentCoordinator.get_weights`).
-        """
-        state_dict = {k: torch.from_numpy(v) for k, v in weights_np.items()}
-        self.model.load_state_dict(state_dict)
-        for p_cpu, p_online in zip(self.inference_model.parameters(), self.model.parameters()):
-            p_cpu.data.copy_(p_online.data.cpu())
+    def _sync_inference_model(self) -> None:
+        with torch.no_grad():
+            for p_cpu, p_online in zip(
+                self.inference_model.parameters(), self.model.parameters(), strict=True
+            ):
+                p_cpu.copy_(p_online.cpu())

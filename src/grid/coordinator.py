@@ -158,7 +158,7 @@ class MultiAgentCoordinator:
             k: v.cpu().numpy()
             for k, v in self.agents[self.tl_ids[0]].model.model.state_dict().items()
         }
-        return {tl: shared for tl in self.tl_ids}
+        return dict.fromkeys(self.tl_ids, shared)
 
     def load_weights(self, weights: dict[str, dict[str, NDArray]]) -> None:
         """Load online model weights from numpy arrays.

@@ -45,7 +45,7 @@ class GridEnvironment:
         gui: Whether to launch ``sumo-gui`` instead of headless ``sumo``.
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         grid_cfg: GridConfig,
         n_cars_generated: int,

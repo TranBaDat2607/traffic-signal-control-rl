@@ -1,3 +1,5 @@
+"""Experience replay buffer."""
+
 import random
 from dataclasses import dataclass
 
@@ -6,12 +8,17 @@ from numpy.typing import NDArray
 
 @dataclass(slots=True)
 class Sample:
-    """Single transition sample stored in replay memory."""
+    """One transition (s, a, r, s', terminated) stored in replay memory.
+
+    ``terminated`` is True only when ``next_state`` is a true terminal state. A
+    time-limit cut-off is not one; see ``Agent.replay``.
+    """
 
     state: NDArray
     action: int
     reward: float
     next_state: NDArray
+    terminated: bool = False
 
 
 class Memory:
@@ -65,7 +72,7 @@ class Memory:
 
         actual_n = min(n, self._count)
         indices = random.sample(range(self._count), actual_n)
-        return [self._buf[i] for i in indices]  # type: ignore[return-value]
+        return [self._buf[i] for i in indices]  # type: ignore[misc]
 
     def __len__(self) -> int:
         """Return the current number of stored samples."""

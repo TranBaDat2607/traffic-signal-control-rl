@@ -1,28 +1,38 @@
+# Training settings for the DQN agent (src/train.py).
+# Unknown keys are rejected. Any field can be overridden for one run with
+# --seed / --episodes on the command line; the settings actually used are
+# saved next to the model as training_settings.yaml.
+
+# reproducibility: seeds network init, exploration and replay sampling.
+# Training traffic always uses seeds 0 .. total_episodes - 1.
+seed: 0
+
 # simulation
 gui: false
 total_episodes: 300
-max_steps: 5400
-n_cars_generated: 1000
-green_duration: 10
-yellow_duration: 4
-turn_chance: 0.25
+max_steps: 5400          # episode length, simulated seconds (1.5 h)
+n_cars_generated: 1000   # vehicles per episode
+green_duration: 10       # seconds of green per decision
+yellow_duration: 4       # seconds of yellow inserted on a phase change
+turn_chance: 0.25        # probability a vehicle turns instead of going straight
 
-# model
+# model: MLP with (num_layers + 1) hidden layers of width_layers units
 num_layers: 4
 width_layers: 400
 batch_size: 100
 learning_rate: 0.001
-training_epochs: 1
+training_epochs: 1       # gradient steps per environment step
 
-# memory
-memory_size_min: 600
+# replay memory
+memory_size_min: 600     # transitions collected before learning starts
 memory_size_max: 50000
 
 # agent
-gamma: 0.75
-tau: 0.005
-checkpoint_interval: 50
-early_stopping_patience: 0  # episodes with no total-delay improvement before stopping (0 = disabled)
+gamma: 0.75              # discount per decision step (10-14 s)
+tau: 0.005               # Polyak rate of the target network
+checkpoint_interval: 50  # save checkpoint_ep<N>.pt every N episodes (0 = never)
+early_stopping_patience: 0     # episodes without total-delay improvement before stopping (0 = off)
+early_stopping_min_episode: 0  # ignore episodes before this one for early stopping / best model
 
-# paths
+# paths (relative to the project root)
 sumocfg_file: intersection/sumo_config.sumocfg

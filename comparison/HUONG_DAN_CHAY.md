@@ -1,18 +1,11 @@
-# Hướng Dẫn Chạy Dự Án Traffic Signal Reinforcement Learning
+# Hướng dẫn chạy dự án
 
-> **Mô tả:** Agent DQN điều khiển đèn tín hiệu của một ngã tư trong SUMO. Dưới
-> đây là đúng quy trình đã tạo ra kết quả công bố trong `README.md`: baseline
-> fixed-time, huấn luyện, đánh giá greedy trên các seed held-out, rồi vẽ biểu đồ
-> so sánh. Bản tiếng Anh nằm ở mục *Reproduce* của `README.md`.
+Bản tiếng Việt, rút gọn, của mục *Quickstart* và *Reproduce* trong
+[`README.md`](../README.md). Giải thích chi tiết về MDP, giao thức đánh giá và
+cách mở rộng nằm ở `README.md` và [`docs/extending.md`](../docs/extending.md).
 
 **Mọi lệnh đều chạy từ thư mục gốc của dự án** (thư mục chứa `pyproject.toml`).
-Đường dẫn trong `settings/*.yaml` và trong file cấu hình SUMO là tương đối so
-với thư mục gốc.
-
-Chỉ chạy **một** lệnh có SUMO tại một thời điểm. Mỗi episode đều ghi đè
-`intersection/episode_routes.rou.xml`, và SUMO đọc file đó dần trong lúc chạy.
-
----
+Đường dẫn trong `settings/*.yaml` là tương đối so với thư mục gốc.
 
 ## 1. Cài đặt (một lần)
 
@@ -20,104 +13,67 @@ Cần cài SUMO và đặt biến môi trường `SUMO_HOME`. Sau đó:
 
 ```bash
 pip install -e ".[dev]"
+pytest -q                                  # không cần SUMO
+python comparison/fixed_phase_check.py     # cần SUMO; phải in PASS
 ```
 
-Lệnh này cài cả `libsumo`: khi không bật GUI, SUMO chạy ngay trong tiến trình
-Python, nhanh hơn TraCI qua socket khoảng 3 lần. Kết quả giống hệt nhau
-(PROBLEMS.md P3-1).
+Khi không bật GUI, SUMO chạy ngay trong tiến trình Python (`libsumo`), nhanh hơn
+TraCI qua socket khoảng 3 lần, và cho kết quả giống hệt.
 
----
-
-## 2. Quy trình chạy (Pipeline)
-
-### Bước 1: Baseline fixed-time trên các seed held-out
-
-SUMO tự chạy kế hoạch pha trong `intersection/environment.net.xml` (30 s xanh /
-4 s vàng). Python không điều khiển đèn, chỉ đo. Dùng `settings/testing_settings.yaml`
-để baseline chạy trên **cùng các seed** mà agent được đánh giá (`episode_seed:
-10000`, 100 episode). Các seed này không trùng với seed huấn luyện (0…299).
+## 2. Thử nhanh (vài phút)
 
 ```bash
-python comparison/run_baseline.py --config settings/testing_settings.yaml --out baseline_results
+python src/train.py --episodes 10 --out runs/train/smoke
+python src/evaluate.py dqn --model runs/train/smoke --episodes 5
+python src/evaluate.py max_pressure --episodes 5
 ```
 
-- **File xuất ra:** `baseline_results/baseline_results.json` (kèm danh sách seed và
-  thời lượng các pha thực sự đã chạy) và các file `.txt`.
+Hoặc mở `notebook/quickstart.ipynb`.
 
-### Bước 2: Huấn luyện agent DQN
+## 3. Quy trình đầy đủ
 
 ```bash
-python src/train.py --settings settings/training_settings.yaml --out model/dqn-300ep
+# Huấn luyện 3 lần với 3 seed khác nhau (có thể chạy song song)
+python src/train.py --seed 0 --threads 2 --out runs/train/dqn-seed0
+python src/train.py --seed 1 --threads 2 --out runs/train/dqn-seed1
+python src/train.py --seed 2 --threads 2 --out runs/train/dqn-seed2
+
+# Đánh giá greedy (ε = 0) trên 100 seed held-out 10000–10099
+python src/evaluate.py dqn --model runs/train/dqn-seed0
+python src/evaluate.py dqn --model runs/train/dqn-seed1
+python src/evaluate.py dqn --model runs/train/dqn-seed2
+
+# Baseline trên đúng các seed đó
+python src/evaluate.py fixed_time --green 30
+python src/evaluate.py fixed_time --green 10
+python src/evaluate.py max_pressure
+python src/evaluate.py random
+
+# So sánh theo cặp (cùng seed = cùng dòng xe), có khoảng tin cậy 95%
+python comparison/compare_results.py runs/eval/fixed_time-30s runs/eval/fixed_time-10s \
+    runs/eval/max_pressure runs/eval/random \
+    runs/eval/dqn-seed0 runs/eval/dqn-seed1 runs/eval/dqn-seed2 --out runs/comparison
 ```
 
-- 300 episode, ε giảm tuyến tính từ 1 về 0. Trên máy 12 nhân, chỉ CPU, lần chạy
-  công bố mất 35 phút.
-- **File xuất ra:** `model/dqn-300ep/trained_model.pt` (mô hình cuối, là mô hình
-  được đánh giá ở bước 3), `best_model.pt`, các file `plot_*_data.txt` và ảnh
-  `plot_*.png` của đường cong huấn luyện.
-- `plot_reward_*` chỉ là chẩn đoán huấn luyện, **không** dùng để so với baseline
-  (PROBLEMS.md P0-1).
+## 4. File xuất ra
 
-### Bước 3: Đánh giá greedy (ε = 0) trên các seed held-out
+| Đường dẫn | Nội dung |
+|---|---|
+| `runs/train/<tên>/trained_model.pt` | Mô hình sau episode cuối, là mô hình được đánh giá |
+| `runs/train/<tên>/training_settings.yaml` | Cấu hình thực sự đã dùng (kể cả `--seed`, `--episodes`) |
+| `runs/train/<tên>/training_log.csv`, `training_curves.png` | Một dòng cho mỗi episode huấn luyện |
+| `runs/eval/<nhãn>/eval_results.json` | Số liệu từng episode trên các seed held-out |
+| `runs/comparison/summary.md`, `comparison.png` | Bảng và biểu đồ so sánh |
 
-```bash
-python src/test.py --model model/dqn-300ep
-```
+`runs/` không được commit. Một lần chạy được trích dẫn trong `README.md` được
+chép vào `results/<tên>/` (xem [`results/README.md`](../results/README.md)).
 
-- **File xuất ra:** `model/dqn-300ep/test/test_results.json` và các file
-  `plot_*_data.txt`.
+## 5. Lưu ý
 
-### Bước 4: So sánh với baseline
-
-```bash
-python comparison/compare_results.py --baseline baseline_results --rl model/dqn-300ep/test --out comparison_output
-```
-
-- Script kiểm tra rằng hai bên chạy trên cùng các seed. Nếu không, nó dừng và
-  báo lỗi.
-- **File xuất ra:** `comparison_output/comparison.png` và
-  `comparison_output/comparison_summary.json` (trung bình, chênh lệch ghép cặp
-  theo seed, khoảng tin cậy 95%, số episode agent tốt hơn). Bảng tóm tắt cũng
-  được in ra console.
-- Thấp hơn là tốt hơn cho delay và queue. `Insertion delay` là số xe-giây phải
-  chờ để vào được mạng lưới. Phần này **không** nằm trong total delay; nếu nó
-  không nhỏ thì total delay chỉ là cận dưới (PROBLEMS.md P2-4).
-
-### Bước 5 (tùy chọn): Baseline fixed-time với thời lượng pha của chính agent
-
-Agent dùng 10 s xanh / 4 s vàng. Baseline này chạy một chu kỳ cố định với đúng
-các thời lượng đó, để biết agent hơn hay kém một chu kỳ cố định cùng nhịp:
-
-```bash
-python comparison/run_baseline.py --config settings/testing_settings.yaml --out baseline_results_10-4 --green 10 --yellow 4
-python comparison/compare_results.py --baseline baseline_results_10-4 --rl model/dqn-300ep/test --out comparison_output_10-4
-```
-
-### Kiểm tra phép đo
-
-```bash
-python comparison/fixed_phase_check.py
-pytest -q
-```
-
-`fixed_phase_check.py` chạy cùng một chu kỳ đèn 10/4 qua hai đường: agent
-(`Environment.execute()`) và SUMO tự chạy. Cả hai phải cho đúng 18,195
-xe-giây (seed 0), in ra `PASS`.
-
----
-
-## 3. Giao diện trực quan SUMO (GUI)
-
-Mặc định mọi lệnh chạy ngầm (headless). Để xem xe chạy, thêm `--gui` vào lệnh
-baseline (ví dụ một episode):
-
-```bash
-python comparison/run_baseline.py --config settings/testing_settings.yaml --out baseline_results_gui --episodes 1 --gui
-```
-
-Với huấn luyện/đánh giá: đặt `gui: true` trong file settings tương ứng. Chế độ
-GUI dùng TraCI (không dùng được libsumo), nên chậm hơn.
-
-> **Mẹo:** đặt tên thư mục khác nhau cho mỗi lần chạy (`model/run-02`,
-> `model/run-03`, …). Mọi thư mục output mặc định đều bị `.gitignore` bỏ qua.
-> Kết quả muốn công bố thì chép vào `results/<tên-run>/` (xem `results/README.md`).
+- **Chỉ so sánh bằng `total_delay`** (xe·giây, định nghĩa trong `src/metrics.py`).
+  Tổng reward chỉ là chẩn đoán huấn luyện, không dùng để so với baseline.
+- Huấn luyện có seed: cùng `--seed` và cùng `--threads` trên CPU cho kết quả
+  giống hệt từng bit.
+- Seed giao thông dùng để huấn luyện là `0 … total_episodes − 1`; seed đánh giá
+  bắt đầu từ `10000`. Đừng chọn siêu tham số hay checkpoint dựa trên seed đánh giá.
+- `gui: true` trong file settings sẽ mở `sumo-gui` (dùng TraCI, chậm hơn).

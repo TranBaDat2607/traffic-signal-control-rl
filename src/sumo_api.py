@@ -21,7 +21,7 @@ Two backends expose the same API:
     ``sumo-gui``, and the fallback when ``libsumo`` is not installed.
 
 Both run the same SUMO version, so they give identical results.
-``comparison/fixed_phase_check.py`` verifies that (PROBLEMS.md P3-1).
+``comparison/fixed_phase_check.py`` verifies that.
 
 The backend can be switched only between simulations, never while one is
 loaded.

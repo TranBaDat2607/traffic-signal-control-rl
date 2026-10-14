@@ -1,3 +1,8 @@
+# The evaluation protocol (src/evaluate.py): the traffic every controller is
+# scored on. Seeds episode_seed .. episode_seed + total_episodes - 1 are never
+# used for training. Keep the demand and timing equal to training unless you
+# are deliberately testing generalisation.
+
 # simulation
 gui: false
 total_episodes: 100
@@ -7,9 +12,6 @@ green_duration: 10
 yellow_duration: 4
 turn_chance: 0.25
 episode_seed: 10000
-
-# agent
-gamma: 0.75
 
 # paths
 sumocfg_file: intersection/sumo_config.sumocfg

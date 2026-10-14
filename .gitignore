@@ -6,24 +6,24 @@ dist/
 build/
 .venv/
 
-# Where results live (PROBLEMS.md P1-4)
-#   Every script's default output directory is scratch space and is ignored.
-#   A run that the README cites is copied, deliberately, into
+# Where results live
+#   Every script's default output directory (runs/) is scratch space and is
+#   ignored. A run that the README cites is copied, deliberately, into
 #   results/<run-name>/ and committed there. Nothing under results/ is ignored.
+/runs/
 
-# train.py / test.py default output (src/constants.py — singular "model")
-model/
+# Default outputs of earlier versions of the scripts
+/model/
 
 # Generated SUMO inputs
 **/episode_routes.rou.xml
 intersection_grid/
 
-# run_baseline.py / compare_results.py default outputs (run from the root)
 /baseline_results*/
 /comparison_output*/
 /comparison/comparison.png
 
-# Profiler output (PROBLEMS.md verification commands)
+# Profiler output
 *.prof
 
 # Per-machine Claude Code permissions
@@ -40,7 +40,3 @@ intersection_grid/
 .DS_Store
 Thumbs.db
 instruction.md
-
-# Local-only notes (kept off GitHub)
-/PROBLEMS.md
-/FUTURE_WORK.md

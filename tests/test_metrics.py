@@ -18,7 +18,6 @@ from metrics import (
     vehicles_arrived,
 )
 
-
 # --- Stand-ins for the per-step stat objects the real call sites hold. -------
 
 
