@@ -1,4 +1,4 @@
-"""State extraction for individual intersections and neighbour-aware aggregation.
+"""State extraction for individual intersections.
 
 Parameterised rewrite of ``environment/state.py`` using per-junction
 :class:`~grid.config.IntersectionConfig` instead of global constants.
@@ -16,9 +16,8 @@ from constants import (
     MAX_WAIT_TIME,
     NUM_CELLS,
     ROAD_MAX_LENGTH,
-    STATE_SIZE,
 )
-from grid.config import GridConfig, IntersectionConfig
+from grid.config import IntersectionConfig
 from sumo_api import traci
 
 
@@ -72,30 +71,3 @@ def get_intersection_state(cfg: IntersectionConfig) -> NDArray:
 
     return np.concatenate([presence, speed_norm, wait_norm])
 
-
-def get_neighbor_aware_state(tl_id: str, grid_cfg: GridConfig) -> NDArray:
-    """Compute a 1200-element neighbour-aware state vector for *tl_id*.
-
-    Concatenates the 240-element state of the target junction with those of
-    its four neighbours (W, N, E, S order), padding absent neighbours with
-    zeros.
-
-    Args:
-        tl_id: Target junction ID.
-        grid_cfg: Full grid configuration.
-
-    Returns:
-        NumPy array of shape ``(STATE_SIZE * 5,)`` = ``(1200,)``.
-    """
-    cfg = grid_cfg.intersections[tl_id]
-    parts: list[NDArray] = [get_intersection_state(cfg)]
-
-    for direction in ("W", "N", "E", "S"):
-        nbr_id = cfg.neighbor_tl_ids.get(direction)
-        if nbr_id is not None:
-            nbr_cfg = grid_cfg.intersections[nbr_id]
-            parts.append(get_intersection_state(nbr_cfg))
-        else:
-            parts.append(np.zeros(STATE_SIZE, dtype=float))
-
-    return np.concatenate(parts)
